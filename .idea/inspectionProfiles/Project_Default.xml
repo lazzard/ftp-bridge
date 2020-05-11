@@ -1,0 +1,38 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PhpCompoundNamespaceDepthInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpDocFieldTypeMismatchInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpDocMissingReturnTagInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpDocMissingThrowsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpDocRedundantThrowsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpDocSignatureInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpFullyQualifiedNameUsageInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PhpIllegalPsrClassPathInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpLongTypeFormInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpMethodOrClassCallIsNotCaseSensitiveInspection" enabled="true" level="INFORMATION" enabled_by_default="true" />
+    <inspection_tool class="PhpMissingDocCommentInspection" enabled="true" level="INFORMATION" enabled_by_default="true">
+      <option name="CHECK_FIELD" value="true" />
+      <option name="CHECK_CLASS_CONSTANT" value="true" />
+    </inspection_tool>
+    <inspection_tool class="PhpMissingVisibilityInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpModifierOrderInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpMultipleClassesDeclarationsInOneFile" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpNewClassMissingParameterListInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpNonCanonicalElementsOrderInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpSeparateElseIfInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpShortOpenTagInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpTooManyParametersInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpTraditionalSyntaxArrayLiteralInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpTraitsUseListInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpUnused" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="SUPPRESS_GETTERS_AND_SETTERS" value="true" />
+    </inspection_tool>
+    <inspection_tool class="PhpUnusedPrivateMethodInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="SKIP_CONSTRUCT_METHOD" value="false" />
+      <option name="SKIP_CLONE_METHOD" value="false" />
+    </inspection_tool>
+    <inspection_tool class="PhpVarUsageInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpVariableVariableInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+  </profile>
+</component>

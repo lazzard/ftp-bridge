@@ -1,0 +1,20 @@
+{
+    "name": "lazzard/php-ftp-helper",
+    "description": "Provides a simple interface for FTP communications.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "elamrani744",
+            "email": "elamrani.sv.laza@gmail.com"
+        }
+    ],
+    "require": {
+    
+    },
+    "autoload": {
+        "psr-4": {
+            "Lazzard\\FtpHelper\\": "src/"    
+        }
+    }
+}
