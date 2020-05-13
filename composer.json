@@ -1,20 +1,21 @@
 {
-    "name": "lazzard/php-ftp-helper",
-    "description": "Provides a simple interface for FTP communications.",
+    "name": "lazzard/ftp-bridge",
+    "description": "Provides s simple interface to transfer data through the File Transfer Protocol (FTP).",
     "type": "library",
     "license": "MIT",
+    "keywords": ["ftp", "bridge", "connector"],
     "authors": [
         {
-            "name": "elamrani744",
+            "name": "El Amrani Chakir",
             "email": "elamrani.sv.laza@gmail.com"
         }
     ],
     "require": {
-    
+
     },
     "autoload": {
         "psr-4": {
-            "Lazzard\\FtpHelper\\": "src/"    
+            "Lazzard\\FtpBridge\\": "src/"
         }
     }
 }
