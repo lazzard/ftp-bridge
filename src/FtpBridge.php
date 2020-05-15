@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the Lazzard/php-ftp-helper package.
+ * This file is part of the Lazzard/ftp-bridge package.
  *
  * (c) El Amrani Chakir <elamrani.sv.laza@gmail.com>
  *
@@ -28,8 +28,8 @@ class FtpBridge implements FtpBridgeInterface
     const BINARY = 'I';
     const EBCDIC = 'E';
 
-    /** @var array */
-    protected $logs;
+    /** @var FtpLoggerInterface */
+    public $logger;
 
     /** @var resource */
     protected $commandStream;
@@ -47,20 +47,29 @@ class FtpBridge implements FtpBridgeInterface
     protected $responseMessage;
 
     /**
-     * FtpBridge constructor opens a command stream connection on port 21 (default) and logging with
-     * the provided username and password.
+     * FtpBridge constructor
+     *
+     * @param FtpLoggerInterface|null $logger
+     */
+    public function __construct(FtpLoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Opens a command stream connection on active port 21 (default) and logs with the provided username and password.
      *
      * @param string $host
      * @param string $username
      * @param string $password
      * @param int    $port
      *
-     * @throws \Exception
+     * @throws \RuntimeException
      */
-    public function __construct($host, $username, $password, $port = 21)
+    public function connect($host, $username, $password, $port = 21)
     {
         if ( ! ($this->commandStream = fsockopen($host, $port, $errno, $errMsg))) {
-            throw new \Exception("Opening socket connection was failed : [{$errMsg}]");
+            throw new \RuntimeException("Opening socket connection was failed : [{$errMsg}]");
         }
 
         $this->getCmd(); // welcome message
@@ -74,14 +83,6 @@ class FtpBridge implements FtpBridgeInterface
 
         $this->putCmd('PASS ' . $password);
         $this->getCmd();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getLogs()
-    {
-        return $this->logs;
     }
 
     /**
@@ -146,13 +147,11 @@ class FtpBridge implements FtpBridgeInterface
             }
         }
 
-        $response = $this->responseToArray($response);
+        $this->logger->addLog($response);
 
-        $this->addLog($response);
-
-        $this->response        = $response;
-        $this->responseCode    = $this->responseCode = intval(substr(@$response[0], 0, 3));
-        $this->responseMessage = $this->responseMessage = intval(substr(@$response[0], 0, 3));
+        $this->response        = $response = $this->responseToArray($response);;
+        $this->responseCode    = $this->responseCode = intval(substr(@$this->response[0], 0, 3));
+        $this->responseMessage = $this->responseMessage = intval(substr(@$this->response[0], 0, 3));
 
         return $response;
     }
@@ -200,18 +199,14 @@ class FtpBridge implements FtpBridgeInterface
 
         $res = $this->getCmd()[0];
 
-        // TODO use regex instead of functions
-        $ip_port = substr(
-            substr($res, strpos($res, '(') + 1), 0, -2
-        );
-        $ip      = str_replace(',', '.', implode(
-                ',', array_slice(explode(',', $ip_port), 0, 4))
-        );
+        // TODO use regex instead of string functions
+        $ip_port = substr(substr($res, strpos($res, '(') + 1), 0, -2);
+        $ip      = str_replace(',', '.', implode(',', array_slice(explode(',', $ip_port), 0, 4)));
         $port    = array_slice(explode(',', $ip_port), 4, 6);
         $port    = ($port[0] * 256) + $port[1];
 
         if ( ! ($this->dataStream = fsockopen($ip, $port, $errno, $errMsg))) {
-            throw new \Exception("Opening data connection stream was failed. [{$errMsg}]");
+            throw new \RuntimeException("Opening data connection stream was failed. [{$errMsg}]");
         }
 
         stream_set_blocking($this->dataStream, true); // Switch to blocking mode.

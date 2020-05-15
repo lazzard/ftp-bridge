@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the Lazzard/php-ftp-helper package.
+ * This file is part of the Lazzard/ftp-bridge package.
  *
  * (c) El Amrani Chakir <elamrani.sv.laza@gmail.com>
  *
@@ -19,11 +19,6 @@ namespace Lazzard\FtpBridge;
  */
 interface FtpBridgeInterface
 {
-    /**
-     * @return array
-     */
-    public function getLogs();
-
     /**
      * @return resource
      */
@@ -53,7 +48,7 @@ interface FtpBridgeInterface
      * @return bool
      */
     public function isSuccess();
-
+    
     /**
      * Sends a command to the server thought the control channel.
      *
@@ -91,7 +86,7 @@ interface FtpBridgeInterface
      * Opens a data stream connection based on the IP address and the port number
      * returned from 'PASV' command.
      *
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     public function openPassiveConnection();
 }
