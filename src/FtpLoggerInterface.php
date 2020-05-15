@@ -6,7 +6,6 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
  */
 
 namespace Lazzard\FtpBridge;
@@ -19,12 +18,54 @@ namespace Lazzard\FtpBridge;
  */
 interface FtpLoggerInterface
 {
+    /**
+     * @var int
+     *
+     * The plain mode logs the FTP server response as they are,
+     * no parsing performed on the response string.
+     */
     const PLAIN_MODE = 0;
-    const ARRAY_MODE = 1; 
+    /**
+     * @var int
+     *
+     * Array mode parses the remote replay to an array.
+     */
+    const ARRAY_MODE = 1;
 
+    /**
+     * @return mixed
+     */
     public function getLogs();
 
-    public function addLog($log);
+    /**
+     * @param int    $level
+     * @param string $message
+     *
+     * @return void
+     */
+    public function log($level, $message);
 
+    /**
+     * @param string $message
+     *
+     * @return void
+     */
+    public function info($message);
+
+    /**
+     * @param string $message
+     *
+     * @return void
+     */
+    public function error($message);
+
+    /**
+     * @return void
+     */
     public function clear();
+
+    /**
+     * @return int
+     */
+    public function count();
 }

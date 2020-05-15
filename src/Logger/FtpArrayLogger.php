@@ -20,9 +20,7 @@ use Lazzard\FtpBridge\FtpLoggerInterface;
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-class FtpArrayLogger implements 
-    FtpLoggerInterface,
-    \Countable
+class FtpArrayLogger extends AbstractFtpLogger implements FtpLoggerInterface
 {
     /** @var array */
     protected $logs;
@@ -30,38 +28,54 @@ class FtpArrayLogger implements
     /** @var int */
     protected $mode;
 
-    public function __construct($mode = self::PLAIN_MODE)
+    /**
+     * FtpArrayLogger constructor.
+     *
+     * @param int $mode
+     */
+    public function __construct($mode)
     {
-        $this->logs = [];
         $this->mode = $mode;
+        $this->logs = [];
     }
 
+    /**
+     * @return array
+     */
     public function getLogs()
     {
         return $this->logs;
     }
 
-    public function addLog($log)
+    /**
+     * @inheritDoc
+     */
+    public function log($level, $message)
     {
-        if (is_string($log)) {
-            if ($this->mode === self::PLAIN_MODE) {
-                $this->logs[] = $log;
-            } else {
-                $lines = explode(FtpBridge::CRLF, $log);
-                foreach ($lines as $line) {
-                    $this->logs[] = $line;
-                }
+        if ($this->mode === self::PLAIN_MODE) {
+            $this->logs[] = sprintf("[%s] %s", $level, $message);
+
+        } elseif ($this->mode === self::ARRAY_MODE) {
+            $lines = explode(FtpBridge::CRLF, $message);
+            foreach ($lines as $line) {
+                $this->logs[] = sprintf("[%s] %s", $level, $line);
             }
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function clear()
     {
         $this->logs[] = null;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function count()
     {
-        return count($this->logs);
+        return count($this->logs) - 1;
     }
-}   
+}

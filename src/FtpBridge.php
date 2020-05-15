@@ -53,9 +53,7 @@ class FtpBridge implements FtpBridgeInterface
      */
     public function __construct(FtpLoggerInterface $logger = null)
     {
-        if ($logger) {
-            $this->logger = $logger;
-        }
+        $this->logger = $logger;
     }
 
     /**
@@ -132,7 +130,7 @@ class FtpBridge implements FtpBridgeInterface
      */
     public function isSuccess()
     {
-        return $this->responseCode <= 257;
+        return $this->responseCode < 400;
     }
 
     /**
@@ -149,13 +147,15 @@ class FtpBridge implements FtpBridgeInterface
             }
         }
 
-        $this->logger->addLog($response);
-
-        $response = $this->responseToArray($response);
-
         $this->setResponse($response);
         $this->setResponseCode();
         $this->setResponseMessage();
+
+        if ($this->isSuccess()) {
+            $this->logger->info($response);
+        } else {
+            $this->logger->error($response);
+        }
 
         return $response;
     }
@@ -173,15 +173,19 @@ class FtpBridge implements FtpBridgeInterface
      */
     public function getData()
     {
-        $res = '';
+        $response = '';
         // TODO feof hang problem
         while ( ! feof($this->dataStream)) {
-            $res .= fgets($this->dataStream);
+            $response .= fgets($this->dataStream);
         }
 
-        $this->logger->addLog($res);
+        if ($this->isSuccess()) {
+            $this->logger->info($response);
+        } else {
+            $this->logger->error($response);
+        }
 
-        return $this->responseToArray($res);
+        return $response;
     }
 
     /**
@@ -200,10 +204,10 @@ class FtpBridge implements FtpBridgeInterface
     {
         $this->putCmd('PASV');
 
-        $res = $this->getCmd()[0];
+        $response = $this->getCmd();
 
         // TODO use regex instead of string functions
-        $ip_port = substr(substr($res, strpos($res, '(') + 1), 0, -2);
+        $ip_port = substr(substr($response, strpos($response, '(') + 1), 0, -2);
         $ip      = str_replace(',', '.', implode(',', array_slice(explode(',', $ip_port), 0, 4)));
         $port    = array_slice(explode(',', $ip_port), 4, 6);
         $port    = ($port[0] * 256) + $port[1];
@@ -217,13 +221,13 @@ class FtpBridge implements FtpBridgeInterface
     }
 
     /**
-     * @var array $response
+     * @var string $response
      * 
      * @return void
      */
     protected function setResponse($response)
     {
-        $this->response = $response;
+        $this->response = $this->responseToArray($response);;
     }
 
     /**

@@ -20,12 +20,13 @@ use Lazzard\FtpBridge\FtpLoggerInterface;
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-class FtpFileLogger implements 
-    FtpLoggerInterface,
-    \Countable
+class FtpFileLogger extends AbstractFtpLogger implements FtpLoggerInterface
 {
     /** @var string */
     const EOL = "\r\n";
+
+    /** @var int */
+    protected $mode;
 
     /** @var resource */
     protected $handle;
@@ -36,53 +37,73 @@ class FtpFileLogger implements
     /** @var bool */
     protected $append;
 
-    /** @var int */
-    protected $mode;
-
-    public function __construct($filePath, $append = false, $mode = self::PLAIN_MODE)
+    /**
+     * FtpFileLogger constructor.
+     *
+     * @param int    $mode
+     * @param string $filePath
+     * @param bool   $append
+     */
+    public function __construct($mode, $filePath, $append = false)
     {
         $this->filePath = $filePath;
-        $this->append = $append;
-        $this->mode = $mode;
+        $this->append   = $append;
+        $this->mode     = $mode;
 
         $this->open();
     }
 
+    /**
+     * @return string|false
+     */
     public function getLogs()
     {
         return file_get_contents($this->filePath);
     }
 
-    public function addLog($log)
+    /**
+     * @inheritDoc
+     */
+    public function log($level, $message)
     {
-        if (is_string($log)) {
-            if ($this->mode === self::PLAIN_MODE) {
-                $this->write($log);
-                
-            } elseif ($this->mode === self::ARRAY_MODE) {
-                $lines = explode(FtpBridge::CRLF, $log);
-                array_pop($lines);
-                
-                $indent = str_repeat(' ', 4);
+        if ($this->mode === self::PLAIN_MODE) {
+            $this->write(sprintf("[%s] %s", $level, $message));
 
-                $output = sprintf("%s[%s] array() [%s", ftell($this->handle) === 0 ? '' : self::EOL, count($lines), FtpBridge::CRLF);
+        } elseif ($this->mode === self::ARRAY_MODE) {
+            $lines = explode(FtpBridge::CRLF, $message);
+            array_pop($lines);
 
-                foreach ($lines as $line) {
-                    $output .= sprintf("%s%s%s", $indent, $line, self::EOL);
-                }
-            
-                $output .= ']';
-                
-                $this->write($output);
+            $indent = str_repeat(' ', 4);
+
+            $output = sprintf(
+                "%s[%s] array() [%s] [%s",
+                ftell($this->handle) ? self::EOL : '',
+                count($lines),
+                $level,
+                FtpBridge::CRLF
+            );
+
+            foreach ($lines as $line) {
+                $output .= sprintf("%s%s%s", $indent, $line, self::EOL);
             }
+
+            $output .= ']';
+
+            $this->write($output);
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function clear()
     {
-        fwrite($this->filePath, '');
+        fwrite($this->handle, '');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function count()
     {
         if ($this->mode === self::PLAIN_MODE) {
@@ -92,14 +113,19 @@ class FtpFileLogger implements
         }
     }
 
-    protected function write($content)
+    public function __destruct()
     {
-        fwrite($this->handle, $content);
+        $this->close();
     }
 
     protected function open()
     {
         $this->handle = fopen($this->filePath, $this->append ? 'a' : 'w');
+    }
+
+    protected function write($content)
+    {
+        fwrite($this->handle, $content);
     }
 
     protected function close()
