@@ -19,6 +19,9 @@ namespace Lazzard\FtpBridge;
  */
 interface FtpLoggerInterface
 {
+    const PLAIN_MODE = 0;
+    const ARRAY_MODE = 1; 
+
     public function getLogs();
 
     public function addLog($log);

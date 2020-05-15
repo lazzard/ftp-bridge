@@ -1,6 +1,6 @@
 {
     "name": "lazzard/ftp-bridge",
-    "description": "Provides s simple interface to transfer data through the File Transfer Protocol (FTP).",
+    "description": "Ftp bridge is a low-level implementation utility library of the File Transfer protocol (FTP) in PHP.",
     "type": "library",
     "license": "MIT",
     "keywords": ["ftp", "bridge", "connector"],

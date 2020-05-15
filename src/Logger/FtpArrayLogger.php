@@ -11,24 +11,29 @@
 
 namespace Lazzard\FtpBridge\Logger;
 
+use Lazzard\FtpBridge\FtpBridge;
 use Lazzard\FtpBridge\FtpLoggerInterface;
 
 /**
- * Logger
+ * FtpArrayLogger
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
 class FtpArrayLogger implements 
-    FtpArrayLoggerInterface,
-    FtpLoggerInterface
+    FtpLoggerInterface,
+    \Countable
 {
     /** @var array */
     protected $logs;
 
-    public function __construct()
+    /** @var int */
+    protected $mode;
+
+    public function __construct($mode = self::PLAIN_MODE)
     {
         $this->logs = [];
+        $this->mode = $mode;
     }
 
     public function getLogs()
@@ -38,11 +43,25 @@ class FtpArrayLogger implements
 
     public function addLog($log)
     {
-        $this->logs[] = $log; 
+        if (is_string($log)) {
+            if ($this->mode === self::PLAIN_MODE) {
+                $this->logs[] = $log;
+            } else {
+                $lines = explode(FtpBridge::CRLF, $log);
+                foreach ($lines as $line) {
+                    $this->logs[] = $line;
+                }
+            }
+        }
     }
 
     public function clear()
     {
         $this->logs[] = null;
+    }
+
+    public function count()
+    {
+        return count($this->logs);
     }
 }   

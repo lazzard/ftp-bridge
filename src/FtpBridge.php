@@ -53,7 +53,9 @@ class FtpBridge implements FtpBridgeInterface
      */
     public function __construct(FtpLoggerInterface $logger = null)
     {
-        $this->logger = $logger;
+        if ($logger) {
+            $this->logger = $logger;
+        }
     }
 
     /**
@@ -149,9 +151,11 @@ class FtpBridge implements FtpBridgeInterface
 
         $this->logger->addLog($response);
 
-        $this->response        = $response = $this->responseToArray($response);;
-        $this->responseCode    = $this->responseCode = intval(substr(@$this->response[0], 0, 3));
-        $this->responseMessage = $this->responseMessage = intval(substr(@$this->response[0], 0, 3));
+        $response = $this->responseToArray($response);
+
+        $this->setResponse($response);
+        $this->setResponseCode();
+        $this->setResponseMessage();
 
         return $response;
     }
@@ -175,10 +179,9 @@ class FtpBridge implements FtpBridgeInterface
             $res .= fgets($this->dataStream);
         }
 
-        $r = $this->responseToArray($res);
-        $this->addLog($r);
+        $this->logger->addLog($res);
 
-        return $r;
+        return $this->responseToArray($res);
     }
 
     /**
@@ -214,6 +217,32 @@ class FtpBridge implements FtpBridgeInterface
     }
 
     /**
+     * @var array $response
+     * 
+     * @return void
+     */
+    protected function setResponse($response)
+    {
+        $this->response = $response;
+    }
+
+    /**
+     * @return void
+     */
+    protected function setResponseCode()
+    {
+        $this->responseCode = intval(substr(@$this->response[0], 0, 3));
+    }
+
+    /**
+     * @return void
+     */
+    protected function setResponseMessage()
+    {
+        $this->responseMessage = $this->responseMessage = intval(substr(@$this->response[0], 0, 3));
+    }
+
+    /**
      * Convert the response lines to an array
      *
      * @param $response
@@ -226,15 +255,5 @@ class FtpBridge implements FtpBridgeInterface
         array_pop($response);
 
         return $response;
-    }
-
-    /**
-     * @param array $response
-     */
-    protected function addLog($response)
-    {
-        foreach ($response as $log) {
-            $this->logs[] = $log;
-        }
     }
 }

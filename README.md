@@ -1,2 +1,2 @@
-# php-ftp-helper
+# ftp-bridge
 Provides a simple interface for FTP communications.

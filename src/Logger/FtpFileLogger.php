@@ -11,57 +11,99 @@
 
 namespace Lazzard\FtpBridge\Logger;
 
+use Lazzard\FtpBridge\FtpBridge;
 use Lazzard\FtpBridge\FtpLoggerInterface;
 
 /**
- * Logger
+ * FtpFileLogger
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
 class FtpFileLogger implements 
-    FtpFileLoggerInterface,
-    FtpLoggerInterface
+    FtpLoggerInterface,
+    \Countable
 {
-    /** @var $handle */
+    /** @var string */
+    const EOL = "\r\n";
+
+    /** @var resource */
     protected $handle;
 
-    /** @var $filePath */
+    /** @var string */
     protected $filePath;
 
-    /** @var $append */
+    /** @var bool */
     protected $append;
 
-    public function __construct($filePath, $append = false)
+    /** @var int */
+    protected $mode;
+
+    public function __construct($filePath, $append = false, $mode = self::PLAIN_MODE)
     {
-        $this->handle = $this->open($filePath, $append);
         $this->filePath = $filePath;
         $this->append = $append;
+        $this->mode = $mode;
+
+        $this->open();
     }
 
     public function getLogs()
     {
         return file_get_contents($this->filePath);
     }
-    
+
     public function addLog($log)
     {
-        fwrite($this->handle, $log);
+        if (is_string($log)) {
+            if ($this->mode === self::PLAIN_MODE) {
+                $this->write($log);
+                
+            } elseif ($this->mode === self::ARRAY_MODE) {
+                $lines = explode(FtpBridge::CRLF, $log);
+                array_pop($lines);
+                
+                $indent = str_repeat(' ', 4);
+
+                $output = sprintf("%s[%s] array() [%s", ftell($this->handle) === 0 ? '' : self::EOL, count($lines), FtpBridge::CRLF);
+
+                foreach ($lines as $line) {
+                    $output .= sprintf("%s%s%s", $indent, $line, self::EOL);
+                }
+            
+                $output .= ']';
+                
+                $this->write($output);
+            }
+        }
     }
 
     public function clear()
     {
-        file_put_contents($this->filePath, '');
+        fwrite($this->filePath, '');
     }
 
-    protected function open($filePath, $append)
+    public function count()
     {
-        return fopen($filePath, $append ? 'a' : 'w');
+        if ($this->mode === self::PLAIN_MODE) {
+            return count(explode(self::EOL, $this->getLogs())) - 1;
+        } else {
+            return substr_count($this->getLogs(), 'array');
+        }
+    }
+
+    protected function write($content)
+    {
+        fwrite($this->handle, $content);
+    }
+
+    protected function open()
+    {
+        $this->handle = fopen($this->filePath, $this->append ? 'a' : 'w');
     }
 
     protected function close()
     {
         fclose($this->handle);
     }
-
 }
