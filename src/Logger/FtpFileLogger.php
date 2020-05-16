@@ -12,7 +12,6 @@
 namespace Lazzard\FtpBridge\Logger;
 
 use Lazzard\FtpBridge\FtpBridge;
-use Lazzard\FtpBridge\FtpLoggerInterface;
 
 /**
  * FtpFileLogger
@@ -20,7 +19,7 @@ use Lazzard\FtpBridge\FtpLoggerInterface;
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-class FtpFileLogger extends AbstractFtpLogger implements FtpLoggerInterface
+class FtpFileLogger extends AbstractFtpLogger
 {
     /** @var string */
     const EOL = "\r\n";

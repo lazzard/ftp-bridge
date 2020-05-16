@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Lazzard\FtpBridge;
+namespace Lazzard\FtpBridge\Logger;
 
 /**
  * FtpLoggerInterface
@@ -18,20 +18,6 @@ namespace Lazzard\FtpBridge;
  */
 interface FtpLoggerInterface
 {
-    /**
-     * @var int
-     *
-     * The plain mode logs the FTP server response as they are,
-     * no parsing performed on the response string.
-     */
-    const PLAIN_MODE = 0;
-    /**
-     * @var int
-     *
-     * Array mode parses the remote replay to an array.
-     */
-    const ARRAY_MODE = 1;
-
     /**
      * @return mixed
      */
