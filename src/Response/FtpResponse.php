@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Lazzard\FtpBridge\Stream;
+namespace Lazzard\FtpBridge\Response;
 
 /**
  * An FTP replay class
@@ -16,10 +16,10 @@ namespace Lazzard\FtpBridge\Stream;
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-class FtpReply
+class FtpResponse implements FtpResponseInterface
 {
     /** @var string */
-    protected $reply;
+    protected $response;
 
     /** @var int */
     protected $code;
@@ -31,28 +31,28 @@ class FtpReply
     protected $multiline;
 
     /**
-     * FtpReply constructor.
+     * FtpResponse constructor.
      *
-     * @param $reply
+     * @param $response
      */
-    public function __construct($reply)
+    public function __construct($response)
     {
-        $this->reply = $reply;
+        $this->response = $response;
         $this->setCode();
         $this->setMessage();
         $this->setMultiline();
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function getReply()
     {
-        return $this->reply;
+        return $this->response;
     }
 
     /**
-     * @return int
+     * @inheritDoc
      */
     public function getCode()
     {
@@ -60,7 +60,7 @@ class FtpReply
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function getMessage()
     {
@@ -68,9 +68,7 @@ class FtpReply
     }
 
     /**
-     * Returns true if the FTP replay consists of multiple lines, false if one line.
-     *
-     * @return bool
+     * @inheritDoc
      */
     public function isMultiline()
     {
@@ -82,7 +80,7 @@ class FtpReply
      */
     protected function setCode()
     {
-        preg_match('/^\d+/', $this->reply, $match);
+        preg_match('/^\d+/', $this->response, $match);
         $this->code = (int)$match[0];
     }
 
@@ -91,7 +89,7 @@ class FtpReply
      */
     protected function setMessage()
     {
-        preg_match('/[A-z ]+.*/', $this->reply, $match);
+        preg_match('/[A-z ]+.*/', $this->response, $match);
         $this->message = ltrim($match[0]);
     }
 
@@ -108,6 +106,6 @@ class FtpReply
          *
          * @link https://tools.ietf.org/html/rfc959#section-4
          */
-        $this->multiline = preg_match('/\d{2,}-/', $this->reply);
+        $this->multiline = preg_match('/\d{2,}-/', $this->response);
     }
 }
