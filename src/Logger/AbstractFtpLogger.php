@@ -21,7 +21,7 @@ abstract class AbstractFtpLogger implements FtpLoggerInterface
     /**
      * @var int
      *
-     * Array mode parses the remote replay to an array and then logs it.
+     * Array mode parses the remote reply to an array and then logs it.
      */
     const ARRAY_MODE = 1;
 
