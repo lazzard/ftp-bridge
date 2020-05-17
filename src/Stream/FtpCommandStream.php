@@ -10,80 +10,124 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
+use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
+use Lazzard\FtpBridge\Response\FtpResponse;
+
 /**
- * Represents a command stream socket.
+ * Represents a command stream commandStream.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-class FtpCommandStream extends FtpStreamAbstract
+class FtpCommandStream implements FtpStreamInterface
 {
+    /**
+     * Carriage return and line feed used in the end of FTP commands as defined in RFC959.
+     */
+    const CRLF = "\r\n";
 
-    public function __construct($host, $username, $password, $port = 21, $timeout = 90, $blocking = true)
-    {
-        parent::__construct($host, $username, $password, $port, $timeout, $blocking);
+    /** @var FtpLoggerInterface */
+    public $logger;
 
-        $this->login();
-    }
+    /** @var resource */
+    public $stream;
+
+    /** @var string */
+    public $host;
+
+    /** @var int */
+    public $port;
+
+    /** @var int */
+    public $timeout;
+
+    /** @var bool */
+    public $blocking;
 
     /**
-     * {@inheritDoc}
+     * FtpCommandStream constructor.
      *
+     * @param FtpLoggerInterface $logger
+     * @param string             $host
+     * @param int                $port
+     * @param int                $timeout
+     * @param bool               $blocking
+     * 
      * @throws \RuntimeException
      */
-    protected function connect()
+    public function __construct($logger, $host, $port, $timeout, $blocking)
     {
+        $this->host = $host;
+        $this->port = $port;
+        $this->timeout = $timeout;
+        $this->blocking = $blocking;
+
         // TODO wrong giving host resolving
-        if ( ! ($this->socket = fsockopen($this->host, $this->port, $errno, $errMsg))) {
-            throw new \RuntimeException("Opening socket connection was failed : [{$errMsg}]");
+        if ( ! ($this->stream = fsockopen($host, $port, $errno, $errMsg))) {
+            throw new \RuntimeException("Opening command stream socket was failed : [{$errMsg}]");
         }
 
-        stream_set_blocking($this->socket, $this->blocking);
-        stream_set_timeout($this->socket, $this->timeout);
+        stream_set_blocking($this->stream, $blocking);
+        stream_set_timeout($this->stream, $timeout);
+
+        $this->logger = $logger;
 
         $this->receive();
     }
 
     /**
-     * Logs into the FTP server.
+     * @inheritDoc
+     */
+    public function send($command)
+    {
+        return fwrite($this->stream, trim($command) . self::CRLF);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function receive()
+    {
+        $response = '';
+        while (true) {
+            $line     = fgets($this->stream);
+            $response .= $line;
+
+            /**
+             * To distinguish the end of an FTP reply, the RFC959 indicates that the last line of
+             * a the reply must be on a special format, it must be begin with 3 digits followed
+             * by a space.
+             *
+             * @link https://tools.ietf.org/html/rfc959#section-4
+             */
+            if (preg_match('/\d{3}+ /', $line) !== 0) {
+                break;
+            }
+        }
+
+        $this->log($response);
+
+        return $response;
+    }
+
+    /**
+     * Internal logging method.
      *
-     * Note! this method must be called after as successful connection.
+     * @param string $response
      *
      * @return void
-     *
-     * @throws \RuntimeException
      */
-    protected function login()
+    protected function log($response)
     {
-        // TODO SSL/TLS before login
-        $this->send(sprintf('USER %s%s', $this->username, self::CRLF));
-        $reply = new FtpReply($this->receive());
+        if ($this->logger) {
+            $response = new FtpResponse($response);
 
-        /**
-         * 230 : User logged in, proceed.
-         * 331 : User name okay, need password.
-         */
-
-        if ($reply->getCode() === 230) {
-            return;
-        }
-
-        if ($reply->getCode() === 331) {
-            $this->send(sprintf('PASS %s%s', $this->password, self::CRLF));
-            $reply = new FtpReply($this->receive());
-
-            // TODO 202 code
-            /**
-             * 230 : User logged in, proceed.
-             * 202 : Already logged with USER
-             */
-            if (in_array($reply->getCode(), [202, 230])) {
-                return;
+            // TODO 400 ?
+            if ($response->getCode() < 400) {
+                $this->logger->info($response->getReply());
+            } else {
+                $this->logger->info($response->getReply());
             }
-
-            throw new \RuntimeException(sprintf("PASS command fails : %s", $reply->getMessage()));
         }
-
-        throw new \RuntimeException(sprintf("PASS command fails : %s", $reply->getMessage()));
     }
 }
