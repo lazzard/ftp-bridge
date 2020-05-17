@@ -15,7 +15,6 @@ use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
 use Lazzard\FtpBridge\Response\FtpResponse;
 use Lazzard\FtpBridge\Stream\FtpCommandStream;
 use Lazzard\FtpBridge\Stream\FtpDataStream;
-use Lazzard\FtpBridge\Stream\FtpStreamWrapper;
 
 /**
  * FtpBridge class
@@ -34,9 +33,6 @@ class FtpBridge implements FtpBridgeInterface
 
     /** @var FtpLoggerInterface */
     public $logger;
-
-    /** @var FtpStreamWrapper */
-    public $wrapper;
 
     /** @var FtpCommandStream */
     public $commandStream;
@@ -61,8 +57,7 @@ class FtpBridge implements FtpBridgeInterface
      */
     public function connect($host, $port = 21, $timeout = 90, $blocking = true)
     {
-        $this->wrapper = new FtpStreamWrapper($host, $port, $timeout, $blocking);
-        $this->commandStream = new FtpCommandStream($this->logger, $this->wrapper);
+        $this->commandStream = new FtpCommandStream($this->logger, $host, $port, $timeout, $blocking);
     }
 
     /**
