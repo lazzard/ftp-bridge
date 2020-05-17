@@ -20,12 +20,13 @@ namespace Lazzard\FtpBridge;
 interface FtpBridgeInterface
 {
     /**
-     * Creates a command stream connection.
+     * Opens a command stream connection.
      *
-     * @param string $host
-     * @param int    $port     [optional]
-     * @param int    $timeout  [optional]
-     * @param bool   $blocking [optional]
+     * @param string $host     The remote host name or the IP address.
+     * @param int    $port     [optional] The remote server port to connect to, if omitted the port 21 will be used.
+     * @param int    $timeout  [optional] Specifies the connection timeout of all FTP transfer operations, default sets
+     *                         to 90.
+     * @param bool   $blocking [optional] The transfer mode, the blocking mode is the default.
      */
     public function connect($host, $port = 21, $timeout = 90, $blocking = true);
 
@@ -51,29 +52,26 @@ interface FtpBridgeInterface
     public function send($command);
 
     /**
-     * Receive and gets the response from the command stream.
-     *
-     * Note! be careful when calling this method, it will reads
-     * the server response from the command stream, if there is
-     * no response the method will hang, so you must expect the server
-     * responses depending on which command you send.
+     * Receives and gets the response from the command stream.
      *
      * @return array
      */
     public function receive();
 
     /**
-     * Gets synchronously the data from the data stream.
+     * Receives and reads the data from the data stream.
      *
      * @return array
      */
     public function receiveData();
 
     /**
-     * Opens a passive data connection to the remote server.
+     * Opens the data connection.
      *
-     * @param bool $passive           [optional]
-     * @param bool $usePassiveAddress [optional]
+     * @param bool $passive           [optional] Opens a passive data connection.
+     * @param bool $usePassiveAddress [optional] Specifies if the connection will uses the passive IP address returned
+     *                                in the PASV command to open the connection, or the IP address or the host name
+     *                                which supplied in the {@link FtpBridge::connect()} method.
      *
      * @return void
      */
@@ -82,9 +80,10 @@ interface FtpBridgeInterface
     /**
      * Sets the transfer type for the next transfer operation.
      *
-     * @param string $type [optional] If omitted, the type sets to binary 'I'.
+     * @param string $type The transfer type can be either {@link FtpBridge::BINARY} or {@link FtpBridge::ASCII} or
+     *                     {@link FtpBridge::EBCDIC}.
      *
      * @return void
      */
-    public function setTransferType($type = self::BINARY);
+    public function setTransferType($type);
 }
