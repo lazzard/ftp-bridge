@@ -10,6 +10,9 @@ namespace Lazzard\FtpBridge\Logger;
  */
 abstract class AbstractFtpLogger implements FtpLoggerInterface
 {
+    /** @var string */
+    const EOL = "\r\n";
+
     /**
      * @var int
      *

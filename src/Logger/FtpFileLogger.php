@@ -11,8 +11,6 @@
 
 namespace Lazzard\FtpBridge\Logger;
 
-use Lazzard\FtpBridge\FtpBridge;
-
 /**
  * FtpFileLogger
  *
@@ -21,9 +19,6 @@ use Lazzard\FtpBridge\FtpBridge;
  */
 class FtpFileLogger extends AbstractFtpLogger
 {
-    /** @var string */
-    const EOL = "\r\n";
-
     /** @var int */
     protected $mode;
 
@@ -66,10 +61,10 @@ class FtpFileLogger extends AbstractFtpLogger
     public function log($level, $message)
     {
         if ($this->mode === self::PLAIN_MODE) {
-            $this->write(sprintf("[%s] %s", $level, $message));
+            $this->write($message);
 
         } elseif ($this->mode === self::ARRAY_MODE) {
-            $lines = explode(FtpBridge::CRLF, $message);
+            $lines = explode(self::EOL, $message);
             array_pop($lines);
 
             $indent = str_repeat(' ', 4);
@@ -79,7 +74,7 @@ class FtpFileLogger extends AbstractFtpLogger
                 ftell($this->handle) ? self::EOL : '',
                 count($lines),
                 $level,
-                FtpBridge::CRLF
+                self::EOL
             );
 
             foreach ($lines as $line) {

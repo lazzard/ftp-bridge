@@ -16,7 +16,7 @@ namespace Lazzard\FtpBridge\Logger;
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-final class FtpLogLevel
+class FtpLogLevel
 {
     const INFO  = 'INFO';
     const ERROR = 'ERROR';
