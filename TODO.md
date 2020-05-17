@@ -1,5 +1,8 @@
 # TODO
 
+### Issues.
+`receiveData()` method not working with binary data.
+
 ### Code improvements.
 
 ### Upcoming features.
