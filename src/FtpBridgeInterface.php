@@ -20,41 +20,35 @@ namespace Lazzard\FtpBridge;
 interface FtpBridgeInterface
 {
     /**
-     * @return resource
+     * Creates a command stream connection.
+     *
+     * @param string $host
+     * @param int    $port     [optional]
+     * @param int    $timeout  [optional]
+     * @param bool   $blocking [optional]
      */
-    public function getDataStream();
+    public function connect($host, $port = 21, $timeout = 90, $blocking = true);
 
     /**
-     * @return resource
+     * Logs into the FTP server.
+     *
+     * Note! this method must be called after as successful connection.
+     *
+     * @param string $username
+     * @param string $password
+     *
+     * @return void
      */
-    public function getCommandStream();
+    public function login($username, $password);
 
-    /**
-     * @return array
-     */
-    public function getResponse();
-
-    /**
-     * @return int
-     */
-    public function getResponseCode();
-
-    /**
-     * @return string
-     */
-    public function getResponseMessage();
-
-    /**
-     * @return bool
-     */
-    public function isSuccess();
-    
     /**
      * Sends a command to the server thought the control channel.
      *
-     * @param $command
+     * @param string $command
+     *
+     * @return void
      */
-    public function putCmd($command);
+    public function send($command);
 
     /**
      * Receive and gets the response from the command stream.
@@ -66,27 +60,31 @@ interface FtpBridgeInterface
      *
      * @return array
      */
-    public function getCmd();
+    public function receive();
 
     /**
      * Gets synchronously the data from the data stream.
      *
      * @return array
      */
-    public function getData();
+    public function receiveData();
+
+    /**
+     * Opens a passive data connection to the remote server.
+     *
+     * @param bool $passive           [optional]
+     * @param bool $usePassiveAddress [optional]
+     *
+     * @return void
+     */
+    public function openDataConnection($passive = true, $usePassiveAddress = true);
 
     /**
      * Sets the transfer type for the next transfer operation.
      *
-     * @param string $type If omitted, the type sets to Binary 'I'
+     * @param string $type [optional] If omitted, the type sets to binary 'I'.
+     *
+     * @return void
      */
     public function setTransferType($type = self::BINARY);
-
-    /**
-     * Opens a data stream connection based on the IP address and the port number
-     * returned from 'PASV' command.
-     *
-     * @throws \RuntimeException
-     */
-    public function openPassiveConnection();
 }

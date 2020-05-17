@@ -11,6 +11,12 @@
 
 namespace Lazzard\FtpBridge;
 
+use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
+use Lazzard\FtpBridge\Response\FtpResponse;
+use Lazzard\FtpBridge\Stream\FtpCommandStream;
+use Lazzard\FtpBridge\Stream\FtpDataStream;
+use Lazzard\FtpBridge\Stream\FtpStreamWrapper;
+
 /**
  * FtpBridge class
  *
@@ -19,8 +25,6 @@ namespace Lazzard\FtpBridge;
  */
 class FtpBridge implements FtpBridgeInterface
 {
-    const CRLF = "\r\n";
-
     /**
      * Transfers modes
      */
@@ -31,20 +35,14 @@ class FtpBridge implements FtpBridgeInterface
     /** @var FtpLoggerInterface */
     public $logger;
 
-    /** @var resource */
-    protected $commandStream;
+    /** @var FtpStreamWrapper */
+    public $wrapper;
 
-    /** @var resource */
-    protected $dataStream;
+    /** @var FtpCommandStream */
+    public $commandStream;
 
-    /** @var array */
-    protected $response;
-
-    /** @var int */
-    protected $responseCode;
-
-    /** @var string */
-    protected $responseMessage;
+    /** @var FtpDataStream */
+    public $dataStream;
 
     /**
      * FtpBridge constructor
@@ -57,135 +55,87 @@ class FtpBridge implements FtpBridgeInterface
     }
 
     /**
-     * Opens a command stream connection on active port 21 (default) and logs with the provided username and password.
-     *
-     * @param string $host
-     * @param string $username
-     * @param string $password
-     * @param int    $port
+     * {@inheritDoc}
      *
      * @throws \RuntimeException
      */
-    public function connect($host, $username, $password, $port = 21)
+    public function connect($host, $port = 21, $timeout = 90, $blocking = true)
     {
-        if ( ! ($this->commandStream = fsockopen($host, $port, $errno, $errMsg))) {
-            throw new \RuntimeException("Opening socket connection was failed : [{$errMsg}]");
+        $this->wrapper = new FtpStreamWrapper($host, $port, $timeout, $blocking);
+        $this->commandStream = new FtpCommandStream($this->logger, $this->wrapper);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws \RuntimeException
+     */
+    public function login($username, $password)
+    {
+        // TODO SSL/TLS before login
+        $this->send(sprintf('USER %s', $username));
+
+        $response = new FtpResponse($this->receive());
+
+        /**
+         * 230 : User logged in, proceed.
+         * 331 : User name okay, need password.
+         */
+        if ($response->getCode() === 230) {
+            return;
         }
 
-        $this->getCmd(); // welcome message
+        if ($response->getCode() === 331) {
+            $this->send(sprintf('PASS %s', $password));
 
-        stream_set_blocking($this->commandStream, true); // Switch to blocking mode.
-        stream_set_timeout($this->commandStream, 90); // Setting the default timeout for the control channel.
+            $response = new FtpResponse($this->receive());
 
-        // login.
-        $this->putCmd('USER ' . $username);
-        $this->getCmd();
-
-        $this->putCmd('PASS ' . $password);
-        $this->getCmd();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getDataStream()
-    {
-        return $this->dataStream;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getCommandStream()
-    {
-        return $this->commandStream;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getResponse()
-    {
-        return $this->response;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getResponseCode()
-    {
-        return $this->responseCode;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getResponseMessage()
-    {
-        return $this->responseMessage;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isSuccess()
-    {
-        return $this->responseCode < 400;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getCmd()
-    {
-        $response = '';
-        while (true) {
-            $response .= fgets($this->commandStream);
-            // TODO consider to replace this condition
-            if (@fseek($this->commandStream, ftell($this->commandStream) + 1)) {
-                break;
+            // TODO 202 code
+            /**
+             * 230 : User logged in, proceed.
+             * 202 : Already logged with USER
+             */
+            if (in_array($response->getCode(), [202, 230])) {
+                return;
             }
+
+            throw new \RuntimeException(sprintf("PASS command fails : %s", $response->getMessage()));
         }
 
-        $this->setResponse($response);
-        $this->setResponseCode();
-        $this->setResponseMessage();
-
-        if ($this->isSuccess()) {
-            $this->logger->info($response);
-        } else {
-            $this->logger->error($response);
-        }
-
-        return $response;
+        throw new \RuntimeException(sprintf("PASS command fails : %s", $response->getMessage()));
     }
 
     /**
      * @inheritDoc
      */
-    public function putCmd($command)
+    public function send($command)
     {
-        fputs($this->commandStream, trim($command) . self::CRLF);
+        $this->commandStream->send($command);
     }
 
     /**
      * @inheritDoc
      */
-    public function getData()
+    public function receive()
     {
-        $response = '';
-        // TODO feof hang problem
-        while ( ! feof($this->dataStream)) {
-            $response .= fgets($this->dataStream);
-        }
+        return $this->commandStream->receive();
 
-        if ($this->isSuccess()) {
-            $this->logger->info($response);
-        } else {
-            $this->logger->error($response);
-        }
+    }
 
-        return $response;
+    /**
+     * @inheritDoc
+     */
+    public function receiveData()
+    {
+        return $this->dataStream->receive();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function openDataConnection($passive = true, $usePassiveAddress = true)
+    {
+        $this->dataStream = new FtpDataStream($this->logger, $this->commandStream, $passive, $usePassiveAddress);
     }
 
     /**
@@ -193,71 +143,7 @@ class FtpBridge implements FtpBridgeInterface
      */
     public function setTransferType($type = self::BINARY)
     {
-        $this->putCmd('TYPE ' . $type);
-        $this->getCmd();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function openPassiveConnection()
-    {
-        $this->putCmd('PASV');
-
-        $response = $this->getCmd();
-
-        // TODO use regex instead of string functions
-        $ip_port = substr(substr($response, strpos($response, '(') + 1), 0, -2);
-        $ip      = str_replace(',', '.', implode(',', array_slice(explode(',', $ip_port), 0, 4)));
-        $port    = array_slice(explode(',', $ip_port), 4, 6);
-        $port    = ($port[0] * 256) + $port[1];
-
-        if ( ! ($this->dataStream = fsockopen($ip, $port, $errno, $errMsg))) {
-            throw new \RuntimeException("Opening data connection stream was failed. [{$errMsg}]");
-        }
-
-        stream_set_blocking($this->dataStream, true); // Switch to blocking mode.
-        stream_set_timeout($this->dataStream, 90); // Setting the default timeout for data channel.
-    }
-
-    /**
-     * @var string $response
-     * 
-     * @return void
-     */
-    protected function setResponse($response)
-    {
-        $this->response = $this->responseToArray($response);;
-    }
-
-    /**
-     * @return void
-     */
-    protected function setResponseCode()
-    {
-        $this->responseCode = intval(substr(@$this->response[0], 0, 3));
-    }
-
-    /**
-     * @return void
-     */
-    protected function setResponseMessage()
-    {
-        $this->responseMessage = $this->responseMessage = intval(substr(@$this->response[0], 0, 3));
-    }
-
-    /**
-     * Convert the response lines to an array
-     *
-     * @param $response
-     *
-     * @return array
-     */
-    protected function responseToArray($response)
-    {
-        $response = explode(self::CRLF, $response);
-        array_pop($response);
-
-        return $response;
+        $this->send('TYPE ' . $type);
+        $this->receive();
     }
 }
