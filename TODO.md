@@ -8,3 +8,4 @@
 ### Upcoming features.
 - [ ] Supporting the FTP active file transfer mode.
 - [ ] Support Non-blocking mode.
+- [ ] Support the record structure for file transfers (text files only).
