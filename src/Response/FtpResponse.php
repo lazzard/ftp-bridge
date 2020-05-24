@@ -33,11 +33,12 @@ class FtpResponse implements FtpResponseInterface
     /**
      * FtpResponse constructor.
      *
-     * @param $response
+     * @param string $response
      */
     public function __construct($response)
     {
         $this->response = $response;
+
         $this->setCode();
         $this->setMessage();
         $this->setMultiline();

@@ -12,7 +12,7 @@ namespace Lazzard\FtpBridge\Response;
 
 
 /**
- * An FTP replay class
+ * FtpResponseInterface
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
@@ -20,7 +20,7 @@ namespace Lazzard\FtpBridge\Response;
 interface FtpResponseInterface
 {
     /**
-     * Gets an FTP reply.
+     * Get the FTP reply.
      *
      * @return string
      */
