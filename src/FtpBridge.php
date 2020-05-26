@@ -11,6 +11,8 @@
 
 namespace Lazzard\FtpBridge;
 
+use Lazzard\FtpBridge\Exception\FtpBridgeException;
+use Lazzard\FtpBridge\Exception\StreamException;
 use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
 use Lazzard\FtpBridge\Response\FtpResponse;
 use Lazzard\FtpBridge\Stream\FtpCommandStream;
@@ -25,7 +27,7 @@ use Lazzard\FtpBridge\Stream\FtpDataStream;
 class FtpBridge implements FtpBridgeInterface
 {
     /**
-     * Transfers modes
+     * Transfers modes.
      */
     const ASCII  = 'A';
     const BINARY = 'I';
@@ -51,9 +53,33 @@ class FtpBridge implements FtpBridgeInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function send($command)
+    {
+        $this->commandStream->send($command);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function receive()
+    {
+        return $this->commandStream->receive();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function receiveData()
+    {
+        return $this->dataStream->receive();
+    }
+
+    /**
      * {@inheritDoc}
      *
-     * @throws \RuntimeException
+     * @throws FtpBridgeException
      */
     public function connect($host, $port = 21, $timeout = 90, $blocking = true)
     {
@@ -63,23 +89,23 @@ class FtpBridge implements FtpBridgeInterface
     /**
      * {@inheritDoc}
      *
-     * @throws \RuntimeException
+     * @throws FtpBridgeException
      */
     public function login($username, $password)
     {
-        // TODO SSL/TLS before login
-        $this->send(sprintf('USER %s', $username));
-
+        $this->send(sprintf("USER %s", $username));
         $response = new FtpResponse($this->receive());
 
         /**
          * 230 : User logged in, proceed.
-         * 331 : User name okay, need password.
          */
         if ($response->getCode() === 230) {
             return;
         }
 
+        /**
+         * 331 : User name okay, need password.
+         */
         if ($response->getCode() === 331) {
             $this->send(sprintf('PASS %s', $password));
 
@@ -94,49 +120,26 @@ class FtpBridge implements FtpBridgeInterface
                 return;
             }
 
-            throw new \RuntimeException(sprintf("PASS command fails : %s", $response->getMessage()));
+            throw new FtpBridgeException(sprintf("PASS command fails : %s", $response->getMessage()));
         }
 
-        throw new \RuntimeException(sprintf("PASS command fails : %s", $response->getMessage()));
+        throw new FtpBridgeException(sprintf("PASS command fails : %s", $response->getMessage()));
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
+     * @throws StreamException
      */
-    public function send($command)
+    public function openDataConnection($passive = true)
     {
-        $this->commandStream->send($command);
+        $this->dataStream = new FtpDataStream($this->logger, $this->commandStream, $passive);
     }
 
     /**
      * @inheritDoc
      */
-    public function receive()
-    {
-        return $this->commandStream->receive();
-
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function receiveData()
-    {
-        return $this->dataStream->receive();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function openDataConnection($passive = true, $usePassiveAddress = true)
-    {
-        $this->dataStream = new FtpDataStream($this->logger, $this->commandStream, $passive, $usePassiveAddress);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setTransferType($type = self::BINARY)
+    public function setTransferType($type)
     {
         $this->send('TYPE ' . $type);
         $this->receive();

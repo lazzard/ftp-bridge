@@ -10,6 +10,7 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
+use Lazzard\FtpBridge\Exception\StreamException;
 use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
 use Lazzard\FtpBridge\Response\FtpResponse;
 
@@ -53,7 +54,7 @@ class FtpCommandStream implements FtpStreamInterface
      * @param int                $timeout
      * @param bool               $blocking
      * 
-     * @throws \RuntimeException
+     * @throws StreamException
      */
     public function __construct($logger, $host, $port, $timeout, $blocking)
     {
@@ -64,7 +65,7 @@ class FtpCommandStream implements FtpStreamInterface
 
         // TODO wrong giving host resolving
         if ( ! ($this->stream = fsockopen($host, $port, $errno, $errMsg))) {
-            throw new \RuntimeException("Opening command stream socket was failed : [{$errMsg}]");
+            throw new StreamException("Opening command stream socket was failed : [{$errMsg}]");
         }
 
         stream_set_blocking($this->stream, $blocking);

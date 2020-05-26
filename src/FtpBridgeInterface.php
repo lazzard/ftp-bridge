@@ -12,13 +12,36 @@
 namespace Lazzard\FtpBridge;
 
 /**
- * FtpBridgeInterface class
+ * FtpBridgeInterface interface
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
 interface FtpBridgeInterface
 {
+    /**
+     * Sends a command to the server thought the control channel.
+     *
+     * @param string $command
+     *
+     * @return void
+     */
+    public function send($command);
+
+    /**
+     * Receives and gets the response from the command stream.
+     *
+     * @return string
+     */
+    public function receive();
+
+    /**
+     * Receives and reads the data from the data stream.
+     *
+     * @return array
+     */
+    public function receiveData();
+
     /**
      * Opens a command stream connection.
      *
@@ -43,39 +66,13 @@ interface FtpBridgeInterface
     public function login($username, $password);
 
     /**
-     * Sends a command to the server thought the control channel.
-     *
-     * @param string $command
-     *
-     * @return void
-     */
-    public function send($command);
-
-    /**
-     * Receives and gets the response from the command stream.
-     *
-     * @return array
-     */
-    public function receive();
-
-    /**
-     * Receives and reads the data from the data stream.
-     *
-     * @return array
-     */
-    public function receiveData();
-
-    /**
      * Opens the data connection.
      *
-     * @param bool $passive           [optional] Opens a passive data connection.
-     * @param bool $usePassiveAddress [optional] Specifies if the connection will uses the passive IP address returned
-     *                                in the PASV command to open the connection, or the IP address or the host name
-     *                                which supplied in the {@link FtpBridge::connect()} method.
+     * @param bool $passive [optional] Specifies weather to use a passive or active data connection.
      *
      * @return void
      */
-    public function openDataConnection($passive = true, $usePassiveAddress = true);
+    public function openDataConnection($passive = true);
 
     /**
      * Sets the transfer type for the next transfer operation.

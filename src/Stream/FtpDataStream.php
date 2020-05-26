@@ -10,6 +10,7 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
+use Lazzard\FtpBridge\Exception\StreamException;
 use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
 use Lazzard\FtpBridge\Response\FtpResponse;
 
@@ -42,14 +43,14 @@ class FtpDataStream implements FtpStreamInterface
      * @param FtpLoggerInterface $logger
      * @param FtpCommandStream   $commandStream
      * @param bool               $passive
-     * @param bool               $usePassiveAddress
+     *
+     * @throws StreamException
      */
-    public function __construct($logger, $commandStream, $passive = true, $usePassiveAddress = true)
+    public function __construct($logger, $commandStream, $passive = true)
     {
         $this->logger            = $logger;
         $this->commandStream     = $commandStream;
         $this->passive           = $passive;
-        $this->usePassiveAddress = $usePassiveAddress;
 
         if ($passive) {
             $this->send('PASV');
@@ -65,14 +66,14 @@ class FtpDataStream implements FtpStreamInterface
                 $hostPort = ($hostPort[0] * 256) + $hostPort[1];
 
                 if ( ! ($this->stream = fsockopen($hostIp, $hostPort, $errno, $errMsg))) {
-                    throw new \RuntimeException("Opening data connection stream was failed. [{$errMsg}]");
+                    throw new StreamException("Opening data connection stream was failed. [{$errMsg}]");
                 }
 
                 stream_set_blocking($this->stream, $this->commandStream->blocking);
                 stream_set_timeout($this->stream, $this->commandStream->timeout);
 
             } else {
-                throw new \RuntimeException("PASV command fails : " . $response->getReply());
+                throw new StreamException("PASV command fails : " . $response->getReply());
             }
         }
     }
@@ -93,7 +94,7 @@ class FtpDataStream implements FtpStreamInterface
         $data = '';
 
         while ( ! feof($this->stream)) {
-            $data .= fgets($this->stream);
+            $data .= fread($this->stream, 8192);
         }
 
         $this->logger->info($data);
