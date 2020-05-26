@@ -1,11 +1,10 @@
 # TODO
 
 ### Issues.
-`receiveData()` method not working with binary data.
 
 ### Code improvements.
+- [ ] improving FTP logger levels.
 
 ### Upcoming features.
-- [ ] Supporting the FTP active file transfer mode.
-- [ ] Support Non-blocking mode.
-- [ ] Support the record structure for file transfers (text files only).
+- [ ] Supporting the FTP active file transfer mode for `openDataConnection($passive)`.
+- [ ] Add method allows changing the record structure of the file transfers.
