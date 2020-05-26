@@ -59,7 +59,7 @@ class FtpArrayLogger extends AbstractFtpLogger
             $this->logs[] = sprintf("[%s] %s", $level, $message);
 
         } elseif ($this->mode === self::ARRAY_MODE) {
-            $lines = explode(self::EOL, $message);
+            $lines = explode(self::CRLF, $message);
 
             $this->logs[] = sprintf("[%s] %s", $level, $lines[0]);
 

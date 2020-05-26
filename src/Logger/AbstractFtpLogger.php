@@ -10,24 +10,6 @@ namespace Lazzard\FtpBridge\Logger;
  */
 abstract class AbstractFtpLogger implements FtpLoggerInterface
 {
-    /** @var string */
-    const EOL = "\r\n";
-
-    /**
-     * @var int
-     *
-     * The plain mode logs the FTP server response as they are,
-     * no parsing performed on the response string.
-     */
-    const PLAIN_MODE = 0;
-
-    /**
-     * @var int
-     *
-     * Array mode parses the remote reply to an array and then logs it.
-     */
-    const ARRAY_MODE = 1;
-
     /**
      * @inheritDoc
      */

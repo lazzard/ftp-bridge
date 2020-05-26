@@ -64,21 +64,21 @@ class FtpFileLogger extends AbstractFtpLogger
             $this->write($message);
 
         } elseif ($this->mode === self::ARRAY_MODE) {
-            $lines = explode(self::EOL, $message);
+            $lines = explode(self::CRLF, $message);
             array_pop($lines);
 
             $indent = str_repeat(' ', 4);
 
             $output = sprintf(
                 "%s[%s] array() [%s] [%s",
-                ftell($this->handle) ? self::EOL : '',
+                ftell($this->handle) ? self::CRLF : '',
                 count($lines),
                 $level,
-                self::EOL
+                self::CRLF
             );
 
             foreach ($lines as $line) {
-                $output .= sprintf("%s%s%s", $indent, $line, self::EOL);
+                $output .= sprintf("%s%s%s", $indent, $line, self::CRLF);
             }
 
             $output .= ']';
@@ -101,7 +101,7 @@ class FtpFileLogger extends AbstractFtpLogger
     public function count()
     {
         if ($this->mode === self::PLAIN_MODE) {
-            return count(explode(self::EOL, $this->getLogs())) - 1;
+            return count(explode(self::CRLF, $this->getLogs())) - 1;
         } else {
             return substr_count($this->getLogs(), 'array');
         }
