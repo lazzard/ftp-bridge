@@ -11,8 +11,6 @@
 
 namespace Lazzard\FtpBridge\Logger;
 
-use Lazzard\FtpBridge\Response\FtpResponse;
-
 /**
  * FtpArrayLogger
  *
@@ -52,10 +50,6 @@ class FtpArrayLogger extends AbstractFtpLogger
     public function log($level, $message)
     {
         if ($this->mode === self::PLAIN_MODE) {
-            if ( ! (new FtpResponse($message))->isMultiline()) {
-                $message = preg_replace('/(\\r\\n)/', '', $message);
-            }
-            
             $this->logs[] = sprintf("[%s] %s", $level, $message);
 
         } elseif ($this->mode === self::ARRAY_MODE) {

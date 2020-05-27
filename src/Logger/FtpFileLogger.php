@@ -61,7 +61,7 @@ class FtpFileLogger extends AbstractFtpLogger
     public function log($level, $message)
     {
         if ($this->mode === self::PLAIN_MODE) {
-            $this->write($message);
+            $this->write( sprintf("[%s] %s", $level, $message));
 
         } elseif ($this->mode === self::ARRAY_MODE) {
             $lines = explode(self::CRLF, $message);
