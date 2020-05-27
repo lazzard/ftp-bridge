@@ -71,46 +71,7 @@ abstract class FtpStreamAbstract
     }
 
     /**
-     * Sends an arbitrary command to the FTP server.
-     *
-     * @param $command
-     *
-     * @return int|false
+     * @inheritDoc
      */
-    public function send($command)
-    {
-        return fwrite($this->socket, trim($command) . self::CRLF);
-    }
-
-    /**
-     * Receive the FTP reply.
-     *
-     * No parsing performed on the replay string.
-     *
-     * @return string|false
-     */
-    public function receive()
-    {
-        /**
-         * Using the fgets function ...
-         */
-
-        $data = "";
-        while (true) {
-            $data .= fgets($this->socket);
-
-            if (@fseek($this->socket, ftell($this->socket) + 1)) {
-                break;
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * Connects to the remote server.
-     *
-     * @return bool
-     */
-    abstract protected function connect();
+    abstract protected function open();
 }
