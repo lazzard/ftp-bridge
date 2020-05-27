@@ -20,13 +20,8 @@ use Lazzard\FtpBridge\Response\FtpResponse;
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-class FtpCommandStream implements FtpStreamInterface
+class FtpCommandStream extends FtpStreamAbstract
 {
-    /**
-     * Carriage return and line feed used in the end of FTP commands as defined in RFC959.
-     */
-    const CRLF = "\r\n";
-
     /** @var FtpLoggerInterface */
     public $logger;
 
@@ -53,27 +48,18 @@ class FtpCommandStream implements FtpStreamInterface
      * @param int                $port
      * @param int                $timeout
      * @param bool               $blocking
-     * 
+     *
      * @throws StreamException
      */
     public function __construct($logger, $host, $port, $timeout, $blocking)
     {
-        $this->host = $host;
-        $this->port = $port;
-        $this->timeout = $timeout;
+        $this->logger   = $logger;
+        $this->host     = $host;
+        $this->port     = $port;
+        $this->timeout  = $timeout;
         $this->blocking = $blocking;
 
-        // TODO wrong giving host resolving
-        if ( ! ($this->stream = fsockopen($host, $port, $errno, $errMsg))) {
-            throw new StreamException("Opening command stream socket was failed : [{$errMsg}]");
-        }
-
-        stream_set_blocking($this->stream, $blocking);
-        stream_set_timeout($this->stream, $timeout);
-
-        $this->logger = $logger;
-
-        $this->receive();
+        $this->open();
     }
 
     /**
@@ -111,6 +97,20 @@ class FtpCommandStream implements FtpStreamInterface
         return $response;
     }
 
+    protected function open()
+    {
+        // TODO wrong giving host resolving
+        if ( ! ($this->stream = fsockopen($this->host, $this->port, $errno, $errMsg))) {
+            throw new StreamException("Opening command stream socket was failed : [{$errMsg}]");
+        }
+
+        stream_set_blocking($this->stream, $this->blocking);
+        stream_set_timeout($this->stream, $this->blocking);
+
+        // TODO check the reply
+        $this->receive();
+    }
+
     /**
      * Internal logging method.
      *
@@ -121,13 +121,11 @@ class FtpCommandStream implements FtpStreamInterface
     protected function log($response)
     {
         if ($this->logger) {
-            $response = new FtpResponse($response);
-
             // TODO 400 ?
-            if ($response->getCode() < 400) {
-                $this->logger->info($response->getReply());
+            if ((new FtpResponse($response))->getCode() < 400) {
+                $this->logger->info($response);
             } else {
-                $this->logger->info($response->getReply());
+                $this->logger->info($response);
             }
         }
     }

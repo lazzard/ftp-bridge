@@ -20,7 +20,7 @@ use Lazzard\FtpBridge\Response\FtpResponse;
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-class FtpDataStream implements FtpStreamInterface
+class FtpDataStream extends FtpStreamAbstract
 {
     /** @var FtpLoggerInterface */
     public $logger;
@@ -43,7 +43,7 @@ class FtpDataStream implements FtpStreamInterface
      * @param FtpLoggerInterface $logger
      * @param FtpCommandStream   $commandStream
      * @param bool               $passive
-     *
+     * 
      * @throws StreamException
      */
     public function __construct($logger, $commandStream, $passive = true)
@@ -52,30 +52,7 @@ class FtpDataStream implements FtpStreamInterface
         $this->commandStream     = $commandStream;
         $this->passive           = $passive;
 
-        if ($passive) {
-            $this->send('PASV');
-
-            $response = new FtpResponse($this->commandStream->receive());
-
-            if ($response->getCode() === 227) {
-                preg_match_all('/\d+/', $response->getMessage(), $match);
-
-                $hostIp = join('.', array_slice($match[0], 0, 4));
-
-                $hostPort = array_slice($match[0], 4);
-                $hostPort = ($hostPort[0] * 256) + $hostPort[1];
-
-                if ( ! ($this->stream = fsockopen($hostIp, $hostPort, $errno, $errMsg))) {
-                    throw new StreamException("Opening data connection stream was failed. [{$errMsg}]");
-                }
-
-                stream_set_blocking($this->stream, $this->commandStream->blocking);
-                stream_set_timeout($this->stream, $this->commandStream->timeout);
-
-            } else {
-                throw new StreamException("PASV command fails : " . $response->getReply());
-            }
-        }
+        $this->open();
     }
 
     /**
@@ -100,5 +77,30 @@ class FtpDataStream implements FtpStreamInterface
         $this->logger->info($data);
 
         return $data;
+    }
+
+    protected function open()
+    {
+        if ($this->passive) {
+            $this->send('PASV');
+
+            $response = new FtpResponse($this->commandStream->receive());
+
+            if ($response->getCode() === 227) {
+                preg_match_all('/\d+/', $response->getMessage(), $match);
+
+                $hostIp = join('.', array_slice($match[0], 0, 4));
+
+                $hostPort = array_slice($match[0], 4);
+                $hostPort = ($hostPort[0] * 256) + $hostPort[1];
+
+                if ( ! ($this->stream = fsockopen($hostIp, $hostPort, $errno, $errMsg))) {
+                    throw new StreamException("Opening data connection stream was failed. [{$errMsg}]");
+                }
+
+                stream_set_blocking($this->stream, $this->commandStream->blocking);
+                stream_set_timeout($this->stream, $this->commandStream->timeout);
+            }
+        }
     }
 }

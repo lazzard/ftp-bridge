@@ -20,6 +20,11 @@ namespace Lazzard\FtpBridge\Stream;
 interface FtpStreamInterface
 {
     /**
+     * Carriage return and line feed used in the end of FTP commands as defined in RFC959.
+     */
+    const CRLF = "\r\n";
+
+    /**
      * Sends an arbitrary command to the FTP server.
      *
      * @param string $command
@@ -36,4 +41,11 @@ interface FtpStreamInterface
      * @return string|false
      */
     public function receive();
+
+    /**
+     * Closes FTP stream socket.
+     *
+     * @return bool
+     */
+    public function close();
 }
