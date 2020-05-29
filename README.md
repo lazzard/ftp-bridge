@@ -1,26 +1,41 @@
 # Introduction
 
-**Lazzard/FtpBridge** Provides a low-level implementation to the FTP in php, it can be used to implement a specific and adjusted FTP functions, it provides also the possibility to logging the entire FTP session.
+> **Lazzard/FtpBridge** Provides a low-level implementation to the FTP in php, it can be used to implement a specific and adjusted FTP functions, it provides also the possibility to logging the entire FTP session.
 
-# FtpBridge 
+# Contents
+* [FtpBridge](#FtpBridge)
+    * [FtpBridge methods](#FtpBridge-methods)
+    * [FtpBridge already implemented FTP functions](#FtpBridge-already-implemented-FTP-functions)
+* [FtpResponse](#FtpResponse)
+* [Logger [optional]](#logger-optional)
+    * [Logger modes](#Logger-modes)
+    * [FileLogger](#FileLogger)
+    * [ArrayLogger](#ArrayLogger)
+* [Usage](#Usage)
+    * [Initialize the FtpBridge and connect to the server](#Initialize-the-FtpBridge-and-connect-to-the-server)
+    * [Implementing an FTP function that's depends on an Arbitrary FTP command](#implementing-an-ftp-function-thats-depends-on-an-arbitrary-ftp-command)
+    * [Implementing an FTP function that's depends on an FTP Directory listing command](#implementing-an-ftp-function-thats-depends-on-an-ftp-directory-listing-command)
+    * [Implementing an FTP function that's depends on an FTP File transfer command](#implementing-an-ftp-function-thats-depends-on-an-ftp-file-transfer-command)
 
-Syntax : 
+# FtpBridge
+
+**Syntax :** 
 
 ```php
 <?php
     $ftp = new Lazzard\FtpBridge\FtpBridge(Lazzard\FtpBridge\Logger\FtpLoggerInterface $logger);
 ```
 
-## FtpBridgeInterface methods
+### FtpBridge methods
 
 | Method                 | Description      
 | ---------------------- |:---------------  
 | `send($command)`       | Sends an FTP command through the control stream.
-| `receive()`            | Receive the FTP reply, must be called after the `send($command)` method.
-| `receiveData()`        | Receive and gets the data from the data stream, must be called after sending a **directory listing** or a **transfer** FTP command.
+| `receive()`            | Receives the FTP reply, must be called after the `send($command)` method.
+| `receiveData()`        | Receives and gets the data from the data stream, must be called after sending a **directory listing** or a **transfer** FTP command.
 
 
-## FtpBridgeInterface already implemented FTP functions
+### FtpBridge already implemented FTP functions
 
 Those functions already implemented for you, its provided in the **FtpBridgeInterface**.
 
@@ -30,6 +45,41 @@ Those functions already implemented for you, its provided in the **FtpBridgeInte
 | `login()`                      | `ftp_login()`    | 4.0.0                | 5.3.0                     |
 | `openDataConnection($passive)` | `ftp_pasv()`     | 4.0.0                | 5.3.0                     |
 | `setTransferMode`              | N/A              | N/A                  | N/A                       |
+
+# FtpResponse
+
+`FtpResponse` normalizes FTP responses.
+
+**Syntax :** 
+
+```php
+<?php
+    $response = new Lazzard\FtpBridge\Response\FtpResponse($response);
+```
+
+**Example of usage**
+
+```php
+<?php
+    $ftp = new FtpBridge();
+    
+    $ftp->send('NOOP');
+    
+    $response = new FtpResponse($ftp->receive);
+
+    echo $response->getCode(); // 200
+    echo $response->getMessage(); // Zzz...
+```
+
+**Available methods :** 
+
+| Method                  | Description      
+| ----------------------  |:---------------  
+| `getReply()`            | Gets FTP reply as a string.
+| `getMessage()`          | Gets FTP readable text.
+| `getCode()`             | Gets FTP reply code.
+| `isMultiline()`         | Checks if the FTP reply is multiline reply.
+
 
 # Logger [optional]
 
@@ -52,43 +102,43 @@ The logger interface provides a simple methods to add and manage the FTP replies
 
 `FileLogger` logs the replies in a regular file.
 
-Syntax : 
+**Syntax :** 
 
 ```php
 <?php
     new FileLogger($mode, $filePath, $append = false);
 ```
 
-Example : 
+**Example :** 
 
 ```php
 <?php
-    $logger = new FileLogger(FileLogger::ArrayLogger, 'ftp.txt');
+    $logger = new FileLogger(FileLogger::PLAIN_MODE, 'ftp.txt');
 ```
 
 ## ArrayLogger
 
 `ArrayLogger` logs the FTP replies in array.
 
-Syntax : 
+**Syntax :** 
 
 ```php
 <?php
     new ArrayLogger($mode, $filePath, $append = false);
 ```
 
-Example : 
+**Example :** 
 
 ```php
 <?php
-    $logger = new ArrayLogger(ArrayLogger::ArrayLogger, 'ftp.txt');
+    $logger = new ArrayLogger(ArrayLogger::ARRAY_MODE);
 ```
 # Usage
 
-## Initialize the FtpBridge and connect to the server.
+## Initialize the FtpBridge and connect to the server
 
 ```php
-    $logger = new ArrayLogger(ArrayLogger::PLAIN_MODE);
+    $logger = new ArrayLogger(ArrayLogger::ARRAY_MODE); // Optional
     
     $ftp = new FtpBridge($logger);
     
@@ -96,7 +146,7 @@ Example :
     $ftp->login("user", "pass");
 ```
 
-## Implementing an FTP function that's depends on an **Arbitrary FTP command**.
+## Implementing an FTP function that's depends on an Arbitrary FTP command
 
 Let's implement our **help()** function :
 
@@ -105,8 +155,8 @@ Let's implement our **help()** function :
 ```php
 <?php
     /**
-    * @return array|bool
-    */
+     * @return array|bool
+     */
     function help()
     {
         $ftp->send('HELP');
@@ -121,87 +171,87 @@ Let's implement our **help()** function :
     }
 ```
 
-## Implementing an FTP function that's depends on an FTP **Directory listing command**.
+## Implementing an FTP function that's depends on an FTP Directory listing command
 
 ```php
 <?php
     /**
-    * @param string $directory 
-    * 
-    * @return array|bool
-    */
+     * @param string $directory 
+     * 
+     * @return array|bool
+     */
     function filesList($directory)
     {
         // open a passive data connection
-        $ftp->openDataConnection(true);
-
-        $ftp->send(sprintf("NLST %s", $directory));
-                    
-        if (in_array((new FtpResponse($ftp->receive()))->getCode(), [150, 125])) {
-
-            /**
-            * Note! This is an optional step, it basically useful for logging the next FTP
-            * reply concerning this transfer, if you don't care about logs you can start working 
-            * with the data here without the following test.
-            * 
-            * After the data was sent, the server sends a reply 226 or 250 to
-            * indicates the state of data channel (closed or still opened) and
-            * the state of the transfer.
-            * 
-            * @link https://tools.ietf.org/html/rfc959#section-5
-            */
-            if (in_array((new FtpResponse($ftp->receive()))->getCode(), [226, 250])) {
-                return $ftp->receiveData();
-            } 
+        if ($ftp->openDataConnection(true)) {
+            $ftp->send(sprintf("NLST %s", $directory));
+            
+            if (in_array((new FtpResponse($ftp->receive())->getCode(), [150, 125])) {
+    
+                /**
+                 * Note! This is an optional step, it basically useful for logging the next FTP
+                 * reply concerning this transfer, if you don't care about logs you can start working 
+                 * with the data here without the following test.
+                 * 
+                 * After the data was sent, the server sends a reply code '226' or '250' to
+                 * indicate the state of data channel (closed or still opened) and
+                 * the state of the transfer.
+                 * 
+                 * @link https://tools.ietf.org/html/rfc959#section-5
+                 */
+                if (in_array((new FtpResponse($ftp->receive()))->getCode(), [226, 250])) {
+                    return $ftp->receiveData();
+                } 
+            }
         }
         
         return false;
     }
 ```
 
-## Implementing an FTP function that's depends on an FTP **File transfer command**.
-
+## Implementing an FTP function that's depends on an FTP File transfer command
 
 ```php
 <?php
     /**
-    * @param string $remoteFile
-    * @param string $localFile
-    * @param int    $transferType
-    *
-    * @return bool
-    */
+     * @param string $remoteFile
+     * @param string $localFile
+     * @param int    $transferType
+     *
+     * @return bool
+     */
     function download($remoteFile, $localFile, $transferType = FtpBridge::BINARY)
     {
         $ftp->setTransferType($transferType);
 
-        $ftp->openDataConnection(true);
-
-        $ftp->send(sprintf("RETR %s", $remoteFile));
-
-        if (in_array((new FtpResponse($ftp->receive()))->getCode()->getCode(), [125, 150])) {
-
-            /**
-            * Note! This is an optional step, it basically useful for logging the next FTP
-            * reply concerning this transfer, if you don't care about logs you can start working 
-            * with the data here without the following test.
-            * 
-            * After the data was sent, the server sends a reply 226 or 250 to
-            * indicates the state of data channel (closed or still opened) and
-            * the state of the transfer.
-            * 
-            * @link https://tools.ietf.org/html/rfc959#section-5
-            */
-            if (in_array((new FtpResponse($ftp->receive()))->getCode(), [226, 250])) {
-                $handle = fopen($localFile, 'wb');
-
-                while (!feof($ftp->dataStream->stream)) {
-                    fwrite($handle, fread($ftp->dataStream->stream, 8192));
+        // open a passive data connection
+        if ($ftp->openDataConnection(true)) {
+            $ftp->send(sprintf("RETR %s", $remoteFile));
+    
+            if (in_array((new FtpResponse($ftp->receive()))->getCode(), [125, 150])) {
+    
+                /**
+                 * Note! This is an optional step, it basically useful for logging the next FTP
+                 * reply concerning this transfer, if you don't care about logs you can start working 
+                 * with the data here without the following test.
+                 * 
+                 * After the data was sent, the server sends a reply code '226' or '250' to
+                 * indicate the state of data channel (closed or still opened) and
+                 * the state of the transfer.
+                 * 
+                 * @link https://tools.ietf.org/html/rfc959#section-5
+                 */
+                if (in_array((new FtpResponse($ftp->receive()))->getCode(), [226, 250])) {
+                    $handle = fopen($localFile, 'wb');
+    
+                    while (!feof($ftp->dataStream->stream)) {
+                        fwrite($handle, fread($ftp->dataStream->stream, 8192));
+                    }
+            
+                    fclose($handle);
+    
+                    return true;
                 }
-        
-                fclose($handle);
-
-                return true;
             }
         }
         
