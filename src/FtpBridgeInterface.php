@@ -38,7 +38,7 @@ interface FtpBridgeInterface
     /**
      * Receives and reads the data from the data stream.
      *
-     * @return array
+     * @return string
      */
     public function receiveData();
 
@@ -49,7 +49,9 @@ interface FtpBridgeInterface
      * @param int    $port     [optional] The remote server port to connect to, if omitted the port 21 will be used.
      * @param int    $timeout  [optional] Specifies the connection timeout of all FTP transfer operations, default sets
      *                         to 90.
-     * @param bool   $blocking [optional] The transfer mode, the blocking mode is the default.
+     * @param        $blocking $blocking [optional] The transfer mode, the blocking mode is the default.
+     *
+     * @return bool Returns true on success, false on failure and an E_WARNING error raised.
      */
     public function connect($host, $port = 21, $timeout = 90, $blocking = true);
 
@@ -61,7 +63,7 @@ interface FtpBridgeInterface
      * @param string $username
      * @param string $password
      *
-     * @return void
+     * @return bool Returns true on success, false on failure and an E_WARNING error raised.
      */
     public function login($username, $password);
 
@@ -70,7 +72,7 @@ interface FtpBridgeInterface
      *
      * @param bool $passive [optional] Specifies weather to use a passive or active data connection.
      *
-     * @return void
+     * @return bool Returns true on success, false on failure and an E_WARNING error raised.
      */
     public function openDataConnection($passive = true);
 

@@ -11,8 +11,6 @@
 
 namespace Lazzard\FtpBridge;
 
-use Lazzard\FtpBridge\Exception\FtpBridgeException;
-use Lazzard\FtpBridge\Exception\StreamException;
 use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
 use Lazzard\FtpBridge\Response\FtpResponse;
 use Lazzard\FtpBridge\Stream\FtpCommandStream;
@@ -78,18 +76,15 @@ class FtpBridge implements FtpBridgeInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @throws FtpBridgeException
      */
     public function connect($host, $port = 21, $timeout = 90, $blocking = true)
     {
         $this->commandStream = new FtpCommandStream($this->logger, $host, $port, $timeout, $blocking);
+        return $this->commandStream->open();
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @throws FtpBridgeException
      */
     public function login($username, $password)
     {
@@ -100,7 +95,7 @@ class FtpBridge implements FtpBridgeInterface
          * 230 : User logged in, proceed.
          */
         if ($response->getCode() === 230) {
-            return;
+            return true;
         }
 
         /**
@@ -117,23 +112,28 @@ class FtpBridge implements FtpBridgeInterface
              * 202 : Already logged with USER
              */
             if (in_array($response->getCode(), [202, 230])) {
-                return;
+                return true;
             }
 
-            throw new FtpBridgeException(sprintf("PASS command fails : %s", $response->getMessage()));
+            return !trigger_error(
+                sprintf("PASS command failed : %s", $response->getMessage()),
+                E_USER_WARNING
+            );
         }
 
-        throw new FtpBridgeException(sprintf("PASS command fails : %s", $response->getMessage()));
+        return !trigger_error(
+            sprintf("USER command failed : %s", $response->getMessage()),
+            E_USER_WARNING
+        );
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @throws StreamException
      */
     public function openDataConnection($passive = true)
     {
         $this->dataStream = new FtpDataStream($this->logger, $this->commandStream, $passive);
+        return $this->dataStream->open();
     }
 
     /**

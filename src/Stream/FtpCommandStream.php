@@ -10,7 +10,6 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Exception\StreamException;
 use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
 use Lazzard\FtpBridge\Response\FtpResponse;
 
@@ -48,8 +47,6 @@ class FtpCommandStream extends FtpStreamAbstract
      * @param int                $port
      * @param int                $timeout
      * @param bool               $blocking
-     *
-     * @throws StreamException
      */
     public function __construct($logger, $host, $port, $timeout, $blocking)
     {
@@ -58,8 +55,6 @@ class FtpCommandStream extends FtpStreamAbstract
         $this->port     = $port;
         $this->timeout  = $timeout;
         $this->blocking = $blocking;
-
-        $this->open();
     }
 
     /**
@@ -97,11 +92,17 @@ class FtpCommandStream extends FtpStreamAbstract
         return $response;
     }
 
-    protected function open()
+    /**
+     * @inheritDoc
+     */
+    public function open()
     {
         // TODO wrong giving host resolving
         if ( ! ($this->stream = fsockopen($this->host, $this->port, $errno, $errMsg))) {
-            throw new StreamException("Opening command stream socket was failed : [{$errMsg}]");
+            return !trigger_error(
+                sprintf("Opening command stream socket was failed : %s", $errMsg),
+                E_USER_WARNING
+            );
         }
 
         stream_set_blocking($this->stream, $this->blocking);
@@ -109,6 +110,8 @@ class FtpCommandStream extends FtpStreamAbstract
 
         // TODO check the reply
         $this->receive();
+
+        return true;
     }
 
     /**
@@ -125,7 +128,7 @@ class FtpCommandStream extends FtpStreamAbstract
             if ((new FtpResponse($response))->getCode() < 400) {
                 $this->logger->info($response);
             } else {
-                $this->logger->info($response);
+                $this->logger->error($response);
             }
         }
     }

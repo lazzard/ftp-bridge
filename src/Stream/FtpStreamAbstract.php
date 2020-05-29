@@ -60,18 +60,6 @@ abstract class FtpStreamAbstract
      */
     public function __construct($host, $username, $password, $port = 21, $timeout = 90, $blocking = true)
     {
-        $this->host     = $host;
-        $this->username = $username;
-        $this->password = $password;
-        $this->port     = $port;
-        $this->timeout  = $timeout;
-        $this->blocking = $blocking;
-
-        $this->connect();
+        return fclose($this->stream);
     }
-
-    /**
-     * @inheritDoc
-     */
-    abstract protected function open();
 }

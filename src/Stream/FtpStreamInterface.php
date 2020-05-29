@@ -25,6 +25,20 @@ interface FtpStreamInterface
     const CRLF = "\r\n";
 
     /**
+     * Opens the stream socket.
+     *
+     * @return bool Returns true on success, false otherwise, an E_WARING_ERROR also raised.
+     */
+    public function open();
+
+    /**
+     * Closes FTP stream socket.
+     *
+     * @return bool
+     */
+    public function close();
+
+    /**
      * Sends an arbitrary command to the FTP server.
      *
      * @param string $command
@@ -41,11 +55,4 @@ interface FtpStreamInterface
      * @return string|false
      */
     public function receive();
-
-    /**
-     * Closes FTP stream socket.
-     *
-     * @return bool
-     */
-    public function close();
 }
