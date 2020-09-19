@@ -1,52 +1,62 @@
 # Introduction
 
-> **Lazzard/FtpBridge** Provides a low-level implementation to the FTP in php, it can be used to implement a specific and adjusted FTP functions, it provides also the possibility to logging the entire FTP session.
+> **Lazzard/FtpBridge** is a low-level implementation library of the File Transfer Protocol (FTP) in PHP, it can be used to implement an FTP functions without the need for the FTP extension, and it provides the possibility of logging the entire FTP session.
 
 **Note :** This library is under development. 
 
 # Contents
-* [FtpBridge](#FtpBridge)
-    * [FtpBridge methods](#FtpBridge-methods)
-    * [FtpBridge already implemented FTP functions](#FtpBridge-already-implemented-FTP-functions)
-* [FtpResponse](#FtpResponse)
-* [Logger [optional]](#logger-optional)
-    * [Logger modes](#Logger-modes)
-    * [FileLogger](#FileLogger)
-    * [ArrayLogger](#ArrayLogger)
-* [Usage](#Usage)
-    * [Initialize the FtpBridge and connect to the server](#Initialize-the-FtpBridge-and-connect-to-the-server)
-    * [Implementing an FTP function that's depends on an Arbitrary FTP command](#implementing-an-ftp-function-thats-depends-on-an-arbitrary-ftp-command)
-    * [Implementing an FTP function that's depends on an FTP Directory listing command](#implementing-an-ftp-function-thats-depends-on-an-ftp-directory-listing-command)
-    * [Implementing an FTP function that's depends on an FTP File transfer command](#implementing-an-ftp-function-thats-depends-on-an-ftp-file-transfer-command)
+
+- [Introduction](#introduction)
+- [Contents](#contents)
+- [Requirements](#requirements)
+- [FtpBridge](#ftpbridge)
+    + [FtpBridge methods](#ftpbridge-methods)
+    + [FtpBridge already implemented FTP functions](#ftpbridge-already-implemented-ftp-functions)
+- [FtpResponse](#ftpresponse)
+- [Logger [optional]](#logger-optional)
+  * [Logger modes](#logger-modes)
+  * [FtpFileLogger](#ftpfilelogger)
+  * [FtpArrayLogger](#ftparraylogger)
+- [Usage](#usage)
+- [Implementation examples](#implementation-examples)
+  * [Implementing an FTP function that's depends on an Arbitrary FTP command](#implementing-an-ftp-function-thats-depends-on-an-arbitrary-ftp-command)
+  * [Implementing an FTP function that's depends on an FTP Directory listing command](#implementing-an-ftp-function-thats-depends-on-an-ftp-directory-listing-command)
+  * [Implementing an FTP function that's depends on an FTP File transfer command](#implementing-an-ftp-function-thats-depends-on-an-ftp-file-transfer-command)
+
+# Requirements
+
+* PHP version >= 5.3.0
 
 # FtpBridge
+
+`FtpBridge` holds all the necessary methods to start communicating with the remote server, in addition to other useful utility methods. 
 
 **Syntax :** 
 
 ```php
 <?php
-    $ftp = new Lazzard\FtpBridge\FtpBridge(Lazzard\FtpBridge\Logger\FtpLoggerInterface $logger);
+    $ftp = new FtpBridge();
 ```
 
-### FtpBridge methods
+### FtpBridgeInterface methods
 
 | Method                 | Description      
 | ---------------------- |:---------------  
 | `send($command)`       | Sends an FTP command through the control stream.
 | `receive()`            | Receives the FTP reply, must be called after the `send($command)` method.
 | `receiveData()`        | Receives and gets the data from the data stream, must be called after sending a **directory listing** or a **transfer** FTP command.
+| `setTransferMode($mode)` | Sets the transfer mode for all FTP transfer operations.  
 
 
 ### FtpBridge already implemented FTP functions
 
-Those functions already implemented for you, its provided in the **FtpBridgeInterface**.
+`FtpBridge` provides already functions for creating an FTP connection and logging to the remote server and some other basics functions, if you don't have any reason (special requirements) to implement those functions in yourself then why to reinvent the wheel, you can use the following functions provided by **FtpBridgeInterface**.
 
 | Method                         | PHP alternative  | PHP Min version      | FtpBridge Min version     |
 | ----------------------         |:----------------:|:--------------------:|:-------------------------:|
 | `connect()`                    | `ftp_connect()`  | 4.0.0                | 5.3.0                     |
 | `login()`                      | `ftp_login()`    | 4.0.0                | 5.3.0                     |
 | `openDataConnection($passive)` | `ftp_pasv()`     | 4.0.0                | 5.3.0                     |
-| `setTransferMode`              | N/A              | N/A                  | N/A                       |
 
 # FtpResponse
 
@@ -56,7 +66,7 @@ Those functions already implemented for you, its provided in the **FtpBridgeInte
 
 ```php
 <?php
-    $response = new Lazzard\FtpBridge\Response\FtpResponse($response);
+    $response = new FtpResponse($response);
 ```
 
 **Example of usage**
@@ -73,15 +83,14 @@ Those functions already implemented for you, its provided in the **FtpBridgeInte
     echo $response->getMessage(); // Zzz...
 ```
 
-**Available methods :** 
+**FtpResponseInterface methods :** 
 
 | Method                  | Description      
 | ----------------------  |:---------------  
-| `getReply()`            | Gets FTP reply as a string.
+| `getResponse()`         | Gets FTP reply as a string.
 | `getMessage()`          | Gets FTP readable text.
 | `getCode()`             | Gets FTP reply code.
 | `isMultiline()`         | Checks if the FTP reply is multiline reply.
-
 
 # Logger [optional]
 
@@ -90,63 +99,74 @@ The logger interface provides a simple methods to add and manage the FTP replies
 | Method                  | Description      
 | ----------------------  |:---------------  
 | `getLogs()`             | Gets logs.
-| `log($level, $message)` | Logs a registry, the log levels provided in the `Lazzard\FtpBridge\Logger\FtpLogLevel`.
+| `log($level, $message)` | Logs a registry, the log levels provided by `FtpLogLevel`.
 | `clear()`               | Clears the logs.
 | `count()`               | Gets the logs count.
 
-
 ## Logger modes
+
+`FtpLoggerInterface` provides the following logging modes.
 
 * **ARRAY_MODE** : logging each line of the FTP reply as one registry.
 * **PLAIN_MODE** : logging the entire FTP reply as one registry.
 
-## FileLogger
+## FtpFileLogger
 
-`FileLogger` logs the replies in a regular file.
+`FtpFileLogger` logs the replies to a regular file.
 
 **Syntax :** 
 
 ```php
 <?php
-    new FileLogger($mode, $filePath, $append = false);
+    new FtpFileLogger($mode, $filePath, $append = false);
 ```
 
 **Example :** 
 
 ```php
 <?php
-    $logger = new FileLogger(FileLogger::PLAIN_MODE, 'ftp.txt');
+    $logger = new FtpFileLogger(FtpLoggerInterface::PLAIN_MODE, 'ftp.txt');
 ```
 
-## ArrayLogger
+## FtpArrayLogger
 
-`ArrayLogger` logs the FTP replies in array.
+`FtpArrayLogger` logs the FTP replies to an array.
 
 **Syntax :** 
 
 ```php
 <?php
-    new ArrayLogger($mode, $filePath, $append = false);
+    new FtpArrayLogger($mode);
 ```
 
 **Example :** 
 
 ```php
 <?php
-    $logger = new ArrayLogger(ArrayLogger::ARRAY_MODE);
+    $logger = new FtpArrayLogger(FtpLoggerInterface::ARRAY_MODE);
 ```
+
 # Usage
 
-## Initialize the FtpBridge and connect to the server
-
 ```php
-    $logger = new ArrayLogger(ArrayLogger::ARRAY_MODE); // Optional
+    $logger = new ArrayLogger(ArrayLogger::ARRAY_MODE); // initialize the logger (Optional)
     
-    $ftp = new FtpBridge($logger);
+    $ftp = new FtpBridge($logger); // initialize the FtpBridge
     
-    $ftp->connect("foo@bar.com");
+    $ftp->connect("foo@bar.com"); 
     $ftp->login("user", "pass");
+    
+    $ftp->send('HELP');
+    
+    $response = new FtpResponse($ftp->receive());
+    
+    var_dump($ftp->getMessage()); // dump the ftp reply message
+    var_dump($ftp->getCode()); // dump the ftp reply code
+    
+    var_dump($logger->getLogs()); // Shows the entire session negotiation 
 ```
+
+# Implementation examples
 
 ## Implementing an FTP function that's depends on an Arbitrary FTP command
 
@@ -173,7 +193,7 @@ Let's implement our **help()** function :
     }
 ```
 
-## Implementing an FTP function that's depends on an FTP Directory listing command
+## Implementing an FTP function that's depends on an FTP directory listing command
 
 ```php
 <?php
@@ -211,7 +231,7 @@ Let's implement our **help()** function :
     }
 ```
 
-## Implementing an FTP function that's depends on an FTP File transfer command
+## Implementing an FTP function that's depends on an FTP file transfer command
 
 ```php
 <?php
