@@ -2,6 +2,8 @@
 
 > **Lazzard/FtpBridge** Provides a low-level implementation to the FTP in php, it can be used to implement a specific and adjusted FTP functions, it provides also the possibility to logging the entire FTP session.
 
+**Note :** This library is under development. 
+
 # Contents
 * [FtpBridge](#FtpBridge)
     * [FtpBridge methods](#FtpBridge-methods)
