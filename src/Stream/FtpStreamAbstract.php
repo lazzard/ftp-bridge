@@ -11,6 +11,9 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
+use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
+use Lazzard\FtpBridge\Response\FtpResponse;
+
 /**
  * An abstract class represents an FTP stream connection.
  *
@@ -19,49 +22,28 @@ namespace Lazzard\FtpBridge\Stream;
  *
  * @internal
  */
-abstract class FtpStreamAbstract
+abstract class FtpStreamAbstract implements FtpStreamInterface
 {
-    /**
-     * Carriage return and line feed used in the end of FTP commands as defined in RFC959.
-     */
-    const CRLF = "\r\n";
+    /** @var resource */
+    public $stream;
 
-    /**
-     * Stream socket.
-     *
-     * @var resource
-     */
-    protected $socket;
-
-    /** @var string */
-    protected $host;
-
-    /** @var string */
-    protected $username;
-
-    /** @var string */
-    protected $password;
-
-    /** @var int */
-    protected $port;
-
-    /** @var int */
-    protected $timeout;
-
-    /** @var bool */
-    protected $blocking;
+    /** @var FtpLoggerInterface */
+    public $logger;
 
     /**
      * FtpStreamAbstract constructor.
      *
-     * @param string $host
-     * @param string $username
-     * @param string $password
-     * @param int    $port
-     * @param int    $timeout
-     * @param bool   $blocking
+     * @param FtpLoggerInterface $logger
      */
-    public function __construct($host, $username, $password, $port = 21, $timeout = 90, $blocking = true)
+    public function __construct(FtpLoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    final public function close()
     {
         return fclose($this->stream);
     }
