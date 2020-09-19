@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Lazzard/ftp-bridge package.
  *
@@ -11,10 +12,12 @@
 namespace Lazzard\FtpBridge\Stream;
 
 /**
- * Class FtpStreamAbstract
+ * An abstract class represents an FTP stream connection.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
+ *
+ * @internal
  */
 abstract class FtpStreamAbstract
 {
@@ -61,5 +64,24 @@ abstract class FtpStreamAbstract
     public function __construct($host, $username, $password, $port = 21, $timeout = 90, $blocking = true)
     {
         return fclose($this->stream);
+    }
+
+    /**
+     * Internal logging method.
+     *
+     * @param string $response
+     *
+     * @return void
+     */
+    final protected function log($response)
+    {
+        if (!is_null($this->logger)) {
+            // TODO 400 ?
+            if ((new FtpResponse($response))->getCode() < 400) {
+                $this->logger->info($response);
+            } else {
+                $this->logger->error($response);
+            }
+        }
     }
 }

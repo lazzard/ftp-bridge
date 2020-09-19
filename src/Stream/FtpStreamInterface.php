@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Lazzard/ftp-bridge package.
  *
@@ -10,12 +11,13 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-
 /**
- * FtpStreamInterface
+ * FtpStreamInterface defines an FTP stream behavior.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
+ *
+ * @internal
  */
 interface FtpStreamInterface
 {

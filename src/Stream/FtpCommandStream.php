@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Lazzard/ftp-bridge package.
  *
@@ -11,22 +12,17 @@
 namespace Lazzard\FtpBridge\Stream;
 
 use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
-use Lazzard\FtpBridge\Response\FtpResponse;
 
 /**
  * Represents a command stream commandStream.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
+ *
+ * @internal
  */
 class FtpCommandStream extends FtpStreamAbstract
 {
-    /** @var FtpLoggerInterface */
-    public $logger;
-
-    /** @var resource */
-    public $stream;
-
     /** @var string */
     public $host;
 
@@ -50,7 +46,8 @@ class FtpCommandStream extends FtpStreamAbstract
      */
     public function __construct($logger, $host, $port, $timeout, $blocking)
     {
-        $this->logger   = $logger;
+        parent::__construct($logger);
+
         $this->host     = $host;
         $this->port     = $port;
         $this->timeout  = $timeout;
@@ -98,7 +95,7 @@ class FtpCommandStream extends FtpStreamAbstract
     public function open()
     {
         // TODO wrong giving host resolving
-        if ( ! ($this->stream = fsockopen($this->host, $this->port, $errno, $errMsg))) {
+        if (!($this->stream = fsockopen($this->host, $this->port, $errno, $errMsg))) {
             return !trigger_error(
                 sprintf("Opening command stream socket was failed : %s", $errMsg),
                 E_USER_WARNING
@@ -112,24 +109,5 @@ class FtpCommandStream extends FtpStreamAbstract
         $this->receive();
 
         return true;
-    }
-
-    /**
-     * Internal logging method.
-     *
-     * @param string $response
-     *
-     * @return void
-     */
-    protected function log($response)
-    {
-        if ($this->logger) {
-            // TODO 400 ?
-            if ((new FtpResponse($response))->getCode() < 400) {
-                $this->logger->info($response);
-            } else {
-                $this->logger->error($response);
-            }
-        }
     }
 }

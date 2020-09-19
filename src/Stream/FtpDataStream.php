@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Lazzard/ftp-bridge package.
  *
@@ -18,23 +19,16 @@ use Lazzard\FtpBridge\Response\FtpResponse;
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
+ *
+ * @internal
  */
 class FtpDataStream extends FtpStreamAbstract
 {
-    /** @var FtpLoggerInterface */
-    public $logger;
-
-    /** @var FtpCommandStream */
-    public $commandStream;
-
-    /** @var resource */
-    public $stream;
-
     /** @var bool */
     public $passive;
 
-    /** @var bool */
-    public $usePassiveAddress;
+    /** @var FtpCommandStream */
+    public $commandStream;
 
     /**
      * Opens a data stream socket.
@@ -45,9 +39,10 @@ class FtpDataStream extends FtpStreamAbstract
      */
     public function __construct($logger, $commandStream, $passive = true)
     {
-        $this->logger            = $logger;
-        $this->commandStream     = $commandStream;
-        $this->passive           = $passive;
+        parent::__construct($logger);
+
+        $this->commandStream = $commandStream;
+        $this->passive       = $passive;
     }
 
     /**
@@ -65,7 +60,7 @@ class FtpDataStream extends FtpStreamAbstract
     {
         $data = '';
 
-        while ( ! feof($this->stream)) {
+        while (!feof($this->stream)) {
             $data .= fread($this->stream, 8192);
         }
 
@@ -80,27 +75,41 @@ class FtpDataStream extends FtpStreamAbstract
     public function open()
     {
         if ($this->passive) {
-            $this->send('PASV');
-
-            $response = new FtpResponse($this->commandStream->receive());
-
-            if ($response->getCode() === 227) {
-                preg_match_all('/\d+/', $response->getMessage(), $match);
-
-                $hostIp = join('.', array_slice($match[0], 0, 4));
-
-                $hostPort = array_slice($match[0], 4);
-                $hostPort = ($hostPort[0] * 256) + $hostPort[1];
-
-                if ( ! ($this->stream = fsockopen($hostIp, $hostPort, $errno, $errMsg))) {
-                    return !trigger_error('Establish data connection was failed.', E_USER_WARNING);
-                }
-
-                stream_set_blocking($this->stream, $this->commandStream->blocking);
-                stream_set_timeout($this->stream, $this->commandStream->timeout);
-            }
+            $this->openPassiveConnection();
         }
 
         return true;
+    }
+
+    /**
+     * Opens a passive data connection to the server.
+     *
+     * @return bool
+     */
+    protected function openPassiveConnection()
+    {
+        $this->send('PASV');
+
+        $response = new FtpResponse($this->commandStream->receive());
+
+        if ($response->getCode() === 227) {
+            preg_match_all('/\d+/', $response->getMessage(), $match);
+
+            $hostIp = join('.', array_slice($match[0], 0, 4));
+
+            $hostPort = array_slice($match[0], 4);
+            $hostPort = ($hostPort[0] * 256) + $hostPort[1];
+
+            if (!($this->stream = fsockopen($hostIp, $hostPort, $errno, $errMsg))) {
+                return !trigger_error('Establish data connection was failed.', E_USER_WARNING);
+            }
+
+            stream_set_blocking($this->stream, $this->commandStream->blocking);
+            stream_set_timeout($this->stream, $this->commandStream->timeout);
+
+            return true;
+        }
+
+        return false;
     }
 }
