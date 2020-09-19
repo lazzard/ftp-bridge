@@ -3,8 +3,9 @@
 ### Issues.
 
 ### Code improvements.
-- [ ] improving FTP logger levels.
+- [ ] Improving FTP logger levels.
 
 ### Upcoming features.
-- [ ] Supporting the FTP active file transfer mode for `openDataConnection($passive)`.
+- [ ] Implementing the FTP active file transfer mode for `openDataConnection($passive)` FtpBridgeInterface method.
 - [ ] Add method allows changing the record structure of the file transfers.
+- [ ] Allowing using the active address when opening a data stream connection.
