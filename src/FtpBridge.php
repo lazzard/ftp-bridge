@@ -17,7 +17,8 @@ use Lazzard\FtpBridge\Stream\FtpCommandStream;
 use Lazzard\FtpBridge\Stream\FtpDataStream;
 
 /**
- * FtpBridge class
+ * FtpBridge class holds the necessary methods to start sending commands and
+ * receiving FTP responses with some useful utility methods.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
