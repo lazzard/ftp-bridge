@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Lazzard/ftp-bridge package.
  *
@@ -11,7 +12,7 @@
 namespace Lazzard\FtpBridge\Response;
 
 /**
- * An FTP replay class
+ * FtpResponse abstracts a regular FTP replay.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
@@ -47,7 +48,7 @@ class FtpResponse implements FtpResponseInterface
     /**
      * @inheritDoc
      */
-    public function getReply()
+    public function getResponse()
     {
         return $this->response;
     }

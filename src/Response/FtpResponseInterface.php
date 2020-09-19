@@ -20,11 +20,11 @@ namespace Lazzard\FtpBridge\Response;
 interface FtpResponseInterface
 {
     /**
-     * Get the FTP reply.
+     * Gets a full response string representation.
      *
      * @return string
      */
-    public function getReply();
+    public function getResponse();
 
     /**
      * Gets reply code.
