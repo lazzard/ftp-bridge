@@ -1,8 +1,8 @@
 # Introduction
 
-> **Lazzard/FtpBridge** is a low-level implementation library of the File Transfer Protocol (FTP) in PHP, it can be used to implement an FTP functions without the need for the FTP extension, and it provides the possibility of logging the entire FTP session.
+**Lazzard/FtpBridge** is a low-level implementation library of the File Transfer Protocol (FTP) in PHP, it can be used to implement an FTP functions without the need for the FTP extension, and it provides the possibility of logging the entire FTP session.
 
-**Note :** This library is under development. 
+***Note :** This library is under development now.*
 
 # Contents
 
