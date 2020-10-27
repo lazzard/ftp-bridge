@@ -18,7 +18,7 @@ use Lazzard\FtpBridge\Stream\FtpDataStream;
 
 /**
  * FtpBridge class holds the necessary methods to start sending commands and
- * receiving FTP responses with some useful utility methods.
+ * receiving FTP responses with some already implemented methods.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
@@ -116,16 +116,10 @@ class FtpBridge implements FtpBridgeInterface
                 return true;
             }
 
-            return !trigger_error(
-                sprintf("PASS command failed : %s", $response->getMessage()),
-                E_USER_WARNING
-            );
+            return !trigger_error(sprintf("PASS command failed : %s", $response->getMessage()), E_USER_WARNING);
         }
 
-        return !trigger_error(
-            sprintf("USER command failed : %s", $response->getMessage()),
-            E_USER_WARNING
-        );
+        return !trigger_error(sprintf("USER command failed : %s", $response->getMessage()), E_USER_WARNING);
     }
 
     /**

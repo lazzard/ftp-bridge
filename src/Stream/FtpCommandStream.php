@@ -14,7 +14,7 @@ namespace Lazzard\FtpBridge\Stream;
 use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
 
 /**
- * Represents a command stream commandStream.
+ * Represents a command stream.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
@@ -68,17 +68,16 @@ class FtpCommandStream extends FtpStreamAbstract
     public function receive()
     {
         $response = '';
+        
         while (true) {
-            $line     = fgets($this->stream);
+            $line = fgets($this->stream);
             $response .= $line;
 
-            /**
-             * To distinguish the end of an FTP reply, the RFC959 indicates that the last line of
-             * a the reply must be on a special format, it must be begin with 3 digits followed
-             * by a space.
-             *
-             * @link https://tools.ietf.org/html/rfc959#section-4
-             */
+            // To distinguish the end of an FTP reply, the RFC959 indicates that the last line of
+            // a the reply must be on a special format, it must be begin with 3 digits followed
+            // by a space.
+            //@link https://tools.ietf.org/html/rfc959#section-4
+
             if (preg_match('/\d{3}+ /', $line) !== 0) {
                 break;
             }
@@ -96,14 +95,11 @@ class FtpCommandStream extends FtpStreamAbstract
     {
         // TODO wrong giving host resolving
         if (!($this->stream = fsockopen($this->host, $this->port, $errno, $errMsg))) {
-            return !trigger_error(
-                sprintf("Opening command stream socket was failed : %s", $errMsg),
-                E_USER_WARNING
-            );
+            return !trigger_error(sprintf("Opening command stream socket was failed : %s", $errMsg), E_USER_WARNING);
         }
 
         stream_set_blocking($this->stream, $this->blocking);
-        stream_set_timeout($this->stream, $this->blocking);
+        stream_set_timeout($this->stream, $this->timeout);
 
         // TODO check the reply
         $this->receive();

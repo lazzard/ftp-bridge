@@ -24,11 +24,11 @@ use Lazzard\FtpBridge\Response\FtpResponse;
  */
 class FtpDataStream extends FtpStreamAbstract
 {
-    /** @var bool */
-    public $passive;
-
     /** @var FtpCommandStream */
     public $commandStream;
+    
+    /** @var bool */
+    public $passive;
 
     /**
      * Opens a data stream socket.
@@ -64,7 +64,7 @@ class FtpDataStream extends FtpStreamAbstract
             $data .= fread($this->stream, 8192);
         }
 
-        $this->logger->info($data);
+        $this->log($data);
 
         return $data;
     }
@@ -74,11 +74,7 @@ class FtpDataStream extends FtpStreamAbstract
      */
     public function open()
     {
-        if ($this->passive) {
-            $this->openPassiveConnection();
-        }
-
-        return true;
+        return $this->passive ? $this->openPassiveConnection() : null;
     }
 
     /**
@@ -100,7 +96,7 @@ class FtpDataStream extends FtpStreamAbstract
             $hostPort = array_slice($match[0], 4);
             $hostPort = ($hostPort[0] * 256) + $hostPort[1];
 
-            if (!($this->stream = fsockopen($hostIp, $hostPort, $errno, $errMsg))) {
+            if (!$this->stream = fsockopen($hostIp, $hostPort, $errno, $errMsg)) {
                 return !trigger_error('Establish data connection was failed.', E_USER_WARNING);
             }
 
@@ -111,5 +107,10 @@ class FtpDataStream extends FtpStreamAbstract
         }
 
         return false;
+    }
+
+    protected function openActiveConnection()
+    {
+        // TODO
     }
 }
