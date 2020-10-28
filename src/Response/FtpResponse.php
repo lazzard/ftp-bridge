@@ -34,12 +34,11 @@ class FtpResponse implements FtpResponseInterface
     /**
      * FtpResponse constructor.
      *
-     * @param string $response
+     * @param string $response The FTP reply string reprensentation.
      */
     public function __construct($response)
     {
         $this->response = $response;
-
         $this->setCode();
         $this->setMessage();
         $this->setMultiline();
@@ -82,8 +81,9 @@ class FtpResponse implements FtpResponseInterface
      */
     protected function setCode()
     {
-        preg_match('/^\d+/', $this->response, $match);
-        $this->code = (int)$match[0];
+        if (preg_match('/^\d+/', $this->response, $match) === 1) {
+            $this->code = (int)$match[0];
+        }
     }
 
     /**
@@ -91,8 +91,9 @@ class FtpResponse implements FtpResponseInterface
      */
     protected function setMessage()
     {
-        preg_match('/[A-z ]+.*/', $this->response, $match);
-        $this->message = ltrim($match[0]);
+        if (preg_match('/[A-z ]+.*/', $this->response, $match) === 1) {
+            $this->message = ltrim($match[0]);
+        }
     }
 
     /**
