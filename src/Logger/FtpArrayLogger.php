@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Lazzard/ftp-bridge package.
  *
@@ -17,7 +18,7 @@ namespace Lazzard\FtpBridge\Logger;
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-class FtpArrayLogger extends AbstractFtpLogger
+class FtpArrayLogger extends FtpFtpLogger
 {
     /** @var array */
     protected $logs;
@@ -33,7 +34,7 @@ class FtpArrayLogger extends AbstractFtpLogger
     public function __construct($mode)
     {
         $this->mode = $mode;
-        $this->logs = [];
+        $this->logs = array();
     }
 
     /**
@@ -51,17 +52,13 @@ class FtpArrayLogger extends AbstractFtpLogger
     {
         if ($this->mode === self::PLAIN_MODE) {
             $this->logs[] = sprintf("[%s] %s", $level, $message);
-
         } elseif ($this->mode === self::ARRAY_MODE) {
             $lines = explode(self::CRLF, $message);
-
             $this->logs[] = sprintf("[%s] %s", $level, $lines[0]);
-
             foreach ($lines as $key => $line) {
                 if ($key === 0 || $line === '') {
                     continue;
                 }
-
                 $this->logs[] = $line;
             }
         }

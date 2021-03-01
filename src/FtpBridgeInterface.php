@@ -12,9 +12,9 @@
 
 namespace Lazzard\FtpBridge;
 
+use Lazzard\FtpBridge\Response\FtpResponse;
+
 /**
- * FtpBridgeInterface interface
- *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
@@ -32,9 +32,9 @@ interface FtpBridgeInterface
     /**
      * Receives and gets the response from the command stream.
      *
-     * @return string
+     * @return FtpResponse
      */
-    public function receive();
+    public function receive($dump = false);
 
     /**
      * Receives and reads the data from the data stream.
@@ -59,7 +59,7 @@ interface FtpBridgeInterface
     /**
      * Logs into the FTP server.
      *
-     * Note! this method must be called after as successful connection.
+     * Note: this method must be called after a successful connection.
      *
      * @param string $username
      * @param string $password

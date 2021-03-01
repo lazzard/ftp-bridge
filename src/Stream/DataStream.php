@@ -15,16 +15,16 @@ use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
 use Lazzard\FtpBridge\Response\FtpResponse;
 
 /**
- * Class FtpDataStream
+ * An FTP data stream socket connection.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  *
  * @internal
  */
-class FtpDataStream extends FtpStreamAbstract
+class DataStream extends Stream
 {
-    /** @var FtpCommandStream */
+    /** @var CommandStream */
     public $commandStream;
     
     /** @var bool */
@@ -34,7 +34,7 @@ class FtpDataStream extends FtpStreamAbstract
      * Opens a data stream socket.
      *
      * @param FtpLoggerInterface $logger
-     * @param FtpCommandStream   $commandStream
+     * @param CommandStream      $commandStream
      * @param bool               $passive
      */
     public function __construct($logger, $commandStream, $passive = true)
@@ -59,7 +59,6 @@ class FtpDataStream extends FtpStreamAbstract
     public function receive()
     {
         $data = '';
-
         while (!feof($this->stream)) {
             $data .= fread($this->stream, 8192);
         }
@@ -78,25 +77,23 @@ class FtpDataStream extends FtpStreamAbstract
     }
 
     /**
-     * Opens a passive data connection to the server.
+     * Opens a passive data connection.
      *
      * @return bool
      */
     protected function openPassiveConnection()
     {
         $this->send('PASV');
-
         $response = new FtpResponse($this->commandStream->receive());
-
         if ($response->getCode() === 227) {
             preg_match_all('/\d+/', $response->getMessage(), $match);
 
-            $hostIp = join('.', array_slice($match[0], 0, 4));
+            $ipAddress = join('.', array_slice($match[0], 0, 4));
 
             $hostPort = array_slice($match[0], 4);
             $hostPort = ($hostPort[0] * 256) + $hostPort[1];
 
-            if (!$this->stream = fsockopen($hostIp, $hostPort, $errno, $errMsg)) {
+            if (!$this->stream = fsockopen($ipAddress, $hostPort, $errno, $errMsg)) {
                 return !trigger_error('Establish data connection was failed.', E_USER_WARNING);
             }
 

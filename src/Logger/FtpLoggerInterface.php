@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Lazzard/ftp-bridge package.
  *
@@ -11,7 +12,7 @@
 namespace Lazzard\FtpBridge\Logger;
 
 /**
- * FtpLoggerInterface
+ * Describes an FTP logger instance.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
@@ -36,7 +37,7 @@ interface FtpLoggerInterface
     /**
      * @var int
      *
-     * Array mode parses the remote reply to an array and then logs it.
+     * Array mode parses the remote reply as an array.
      */
     const ARRAY_MODE = 1;
 

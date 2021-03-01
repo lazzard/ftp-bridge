@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Lazzard/ftp-bridge package.
  *
@@ -11,13 +12,12 @@
 namespace Lazzard\FtpBridge\Logger;
 
 /**
- * Class FtpLogLevel
- *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
 class FtpLogLevel
 {
-    const INFO  = 'INFO';
-    const ERROR = 'ERROR';
+    const INFO    = 'INFO';
+    const ERROR   = 'ERROR';
+    const COMMAND = 'COMMAND';
 }

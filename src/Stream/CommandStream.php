@@ -12,16 +12,17 @@
 namespace Lazzard\FtpBridge\Stream;
 
 use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
+use Lazzard\FtpBridge\Logger\FtpLogLevel;
 
 /**
- * Represents a command stream.
+ * Represents an FTP command stream (control channel).
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  *
  * @internal
  */
-class FtpCommandStream extends FtpStreamAbstract
+class CommandStream extends Stream
 {
     /** @var string */
     public $host;
@@ -36,7 +37,7 @@ class FtpCommandStream extends FtpStreamAbstract
     public $blocking;
 
     /**
-     * FtpCommandStream constructor.
+     * CommandStream constructor.
      *
      * @param FtpLoggerInterface $logger
      * @param string             $host
@@ -47,7 +48,6 @@ class FtpCommandStream extends FtpStreamAbstract
     public function __construct($logger, $host, $port, $timeout, $blocking)
     {
         parent::__construct($logger);
-
         $this->host     = $host;
         $this->port     = $port;
         $this->timeout  = $timeout;
@@ -59,26 +59,25 @@ class FtpCommandStream extends FtpStreamAbstract
      */
     public function send($command)
     {
-        return fwrite($this->stream, trim($command) . self::CRLF);
+        $write = fwrite($this->stream, trim($command) . self::CRLF);
+        $this->logger->log(FtpLogLevel::COMMAND, $command . self::CRLF);
+        return $write !== 0 && $write === false ? false : true;
     }
 
     /**
      * @inheritDoc
      */
-    public function receive()
+    public function receive($dump = false)
     {
         $response = '';
-        
         while (true) {
-            $line = fgets($this->stream);
+            $line     = fgets($this->stream);
             $response .= $line;
-
             // To distinguish the end of an FTP reply, the RFC959 indicates that the last line of
             // a the reply must be on a special format, it must be begin with 3 digits followed
             // by a space.
             //@link https://tools.ietf.org/html/rfc959#section-4
-
-            if (preg_match('/\d{3}+ /', $line) !== 0) {
+            if (preg_match('/^\d{3}+ /', $line) !== 0) {
                 break;
             }
         }

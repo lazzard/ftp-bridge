@@ -15,14 +15,14 @@ use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
 use Lazzard\FtpBridge\Response\FtpResponse;
 
 /**
- * An abstract class represents an FTP stream connection.
+ * Abstracts FTP stream shared implementations.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  *
  * @internal
  */
-abstract class FtpStreamAbstract implements FtpStreamInterface
+abstract class Stream implements Streamable
 {
     /** @var resource */
     public $stream;
@@ -31,7 +31,7 @@ abstract class FtpStreamAbstract implements FtpStreamInterface
     public $logger;
 
     /**
-     * FtpStreamAbstract constructor.
+     * StreamableAbstract constructor.
      *
      * @param FtpLoggerInterface $logger
      */
@@ -51,18 +51,18 @@ abstract class FtpStreamAbstract implements FtpStreamInterface
     /**
      * Internal logging method.
      *
-     * @param string $response
+     * @param string $text
      *
      * @return void
      */
-    final protected function log($response)
+    final protected function log($text)
     {
         if (!is_null($this->logger)) {
             // TODO 400 ?
-            if ((new FtpResponse($response))->getCode() < 400) {
-                $this->logger->info($response);
+            if ((new FtpResponse($text))->getCode() < 400) {
+                $this->logger->info($text);
             } else {
-                $this->logger->error($response);
+                $this->logger->error($text);
             }
         }
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Lazzard/ftp-bridge package.
  *
@@ -17,7 +18,7 @@ namespace Lazzard\FtpBridge\Logger;
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-class FtpFileLogger extends AbstractFtpLogger
+class FtpFileLogger extends FtpFtpLogger
 {
     /** @var int */
     protected $mode;
@@ -43,7 +44,6 @@ class FtpFileLogger extends AbstractFtpLogger
         $this->filePath = $filePath;
         $this->append   = $append;
         $this->mode     = $mode;
-
         $this->open();
     }
 
@@ -102,14 +102,8 @@ class FtpFileLogger extends AbstractFtpLogger
     {
         if ($this->mode === self::PLAIN_MODE) {
             return count(explode(self::CRLF, $this->getLogs())) - 1;
-        } else {
-            return substr_count($this->getLogs(), 'array');
         }
-    }
-
-    public function __destruct()
-    {
-        $this->close();
+        return substr_count($this->getLogs(), 'array');
     }
 
     protected function open()
@@ -125,5 +119,10 @@ class FtpFileLogger extends AbstractFtpLogger
     protected function close()
     {
         fclose($this->handle);
+    }
+
+    public function __destruct()
+    {
+        $this->close();
     }
 }

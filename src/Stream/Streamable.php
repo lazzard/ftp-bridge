@@ -12,14 +12,12 @@
 namespace Lazzard\FtpBridge\Stream;
 
 /**
- * FtpStreamInterface defines an FTP stream behavior.
+ * Streamable defines an FTP stream behavior.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
- *
- * @internal
  */
-interface FtpStreamInterface
+interface Streamable
 {
     /**
      * Carriage return and line feed used in the end of FTP commands as defined in RFC959.
@@ -29,12 +27,12 @@ interface FtpStreamInterface
     /**
      * Opens the stream socket.
      *
-     * @return bool Returns true on success, false otherwise, an E_WARING_ERROR also raised.
+     * @return bool Returns true on success, false otherwise, an E_WARNING_ERROR also will raised.
      */
     public function open();
 
     /**
-     * Closes FTP stream socket.
+     * Closes the FTP stream socket.
      *
      * @return bool
      */
@@ -45,7 +43,7 @@ interface FtpStreamInterface
      *
      * @param string $command
      *
-     * @return int|false
+     * @return bool
      */
     public function send($command);
 

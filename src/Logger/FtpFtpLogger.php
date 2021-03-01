@@ -1,14 +1,23 @@
 <?php
 
+/**
+ * This file is part of the Lazzard/ftp-bridge package.
+ *
+ * (c) El Amrani Chakir <elamrani.sv.laza@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Lazzard\FtpBridge\Logger;
 
 /**
- * A base FTP logger that other FTP Loggers must extends its.
+ * Basic FTP logger implementation that other FTP Loggers may extends its.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-abstract class AbstractFtpLogger implements FtpLoggerInterface
+abstract class FtpFtpLogger implements FtpLoggerInterface
 {
     /**
      * @inheritDoc

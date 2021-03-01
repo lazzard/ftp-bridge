@@ -13,8 +13,8 @@ namespace Lazzard\FtpBridge;
 
 use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
 use Lazzard\FtpBridge\Response\FtpResponse;
-use Lazzard\FtpBridge\Stream\FtpCommandStream;
-use Lazzard\FtpBridge\Stream\FtpDataStream;
+use Lazzard\FtpBridge\Stream\CommandStream;
+use Lazzard\FtpBridge\Stream\DataStream;
 
 /**
  * FtpBridge class holds the necessary methods to start sending commands and
@@ -35,10 +35,10 @@ class FtpBridge implements FtpBridgeInterface
     /** @var FtpLoggerInterface */
     public $logger;
 
-    /** @var FtpCommandStream */
+    /** @var CommandStream */
     public $commandStream;
 
-    /** @var FtpDataStream */
+    /** @var DataStream */
     public $dataStream;
 
     /**
@@ -56,15 +56,15 @@ class FtpBridge implements FtpBridgeInterface
      */
     public function send($command)
     {
-        $this->commandStream->send($command);
+        return $this->commandStream->send($command);
     }
 
     /**
      * @inheritDoc
      */
-    public function receive()
+    public function receive($dump = false)
     {
-        return $this->commandStream->receive();
+        return new FtpResponse($this->commandStream->receive($dump));
     }
 
     /**
@@ -80,7 +80,7 @@ class FtpBridge implements FtpBridgeInterface
      */
     public function connect($host, $port = 21, $timeout = 90, $blocking = true)
     {
-        $this->commandStream = new FtpCommandStream($this->logger, $host, $port, $timeout, $blocking);
+        $this->commandStream = new CommandStream($this->logger, $host, $port, $timeout, $blocking);
         return $this->commandStream->open();
     }
 
@@ -90,29 +90,31 @@ class FtpBridge implements FtpBridgeInterface
     public function login($username, $password)
     {
         $this->send(sprintf("USER %s", $username));
-        $response = new FtpResponse($this->receive());
+        $response = $this->receive();
 
         /**
          * 230 : User logged in, proceed.
+         *
          */
-        if ($response->getCode() === 230) {
+        if (in_array($response->getCode(), array(230))) {
             return true;
         }
 
         /**
          * 331 : User name okay, need password.
          */
-        if ($response->getCode() === 331) {
+        if (in_array($response->getCode(), array(331))) {
+            //$this->receive();
             $this->send(sprintf('PASS %s', $password));
 
-            $response = new FtpResponse($this->receive());
+            $response = $this->receive();
 
             // TODO 202 code
             /**
              * 230 : User logged in, proceed.
              * 202 : Already logged with USER
              */
-            if (in_array($response->getCode(), [202, 230])) {
+            if (in_array($response->getCode(), array(202, 230))) {
                 return true;
             }
 
@@ -127,7 +129,7 @@ class FtpBridge implements FtpBridgeInterface
      */
     public function openDataConnection($passive = true)
     {
-        $this->dataStream = new FtpDataStream($this->logger, $this->commandStream, $passive);
+        $this->dataStream = new DataStream($this->logger, $this->commandStream, $passive);
         return $this->dataStream->open();
     }
 
