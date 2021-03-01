@@ -60,14 +60,14 @@ class CommandStream extends Stream
     public function send($command)
     {
         $write = fwrite($this->stream, trim($command) . self::CRLF);
-        $this->logger->log(FtpLogLevel::COMMAND, $command . self::CRLF);
+        //$this->logger->log(FtpLogLevel::COMMAND, $command . self::CRLF);
         return $write !== 0 && $write === false ? false : true;
     }
 
     /**
      * @inheritDoc
      */
-    public function receive($dump = false)
+    public function receive()
     {
         $response = '';
         while (true) {

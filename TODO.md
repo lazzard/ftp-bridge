@@ -10,6 +10,5 @@
 
 ### Upcoming features.
 
-- [ ] Implementing the FTP active file transfer mode for `openDataConnection($passive)` FtpBridgeInterface method.
-- [ ] Add method allows changing the record structure of the file transfers.
-- [ ] Allowing using the active IP address when opening a data stream connection.
+- [ ] The FTP active mode implementation for `openDataConnection($passive)`.
+- [ ] Add a method that allows changing the record structure of the transferred files.

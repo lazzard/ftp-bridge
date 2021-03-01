@@ -15,7 +15,7 @@ use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
 use Lazzard\FtpBridge\Response\FtpResponse;
 
 /**
- * Abstracts FTP stream shared implementations.
+ * Abstracts FTP streams shared behavior.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
@@ -51,18 +51,19 @@ abstract class Stream implements Streamable
     /**
      * Internal logging method.
      *
-     * @param string $text
+     * @param string $message
      *
      * @return void
      */
-    final protected function log($text)
+    final protected function log($message)
     {
         if (!is_null($this->logger)) {
             // TODO 400 ?
-            if ((new FtpResponse($text))->getCode() < 400) {
-                $this->logger->info($text);
+            $response = new FtpResponse($message);
+            if ($response->getCode() < 400) {
+                $this->logger->info($message);
             } else {
-                $this->logger->error($text);
+                $this->logger->error($message);
             }
         }
     }
