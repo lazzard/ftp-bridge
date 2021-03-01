@@ -12,48 +12,53 @@
 namespace Lazzard\FtpBridge\Response;
 
 /**
- * FtpResponse abstracts a regular FTP replay.
+ * Represents an FTP replay.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
+ *
+ * @internal
  */
-class FtpResponse implements FtpResponseInterface
+class FtpResponse
 {
     /** @var string */
-    protected $response;
+    protected $reply;
 
     /** @var int */
     protected $code;
 
-    /** @var string  */
+    /** @var string */
     protected $message;
 
     /** @var bool */
     protected $multiline;
 
     /**
-     * FtpResponse constructor.
+     * @param string $reply The raw FTP reply string.
+     */
+    public function __construct($reply)
+    {
+        $parser          = new ResponseParser($reply);
+        $response        = $parser->parse();
+        $this->reply     = $reply;
+        $this->code      = $response['code'];
+        $this->message   = $response['message'];
+        $this->multiline = $response['multiline'];
+    }
+
+    /**
+     * Gets the raw (original) reply string sent by the server.
+     * @return string
+     */
+    public function getReply()
+    {
+        return $this->reply;
+    }
+
+    /**
+     * Gets reply code.
      *
-     * @param string $response The FTP reply string reprensentation.
-     */
-    public function __construct($response)
-    {
-        $this->response = $response;
-        $this->setCode();
-        $this->setMessage();
-        $this->setMultiline();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getResponse()
-    {
-        return $this->response;
-    }
-
-    /**
-     * @inheritDoc
+     * @return int
      */
     public function getCode()
     {
@@ -61,7 +66,9 @@ class FtpResponse implements FtpResponseInterface
     }
 
     /**
-     * @inheritDoc
+     * Gets reply message.
+     *
+     * @return string
      */
     public function getMessage()
     {
@@ -69,46 +76,12 @@ class FtpResponse implements FtpResponseInterface
     }
 
     /**
-     * @inheritDoc
+     * Whether the FTP response consists of multiple lines or not.
+     *
+     * @return bool
      */
     public function isMultiline()
     {
         return $this->multiline;
-    }
-
-    /**
-     * @return void
-     */
-    protected function setCode()
-    {
-        if (preg_match('/^\d+/', $this->response, $match) === 1) {
-            $this->code = (int)$match[0];
-        }
-    }
-
-    /**
-     * @return void
-     */
-    protected function setMessage()
-    {
-        if (preg_match('/[A-z ]+.*/', $this->response, $match) === 1) {
-            $this->message = ltrim($match[0]);
-        }
-    }
-
-    /**
-     * @return void
-     */
-    protected function setMultiline()
-    {
-        /**
-         * According to RFC959, an FTP replay may consists of multiple lines and at least one line,
-         * to check weather if a replay consists of multiple lines or not the RFC959 sets a convention,
-         * for the multiple lines replies the first line must be on a special format, the replay code
-         * must immediately followed by a minus "-" character.
-         *
-         * @link https://tools.ietf.org/html/rfc959#section-4
-         */
-        $this->multiline = preg_match('/\d{2,}-/', $this->response);
     }
 }
