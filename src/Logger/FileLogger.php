@@ -13,12 +13,12 @@
 namespace Lazzard\FtpBridge\Logger;
 
 /**
- * FtpFileLogger
+ * FileLogger
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-class FtpFileLogger extends FtpFtpLogger
+class FileLogger extends FtpLogger
 {
     /** @var int */
     protected $mode;
@@ -33,7 +33,7 @@ class FtpFileLogger extends FtpFtpLogger
     protected $append;
 
     /**
-     * FtpFileLogger constructor.
+     * FileLogger constructor.
      *
      * @param int    $mode
      * @param string $filePath

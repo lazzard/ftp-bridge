@@ -19,8 +19,6 @@ use Lazzard\FtpBridge\Logger\FtpLogLevel;
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
- *
- * @internal
  */
 class CommandStream extends Stream
 {
@@ -60,8 +58,8 @@ class CommandStream extends Stream
     public function send($command)
     {
         $write = fwrite($this->stream, trim($command) . self::CRLF);
-        //$this->logger->log(FtpLogLevel::COMMAND, $command . self::CRLF);
-        return $write !== 0 && $write === false ? false : true;
+        $this->logger->log(FtpLogLevel::COMMAND, $command . self::CRLF);
+        return ($write !== 0 && $write === false) ? false : true;
     }
 
     /**

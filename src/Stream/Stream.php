@@ -12,17 +12,15 @@
 namespace Lazzard\FtpBridge\Stream;
 
 use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
-use Lazzard\FtpBridge\Response\FtpResponse;
+use Lazzard\FtpBridge\Response\Response;
 
 /**
  * Abstracts FTP streams shared behavior.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
- *
- * @internal
  */
-abstract class Stream implements Streamable
+abstract class Stream implements StreamInterface
 {
     /** @var resource */
     public $stream;
@@ -59,7 +57,7 @@ abstract class Stream implements Streamable
     {
         if (!is_null($this->logger)) {
             // TODO 400 ?
-            $response = new FtpResponse($message);
+            $response = new Response($message);
             if ($response->getCode() < 400) {
                 $this->logger->info($message);
             } else {

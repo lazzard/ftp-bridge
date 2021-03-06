@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
  * This file is part of the Lazzard/ftp-bridge package.
@@ -13,7 +13,7 @@
 namespace Lazzard\FtpBridge;
 
 use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
-use Lazzard\FtpBridge\Response\FtpResponse;
+use Lazzard\FtpBridge\Response\Response;
 use Lazzard\FtpBridge\Stream\CommandStream;
 use Lazzard\FtpBridge\Stream\DataStream;
 
@@ -38,6 +38,9 @@ class FtpBridge
 
     /** @var DataStream */
     public $dataStream;
+
+    /** @var Response */
+    public $response;
 
     /**
      * FtpBridge constructor
@@ -64,11 +67,11 @@ class FtpBridge
     /**
      * Receives and gets the response from the command stream.
      *
-     * @return FtpResponse
+     * @return Response
      */
     public function receive()
     {
-        return new FtpResponse($this->commandStream->receive());
+        return $this->response = new Response($this->commandStream->receive());
     }
 
     /**

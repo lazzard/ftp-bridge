@@ -12,15 +12,13 @@
 namespace Lazzard\FtpBridge\Stream;
 
 use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
-use Lazzard\FtpBridge\Response\FtpResponse;
+use Lazzard\FtpBridge\Response\Response;
 
 /**
  * An FTP data stream socket connection.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
- *
- * @internal
  */
 class DataStream extends Stream
 {
@@ -84,7 +82,7 @@ class DataStream extends Stream
     protected function openPassiveConnection()
     {
         $this->send('PASV');
-        $response = new FtpResponse($this->commandStream->receive());
+        $response = new Response($this->commandStream->receive());
         if ($response->getCode() === 227) {
             preg_match_all('/\d+/', $response->getMessage(), $match);
 

@@ -12,12 +12,12 @@
 namespace Lazzard\FtpBridge\Stream;
 
 /**
- * Streamable defines an FTP stream behavior.
+ * StreamInterface defines an FTP stream behavior.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-interface Streamable
+interface StreamInterface
 {
     /**
      * Carriage return and line feed used in the end of FTP commands as defined in RFC959.

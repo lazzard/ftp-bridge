@@ -19,7 +19,7 @@ namespace Lazzard\FtpBridge\Response;
  *
  * @internal
  */
-class FtpResponse
+class Response
 {
     /** @var string */
     protected $reply;

@@ -17,7 +17,7 @@ namespace Lazzard\FtpBridge\Logger;
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-abstract class FtpFtpLogger implements FtpLoggerInterface
+abstract class FtpLogger implements FtpLoggerInterface
 {
     /**
      * @inheritDoc
