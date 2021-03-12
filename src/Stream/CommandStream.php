@@ -11,8 +11,8 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
-use Lazzard\FtpBridge\Logger\FtpLogLevel;
+use Lazzard\FtpBridge\Logger\LoggerInterface;
+use Lazzard\FtpBridge\Logger\LogLevel;
 
 /**
  * Represents an FTP command stream (control channel).
@@ -37,7 +37,7 @@ class CommandStream extends Stream
     /**
      * CommandStream constructor.
      *
-     * @param FtpLoggerInterface $logger
+     * @param LoggerInterface $logger
      * @param string             $host
      * @param int                $port
      * @param int                $timeout
@@ -58,7 +58,7 @@ class CommandStream extends Stream
     public function send($command)
     {
         $write = fwrite($this->stream, trim($command) . self::CRLF);
-        $this->logger->log(FtpLogLevel::COMMAND, $command . self::CRLF);
+        $this->logger->log(LogLevel::COMMAND, $command . self::CRLF);
         return ($write !== 0 && $write === false) ? false : true;
     }
 

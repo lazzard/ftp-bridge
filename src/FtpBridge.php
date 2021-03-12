@@ -12,7 +12,7 @@
 
 namespace Lazzard\FtpBridge;
 
-use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
+use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 use Lazzard\FtpBridge\Stream\CommandStream;
 use Lazzard\FtpBridge\Stream\DataStream;
@@ -30,7 +30,7 @@ class FtpBridge
     const BINARY = 'I';
     const EBCDIC = 'E';
 
-    /** @var FtpLoggerInterface */
+    /** @var LoggerInterface */
     public $logger;
 
     /** @var CommandStream */
@@ -45,9 +45,9 @@ class FtpBridge
     /**
      * FtpBridge constructor
      *
-     * @param FtpLoggerInterface|null $logger
+     * @param LoggerInterface|null $logger
      */
-    public function __construct(FtpLoggerInterface $logger = null)
+    public function __construct(LoggerInterface $logger = null)
     {
         $this->logger = $logger;
     }
@@ -67,7 +67,7 @@ class FtpBridge
     /**
      * Receives and gets the response from the command stream.
      *
-     * @return Response
+     * @return string
      */
     public function receive()
     {
@@ -114,20 +114,24 @@ class FtpBridge
     public function login($username, $password)
     {
         $this->send(sprintf("USER %s", $username));
-        $response = $this->receive();
+        $this->receive();
 
-        if (in_array($response->getCode(), array(230))) {
+        if (in_array($this->response->getCode(), array(230))) {
             return true;
         }
 
-        if (in_array($response->getCode(), array(331))) {
+        if (in_array($this->response->getCode(), array(331))) {
             $this->send(sprintf('PASS %s', $password));
-            if (in_array($this->receive()->getCode(), array(202, 230))) { // TODO 202 code
+            $this->receive();
+
+            if (in_array($this->response->getCode(), array(202, 230))) { // TODO 202 code
                 return true;
             }
-            return !trigger_error(sprintf("PASS command failed : %s", $response->getMessage()), E_USER_WARNING);
+            
+            return !trigger_error(sprintf("PASS command failed : %s", $this->response->getMessage()), E_USER_WARNING);
         }
-        return !trigger_error(sprintf("USER command failed : %s", $response->getMessage()), E_USER_WARNING);
+
+        return !trigger_error(sprintf("USER command failed : %s", $this->response->getMessage()), E_USER_WARNING);
     }
 
     /**

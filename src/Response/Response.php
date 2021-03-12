@@ -11,6 +11,8 @@
 
 namespace Lazzard\FtpBridge\Response;
 
+use Lazzard\FtpBridge\Parser\ResponseParser;
+
 /**
  * Represents an FTP replay.
  *

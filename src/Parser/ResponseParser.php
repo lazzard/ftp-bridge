@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Lazzard\FtpBridge\Response;
+namespace Lazzard\FtpBridge\Parser;
 
 /**
  * @internal

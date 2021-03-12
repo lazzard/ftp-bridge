@@ -17,7 +17,7 @@ namespace Lazzard\FtpBridge\Logger;
  *
  * @internal
  */
-class FtpLogLevel
+class LogLevel
 {
     const INFO    = 'INFO';
     const ERROR   = 'ERROR';

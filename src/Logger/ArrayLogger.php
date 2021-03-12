@@ -18,7 +18,7 @@ namespace Lazzard\FtpBridge\Logger;
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
-class ArrayLogger extends FtpLogger
+class ArrayLogger extends Logger
 {
     /** @var array */
     protected $logs;

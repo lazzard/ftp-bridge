@@ -11,7 +11,7 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
+use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 
 /**
@@ -31,7 +31,7 @@ class DataStream extends Stream
     /**
      * Opens a data stream socket.
      *
-     * @param FtpLoggerInterface $logger
+     * @param LoggerInterface $logger
      * @param CommandStream      $commandStream
      * @param bool               $passive
      */

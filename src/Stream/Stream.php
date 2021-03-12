@@ -11,7 +11,7 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Logger\FtpLoggerInterface;
+use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 
 /**
@@ -25,15 +25,15 @@ abstract class Stream implements StreamInterface
     /** @var resource */
     public $stream;
 
-    /** @var FtpLoggerInterface */
+    /** @var LoggerInterface */
     public $logger;
 
     /**
      * StreamableAbstract constructor.
      *
-     * @param FtpLoggerInterface $logger
+     * @param LoggerInterface $logger
      */
-    public function __construct(FtpLoggerInterface $logger = null)
+    public function __construct(LoggerInterface $logger = null)
     {
         $this->logger = $logger;
     }
