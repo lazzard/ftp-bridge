@@ -19,6 +19,17 @@ namespace Lazzard\FtpBridge\Logger;
  */
 abstract class Logger implements LoggerInterface
 {
+    /** @var int */
+    protected $mode;
+
+    /**
+     * @param string $mode
+     */
+    public function __construct($mode)
+    {
+        $this->mode = $mode;
+    }
+
     /**
      * @inheritDoc
      */

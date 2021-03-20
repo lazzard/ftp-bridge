@@ -20,9 +20,6 @@ namespace Lazzard\FtpBridge\Logger;
  */
 class FileLogger extends Logger
 {
-    /** @var int */
-    protected $mode;
-
     /** @var resource */
     protected $handle;
 
@@ -33,17 +30,15 @@ class FileLogger extends Logger
     protected $append;
 
     /**
-     * FileLogger constructor.
-     *
      * @param int    $mode
      * @param string $filePath
      * @param bool   $append
      */
-    public function __construct($mode, $filePath, $append = false)
+    public function __construct($mode = LoggerInterface::PLAIN_MODE, $filePath, $append = false)
     {
+        parent::__construct($mode);
         $this->filePath = $filePath;
         $this->append   = $append;
-        $this->mode     = $mode;
         $this->open();
     }
 

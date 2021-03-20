@@ -23,17 +23,12 @@ class ArrayLogger extends Logger
     /** @var array */
     protected $logs;
 
-    /** @var int */
-    protected $mode;
-
     /**
-     * ArrayLogger constructor.
-     *
      * @param int $mode
      */
-    public function __construct($mode)
+    public function __construct($mode = LoggerInterface::PLAIN_MODE)
     {
-        $this->mode = $mode;
+        parent::__construct($mode);
         $this->logs = array();
     }
 
