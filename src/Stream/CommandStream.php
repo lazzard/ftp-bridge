@@ -11,6 +11,7 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
+use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Logger\LogLevel;
 
@@ -71,6 +72,7 @@ class CommandStream extends Stream
         while (true) {
             $line     = fgets($this->stream);
             $response .= $line;
+            
             // To distinguish the end of an FTP reply, the RFC959 indicates that the last line of
             // a the reply must be on a special format, it must be begin with 3 digits followed
             // by a space.
@@ -92,7 +94,7 @@ class CommandStream extends Stream
     {
         // TODO wrong giving host resolving
         if (!($this->stream = fsockopen($this->host, $this->port, $errno, $errMsg))) {
-            return !trigger_error(sprintf("Opening command stream socket was failed : %s", $errMsg), E_USER_WARNING);
+            return !ErrorTrigger::raise(sprintf("Opening command stream socket was failed : %s", $errMsg), E_USER_WARNING);
         }
 
         stream_set_blocking($this->stream, $this->blocking);

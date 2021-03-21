@@ -11,6 +11,7 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
+use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 
@@ -92,7 +93,7 @@ class DataStream extends Stream
             $hostPort = ($hostPort[0] * 256) + $hostPort[1];
 
             if (!$this->stream = fsockopen($ipAddress, $hostPort, $errno, $errMsg)) {
-                return !trigger_error('Establish data connection was failed.', E_USER_WARNING);
+                return !ErrorTrigger::raise('Failed to open the FTP data stream socket.');
             }
 
             stream_set_blocking($this->stream, $this->commandStream->blocking);

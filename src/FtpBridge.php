@@ -16,6 +16,8 @@ use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 use Lazzard\FtpBridge\Stream\CommandStream;
 use Lazzard\FtpBridge\Stream\DataStream;
+use Lazzard\FtpBridge\Error\ErrorRaiser;
+use Lazzard\FtpBridge\Error\ErrorTrigger;
 
 /**
  * @since  1.0
@@ -85,7 +87,7 @@ class FtpBridge
     }
 
     /**
-     * Opens a command stream connection.
+     * Opens an FTP connection.
      *
      * @param string $host     The remote host name or the IP address.
      * @param int    $port     [optional] The remote server port to connect to, if omitted the port 21 will be used.
@@ -128,10 +130,10 @@ class FtpBridge
                 return true;
             }
             
-            return !trigger_error(sprintf("PASS command failed : %s", $this->response->getMessage()), E_USER_WARNING);
+            return !ErrorTrigger::raise(sprintf("PASS command failed : %s", $this->response->getMessage()));
         }
 
-        return !trigger_error(sprintf("USER command failed : %s", $this->response->getMessage()), E_USER_WARNING);
+        return !ErrorTrigger::raise(sprintf("USER command failed : %s", $this->response->getMessage()));
     }
 
     /**
@@ -157,7 +159,7 @@ class FtpBridge
      */
     public function setTransferType($type)
     {
-        $this->send('TYPE ' . $type);
+        $this->send(sprintf("TYPE %s", $type));
         $this->receive();
     }
 }
