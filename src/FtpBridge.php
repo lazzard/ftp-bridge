@@ -159,6 +159,10 @@ class FtpBridge
      */
     public function setTransferType($type)
     {
+        if (!in_array($type, [self::BINARY, self::ASCII, self::EBCDIC])) {
+            return ErrorTrigger::raise(sprintf("[%s] is unknown FTP transfer type.", $type));
+        }
+        
         $this->send(sprintf("TYPE %s", $type));
         $this->receive();
     }
