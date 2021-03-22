@@ -55,14 +55,14 @@ abstract class Stream implements StreamInterface
      */
     final protected function log($message)
     {
-        if (!is_null($this->logger)) {
-            // TODO 400 ?
-            $response = new Response($message);
-            if ($response->getCode() < 400) {
-                $this->logger->info($message);
-            } else {
-                $this->logger->error($message);
-            }
+        if (!$this->logger) {
+            return;
         }
+
+        $response = new Response($message);
+        call_user_func_array(
+            array($this->logger, $response->getCode() < 400 ? 'info' : 'error'), 
+            array($message)
+        );
     }
 }

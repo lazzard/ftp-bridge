@@ -59,7 +59,11 @@ class CommandStream extends Stream
     public function send($command)
     {
         $write = fwrite($this->stream, trim($command) . self::CRLF);
-        $this->logger->log(LogLevel::COMMAND, $command . self::CRLF);
+
+        if ($this->logger) {
+            $this->logger->log(LogLevel::COMMAND, $command . self::CRLF);
+        }
+
         return ($write !== 0 && $write === false) ? false : true;
     }
 
@@ -94,7 +98,7 @@ class CommandStream extends Stream
     {
         // TODO wrong giving host resolving
         if (!($this->stream = fsockopen($this->host, $this->port, $errno, $errMsg))) {
-            return !ErrorTrigger::raise(sprintf("Opening command stream socket was failed : %s", $errMsg), E_USER_WARNING);
+            return !ErrorTrigger::raise(sprintf("Opening command stream socket failed : %s", $errMsg));
         }
 
         stream_set_blocking($this->stream, $this->blocking);

@@ -103,6 +103,8 @@ class FtpBridge
         return $this->commandStream->open();
     }
 
+    //public function sslConnect($host, $port = 21, $timeout)
+
     /**
      * Logs into the FTP server.
      *

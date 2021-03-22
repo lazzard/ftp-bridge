@@ -50,6 +50,7 @@ class Response
 
     /**
      * Gets the raw (original) reply string sent by the server.
+     * 
      * @return string
      */
     public function getReply()
