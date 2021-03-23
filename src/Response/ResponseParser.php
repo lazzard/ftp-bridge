@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Lazzard\FtpBridge\Parser;
+namespace Lazzard\FtpBridge\Response;
 
 /**
  * @internal
@@ -42,23 +42,19 @@ class ResponseParser
 
     protected function parseMessage()
     {
-        if (preg_match('/[A-z ]+.*/', $this->reply, $match) === 1) {
-            return ltrim($match[0]);
+        if (preg_match('/[A-z ]+.*/', $this->reply, $matches)) {
+            // remove the carriage return from the end
+            return str_replace("\r", '', $matches[0]);
         }
     }
 
     protected function isMultiline()
     {
-        /**
-         * According to RFC959, an FTP replay may consists of multiple lines and at least one line,
-         * to check weather if a replay consists of multiple lines or not the RFC959 sets a convention,
-         * for the multiple lines replies the first line must be on a special format, the replay code
-         * must immediately followed by a minus "-" character.
-         *
-         * @link https://tools.ietf.org/html/rfc959#section-4
-         */
-        if ((preg_match('/^\d{2,}-/', $this->reply)) !== false) {
-            return true;
-        }
+        // according to RFC959, an FTP replay may consists of multiple lines and at least one line,
+        // to check weather if a replay consists of multiple lines or not the RFC959 sets a convention,
+        // for multiple lines replies the first line must be on a special format, the replay code
+        // must immediately followed by a minus "-" character.
+        //@link https://tools.ietf.org/html/rfc959#section-4
+        return preg_match('/^\d{2,}-/', $this->reply);
     }
 }
