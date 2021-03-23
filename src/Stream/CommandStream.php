@@ -96,17 +96,11 @@ class CommandStream extends Stream
      */
     public function open()
     {
-        // TODO wrong giving host resolving
-        if (!($this->stream = fsockopen($this->host, $this->port, $errno, $errMsg))) {
-            return !ErrorTrigger::raise(sprintf("Opening command stream socket failed : %s", $errMsg));
+        if($open = $this->openSocket($this->host, $this->port, $this->timeout, $this->blocking)) {
+            // TODO check the reply
+            $this->receive();
         }
 
-        stream_set_blocking($this->stream, $this->blocking);
-        stream_set_timeout($this->stream, $this->timeout);
-
-        // TODO check the reply
-        $this->receive();
-
-        return true;
+        return $open;
     }
 }

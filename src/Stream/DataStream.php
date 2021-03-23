@@ -11,7 +11,6 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 
@@ -39,7 +38,6 @@ class DataStream extends Stream
     public function __construct($logger, $commandStream, $passive = true)
     {
         parent::__construct($logger);
-
         $this->commandStream = $commandStream;
         $this->passive       = $passive;
     }
@@ -83,26 +81,23 @@ class DataStream extends Stream
     protected function openPassiveConnection()
     {
         $this->send('PASV');
+
         $response = new Response($this->commandStream->receive());
-        if ($response->getCode() === 227) {
-            preg_match_all('/\d+/', $response->getMessage(), $match);
 
-            $ipAddress = join('.', array_slice($match[0], 0, 4));
-
-            $hostPort = array_slice($match[0], 4);
-            $hostPort = ($hostPort[0] * 256) + $hostPort[1];
-
-            if (!$this->stream = fsockopen($ipAddress, $hostPort, $errno, $errMsg)) {
-                return !ErrorTrigger::raise('Failed to open the FTP data stream socket.');
-            }
-
-            stream_set_blocking($this->stream, $this->commandStream->blocking);
-            stream_set_timeout($this->stream, $this->commandStream->timeout);
-
-            return true;
+        if ($response->getCode() !== 227) {
+            return false;
         }
 
-        return false;
+        if (!preg_match('/(\d+,){4}+/', $response->getMessage(), $ipMatches)
+            || !preg_match('/\d+,\d+\)$/', $response->getMessage(), $portMatches)) {
+            return false;
+        }
+
+        $ip    = rtrim(str_replace(",", ".", $ipMatches[0]), ".");
+        $ports = explode(",", rtrim($portMatches[0], ")"));
+        $port  = ($ports[0] * 256) + $ports[1];
+
+        return $this->openSocket($ip, $port, $this->commandStream->timeout, $this->commandStream->blocking);
     }
 
     protected function openActiveConnection()
