@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="ANALYZE_TEST_SOURCES" value="false" />
+    <option name="SCOPE_TYPE" value="8" />
+    <option name="CUSTOM_SCOPE_NAME" value="Project Files" />
+    <option name="SHOW_STRUCTURE" value="true" />
+  </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6ff9da6d-7868-48ea-8e58-b8d55be1aab3" name="Default Changelist" comment="Stream::openSocket added">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/FtpBridge.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/FtpBridge.php" afterDir="false" />
+    </list>
+    <list id="cc5be7f0-370e-41aa-b703-24dc3fd5405c" name="Add FtpResponseInterface" comment="" />
+    <list id="c3e1daaf-00b2-4353-9142-7d93fc2c8bd9" name="Update Streams" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+    </option>
+  </component>
+  <component name="ComposerSettings" doNotAsk="true" synchronizationState="SYNCHRONIZE">
+    <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
+    <execution />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration">
+    <include_path>
+      <path value="$PROJECT_DIR$/vendor/composer" />
+      <path value="$PROJECT_DIR$/vendor/lazzard/php-ftp-client" />
+    </include_path>
+  </component>
+  <component name="ProjectId" id="1blvsNwuUOGb3VxXj5aByuR7fUg" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="add_unversioned_files" value="$PROJECT_DIR$/tests/logs.txt&#10;C:/wamp64/www/ftp-bridge/tests/index.php" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\wamp64\www\ftp-bridge\src\Response" />
+      <recent name="C:\wamp64\www\ftp-bridge\src\Reply" />
+      <recent name="C:\wamp64\www\ftp-bridge\src\Stream" />
+      <recent name="C:\wamp64\www\ftp-bridge\src\Logger" />
+      <recent name="C:\wamp64\www\ftp-bridge\src\FtpLogger" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\wamp64\www\ftp-bridge\src\Stream" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="project-level" UseSingleDictionary="true" transferred="true" />
+  <component name="StructureViewFactory">
+    <option name="ACTIVE_ACTIONS" value=",Show Properties,Show Constants" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6ff9da6d-7868-48ea-8e58-b8d55be1aab3" name="Default Changelist" comment="" />
+      <changelist id="cc5be7f0-370e-41aa-b703-24dc3fd5405c" name="Add FtpResponseInterface" comment="" />
+      <changelist id="c3e1daaf-00b2-4353-9142-7d93fc2c8bd9" name="Update Streams" comment="" />
+      <created>1589219700230</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1589219700230</updated>
+      <workItem from="1589219703425" duration="355000" />
+      <workItem from="1589220124468" duration="3335000" />
+      <workItem from="1589224936936" duration="99000" />
+      <workItem from="1589225072266" duration="887000" />
+      <workItem from="1589226059295" duration="68000" />
+      <workItem from="1589226158988" duration="16578000" />
+      <workItem from="1589280495279" duration="88000" />
+      <workItem from="1589280627282" duration="163000" />
+      <workItem from="1589280832099" duration="88000" />
+      <workItem from="1589280957295" duration="2346000" />
+      <workItem from="1589285677202" duration="10839000" />
+      <workItem from="1589310054611" duration="82000" />
+      <workItem from="1589314031119" duration="1825000" />
+      <workItem from="1589365219589" duration="8748000" />
+      <workItem from="1589376990534" duration="2829000" />
+      <workItem from="1589380057720" duration="5162000" />
+      <workItem from="1589518816493" duration="959000" />
+      <workItem from="1589557998972" duration="9961000" />
+      <workItem from="1589568252330" duration="1134000" />
+      <workItem from="1589621456754" duration="29813000" />
+      <workItem from="1589663909644" duration="21542000" />
+      <workItem from="1589723723172" duration="4183000" />
+      <workItem from="1589803322650" duration="5564000" />
+      <workItem from="1589812521148" duration="5325000" />
+      <workItem from="1589824047047" duration="38000" />
+      <workItem from="1589824132188" duration="545000" />
+      <workItem from="1589824729916" duration="87000" />
+      <workItem from="1589970472092" duration="78000" />
+      <workItem from="1590063369093" duration="5332000" />
+      <workItem from="1590143988065" duration="154000" />
+      <workItem from="1590331661868" duration="4489000" />
+      <workItem from="1590407422328" duration="114000" />
+      <workItem from="1590419405031" duration="1073000" />
+      <workItem from="1590493915310" duration="238000" />
+      <workItem from="1590503282307" duration="6968000" />
+      <workItem from="1590588857267" duration="608000" />
+      <workItem from="1590598316548" duration="3783000" />
+      <workItem from="1590628111158" duration="28000" />
+      <workItem from="1590693962225" duration="15000" />
+      <workItem from="1590694550470" duration="3158000" />
+      <workItem from="1590698528597" duration="2466000" />
+      <workItem from="1590759568396" duration="249000" />
+      <workItem from="1590771461471" duration="6083000" />
+      <workItem from="1590778435776" duration="2989000" />
+      <workItem from="1590856591564" duration="176000" />
+      <workItem from="1590878487114" duration="505000" />
+      <workItem from="1590981916128" duration="50000" />
+      <workItem from="1591150701111" duration="631000" />
+      <workItem from="1600474044254" duration="15046000" />
+      <workItem from="1603355136682" duration="134000" />
+      <workItem from="1603598379094" duration="34000" />
+      <workItem from="1603786748577" duration="1273000" />
+      <workItem from="1603792182262" duration="1979000" />
+      <workItem from="1603856722484" duration="3429000" />
+      <workItem from="1614372697077" duration="3381000" />
+      <workItem from="1614443779034" duration="595000" />
+      <workItem from="1614474143191" duration="1192000" />
+      <workItem from="1614540168394" duration="16967000" />
+      <workItem from="1614585452255" duration="1001000" />
+      <workItem from="1615045863895" duration="3672000" />
+      <workItem from="1616508909161" duration="7466000" />
+      <workItem from="1616574010839" duration="61000" />
+    </task>
+    <task id="LOCAL‎00020" summary="README UPD">
+      <created>1589818132854</created>
+      <option name="number" value="LOCAL‎00020" />
+      <option name="presentableId" value="LOCAL‎00020" />
+      <updated>1589818132855</updated>
+    </task>
+    <task id="LOCAL‎00021" summary="Fix docs">
+      <created>1590335366919</created>
+      <option name="number" value="LOCAL‎00021" />
+      <option name="presentableId" value="LOCAL‎00021" />
+      <updated>1590335366919</updated>
+    </task>
+    <task id="LOCAL‎00022" summary="TODO.md UPD">
+      <created>1590335943372</created>
+      <option name="number" value="LOCAL‎00022" />
+      <option name="presentableId" value="LOCAL‎00022" />
+      <updated>1590335943372</updated>
+    </task>
+    <task id="LOCAL‎00023" summary="Logger refact">
+      <created>1590503640331</created>
+      <option name="number" value="LOCAL‎00023" />
+      <option name="presentableId" value="LOCAL‎00023" />
+      <updated>1590503640331</updated>
+    </task>
+    <task id="LOCAL‎00024" summary="Exception added">
+      <created>1590507574134</created>
+      <option name="number" value="LOCAL‎00024" />
+      <option name="presentableId" value="LOCAL‎00024" />
+      <updated>1590507574134</updated>
+    </task>
+    <task id="LOCAL‎00025" summary="TODO upd">
+      <created>1590507591713</created>
+      <option name="number" value="LOCAL‎00025" />
+      <option name="presentableId" value="LOCAL‎00025" />
+      <updated>1590507591713</updated>
+    </task>
+    <task id="LOCAL‎00026" summary="README.md UPD">
+      <created>1590515048300</created>
+      <option name="number" value="LOCAL‎00026" />
+      <option name="presentableId" value="LOCAL‎00026" />
+      <updated>1590515048300</updated>
+    </task>
+    <task id="LOCAL‎00027" summary="Add FtpStreamAbstract">
+      <created>1590604559698</created>
+      <option name="number" value="LOCAL‎00027" />
+      <option name="presentableId" value="LOCAL‎00027" />
+      <updated>1590604559698</updated>
+    </task>
+    <task id="LOCAL‎00028" summary="Stream upd">
+      <created>1590604580485</created>
+      <option name="number" value="LOCAL‎00028" />
+      <option name="presentableId" value="LOCAL‎00028" />
+      <updated>1590604580485</updated>
+    </task>
+    <task id="LOCAL‎00029" summary="Logger fix PLAIN MODE">
+      <created>1590605779928</created>
+      <option name="number" value="LOCAL‎00029" />
+      <option name="presentableId" value="LOCAL‎00029" />
+      <updated>1590605779928</updated>
+    </task>
+    <task id="LOCAL‎00030" summary="README UPD">
+      <created>1590605836149</created>
+      <option name="number" value="LOCAL‎00030" />
+      <option name="presentableId" value="LOCAL‎00030" />
+      <updated>1590605836149</updated>
+    </task>
+    <task id="LOCAL‎00031" summary="Exception to warning errors">
+      <created>1590780592109</created>
+      <option name="number" value="LOCAL‎00031" />
+      <option name="presentableId" value="LOCAL‎00031" />
+      <updated>1590780592110</updated>
+    </task>
+    <task id="LOCAL‎00032" summary="README UPD">
+      <created>1590780785559</created>
+      <option name="number" value="LOCAL‎00032" />
+      <option name="presentableId" value="LOCAL‎00032" />
+      <updated>1590780785559</updated>
+    </task>
+    <task id="LOCAL‎00033" summary="README UPD">
+      <created>1590781015015</created>
+      <option name="number" value="LOCAL‎00033" />
+      <option name="presentableId" value="LOCAL‎00033" />
+      <updated>1590781015015</updated>
+    </task>
+    <task id="LOCAL-00034" summary="README add note">
+      <created>1600474255056</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1600474255056</updated>
+    </task>
+    <task id="LOCAL-00035" summary="[Streams classes] fixing some structural issues + updating docs">
+      <created>1600479473614</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1600479473614</updated>
+    </task>
+    <task id="LOCAL-00036" summary="TODO UPD">
+      <created>1600479540650</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1600479540650</updated>
+    </task>
+    <task id="LOCAL-00037" summary="[FtpStreamAbstract] fixing issues">
+      <created>1600479892734</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1600479892734</updated>
+    </task>
+    <task id="LOCAL-00038" summary="[Response] fixing issues">
+      <created>1600483007148</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1600483007148</updated>
+    </task>
+    <task id="LOCAL-00039" summary="[FtpBridge] Add class doc">
+      <created>1600536151284</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1600536151284</updated>
+    </task>
+    <task id="LOCAL-00040" summary="README UPD">
+      <created>1600545679710</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1600545679710</updated>
+    </task>
+    <task id="LOCAL-00041" summary="composer.json update desc">
+      <created>1600545884762</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1600545884762</updated>
+    </task>
+    <task id="LOCAL‎00042" summary="Fix format">
+      <created>1603787281681</created>
+      <option name="number" value="LOCAL‎00042" />
+      <option name="presentableId" value="LOCAL‎00042" />
+      <updated>1603787281681</updated>
+    </task>
+    <task id="LOCAL‎00043" summary="[FtpResponse] fix preg match">
+      <created>1603787513116</created>
+      <option name="number" value="LOCAL‎00043" />
+      <option name="presentableId" value="LOCAL‎00043" />
+      <updated>1603787513116</updated>
+    </task>
+    <task id="LOCAL‎00044" summary="TODO.md UPD">
+      <created>1603787588742</created>
+      <option name="number" value="LOCAL‎00044" />
+      <option name="presentableId" value="LOCAL‎00044" />
+      <updated>1603787588742</updated>
+    </task>
+    <task id="LOCAL‎00045" summary="composer.json update package name">
+      <created>1603792584155</created>
+      <option name="number" value="LOCAL‎00045" />
+      <option name="presentableId" value="LOCAL‎00045" />
+      <updated>1603792584155</updated>
+    </task>
+    <task id="LOCAL‎00046" summary="composer.json php version">
+      <created>1603793258173</created>
+      <option name="number" value="LOCAL‎00046" />
+      <option name="presentableId" value="LOCAL‎00046" />
+      <updated>1603793258173</updated>
+    </task>
+    <task id="LOCAL‎00047" summary="README.md UPD">
+      <created>1603793797662</created>
+      <option name="number" value="LOCAL‎00047" />
+      <option name="presentableId" value="LOCAL‎00047" />
+      <updated>1603793797662</updated>
+    </task>
+    <task id="LOCAL‎00048" summary="TODO.md UPD">
+      <created>1603859722669</created>
+      <option name="number" value="LOCAL‎00048" />
+      <option name="presentableId" value="LOCAL‎00048" />
+      <updated>1603859722669</updated>
+    </task>
+    <task id="LOCAL‎00049" summary="[FtpResponse] fix preg match">
+      <created>1603859758958</created>
+      <option name="number" value="LOCAL‎00049" />
+      <option name="presentableId" value="LOCAL‎00049" />
+      <updated>1603859758958</updated>
+    </task>
+    <task id="LOCAL‎00050" summary="composer.json require php version">
+      <created>1603859869381</created>
+      <option name="number" value="LOCAL‎00050" />
+      <option name="presentableId" value="LOCAL‎00050" />
+      <updated>1603859869382</updated>
+    </task>
+    <task id="LOCAL‎00051" summary="README.md UPD">
+      <created>1603860044493</created>
+      <option name="number" value="LOCAL‎00051" />
+      <option name="presentableId" value="LOCAL‎00051" />
+      <updated>1603860044493</updated>
+    </task>
+    <task id="LOCAL‎00052" summary="Breaking changes">
+      <created>1614557442612</created>
+      <option name="number" value="LOCAL‎00052" />
+      <option name="presentableId" value="LOCAL‎00052" />
+      <updated>1614557442612</updated>
+    </task>
+    <task id="LOCAL‎00053" summary="ResponseParser Added">
+      <created>1614557461660</created>
+      <option name="number" value="LOCAL‎00053" />
+      <option name="presentableId" value="LOCAL‎00053" />
+      <updated>1614557461660</updated>
+    </task>
+    <task id="LOCAL‎00054" summary="Fix desc">
+      <created>1614557630963</created>
+      <option name="number" value="LOCAL‎00054" />
+      <option name="presentableId" value="LOCAL‎00054" />
+      <updated>1614557630963</updated>
+    </task>
+    <task id="LOCAL‎00055" summary="Fix desc">
+      <created>1614557674741</created>
+      <option name="number" value="LOCAL‎00055" />
+      <option name="presentableId" value="LOCAL‎00055" />
+      <updated>1614557674741</updated>
+    </task>
+    <task id="LOCAL‎00056" summary="Slight fixes">
+      <created>1614557914973</created>
+      <option name="number" value="LOCAL‎00056" />
+      <option name="presentableId" value="LOCAL‎00056" />
+      <updated>1614557914973</updated>
+    </task>
+    <task id="LOCAL‎00057" summary="Slight fixes">
+      <created>1614559106376</created>
+      <option name="number" value="LOCAL‎00057" />
+      <option name="presentableId" value="LOCAL‎00057" />
+      <updated>1614559106376</updated>
+    </task>
+    <task id="LOCAL‎00058" summary="FtpBridgeInterface Removed">
+      <created>1614559128264</created>
+      <option name="number" value="LOCAL‎00058" />
+      <option name="presentableId" value="LOCAL‎00058" />
+      <updated>1614559128264</updated>
+    </task>
+    <task id="LOCAL‎00059" summary="FtpBridgeInterface Removed">
+      <created>1614559204771</created>
+      <option name="number" value="LOCAL‎00059" />
+      <option name="presentableId" value="LOCAL‎00059" />
+      <updated>1614559204771</updated>
+    </task>
+    <task id="LOCAL‎00060" summary="FtpBridgeInterface Removed">
+      <created>1614585773675</created>
+      <option name="number" value="LOCAL‎00060" />
+      <option name="presentableId" value="LOCAL‎00060" />
+      <updated>1614585773678</updated>
+    </task>
+    <task id="LOCAL‎00061" summary="FtpBridgeInterface Removed">
+      <created>1614585845114</created>
+      <option name="number" value="LOCAL‎00061" />
+      <option name="presentableId" value="LOCAL‎00061" />
+      <updated>1614585845115</updated>
+    </task>
+    <task id="LOCAL‎00062" summary="FtpBridgeInterface Removed">
+      <created>1615046392756</created>
+      <option name="number" value="LOCAL‎00062" />
+      <option name="presentableId" value="LOCAL‎00062" />
+      <updated>1615046392756</updated>
+    </task>
+    <task id="LOCAL‎00063" summary="phpdoc add @internal tags">
+      <created>1615046429209</created>
+      <option name="number" value="LOCAL‎00063" />
+      <option name="presentableId" value="LOCAL‎00063" />
+      <updated>1615046429209</updated>
+    </task>
+    <task id="LOCAL‎00064" summary="FtpBridgeInterface removed">
+      <created>1615046983593</created>
+      <option name="number" value="LOCAL‎00064" />
+      <option name="presentableId" value="LOCAL‎00064" />
+      <updated>1615046983593</updated>
+    </task>
+    <task id="LOCAL‎00065" summary="Refactoring">
+      <created>1615048476717</created>
+      <option name="number" value="LOCAL‎00065" />
+      <option name="presentableId" value="LOCAL‎00065" />
+      <updated>1615048476717</updated>
+    </task>
+    <task id="LOCAL‎00066" summary="Refactoring">
+      <created>1615048652928</created>
+      <option name="number" value="LOCAL‎00066" />
+      <option name="presentableId" value="LOCAL‎00066" />
+      <updated>1615048652928</updated>
+    </task>
+    <task id="LOCAL‎00067" summary="Remove carriage return from the end of replay message">
+      <created>1616512356012</created>
+      <option name="number" value="LOCAL‎00067" />
+      <option name="presentableId" value="LOCAL‎00067" />
+      <updated>1616512356014</updated>
+    </task>
+    <task id="LOCAL‎00068" summary="Stream::openSocket added">
+      <created>1616512543831</created>
+      <option name="number" value="LOCAL‎00068" />
+      <option name="presentableId" value="LOCAL‎00068" />
+      <updated>1616512543831</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list />
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="README add note" />
+    <MESSAGE value="[Streams classes] fixing some structural issues + updating docs" />
+    <MESSAGE value="TODO UPD" />
+    <MESSAGE value="[FtpStreamAbstract] fixing issues" />
+    <MESSAGE value="[Response] fixing issues" />
+    <MESSAGE value="[FtpBridge] Add class doc" />
+    <MESSAGE value="README UPD" />
+    <MESSAGE value="composer.json update desc" />
+    <MESSAGE value="Fix format" />
+    <MESSAGE value="composer.json update package name" />
+    <MESSAGE value="composer.json php version" />
+    <MESSAGE value="TODO.md UPD" />
+    <MESSAGE value="[FtpResponse] fix preg match" />
+    <MESSAGE value="composer.json require php version" />
+    <MESSAGE value="README.md UPD" />
+    <MESSAGE value="Breaking changes" />
+    <MESSAGE value="ResponseParser Added" />
+    <MESSAGE value="Fix desc" />
+    <MESSAGE value="Slight fixes" />
+    <MESSAGE value="FtpBridgeInterface Removed" />
+    <MESSAGE value="phpdoc add @internal tags" />
+    <MESSAGE value="FtpBridgeInterface removed" />
+    <MESSAGE value="Refactoring" />
+    <MESSAGE value="Remove carriage return from the end of replay message" />
+    <MESSAGE value="Stream::openSocket added" />
+    <option name="LAST_COMMIT_MESSAGE" value="Stream::openSocket added" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="285" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1615047771445">
+      <screen x="64" y="0" width="1216" height="768" />
+    </state>
+    <state x="247" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1360.728@0.0.1360.728" timestamp="1614548208028" />
+    <state x="285" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/64.0.1216.768@64.0.1216.768" timestamp="1615047771445" />
+    <state x="410" y="118" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1616510428135">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="410" y="118" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.0.1360.728@0.0.1360.728" timestamp="1616510428135" />
+    <state x="423" y="186" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1614378176839">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="423" y="186" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1360.728@0.0.1360.728" timestamp="1614378176839" />
+    <state x="178" y="58" key="MergeDialog" timestamp="1615046811483">
+      <screen x="64" y="0" width="1216" height="768" />
+    </state>
+    <state x="178" y="58" key="MergeDialog/64.0.1216.768@64.0.1216.768" timestamp="1615046811483" />
+    <state x="482" y="70" key="NewPhpClassDialog" timestamp="1614547275922">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="482" y="70" key="NewPhpClassDialog/0.0.1360.728@0.0.1360.728" timestamp="1614547275922" />
+    <state x="218" y="0" key="SettingsEditor" timestamp="1614556452429">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="218" y="0" key="SettingsEditor/0.0.1360.728@0.0.1360.728" timestamp="1614556452429" />
+    <state width="498" height="446" key="SwitcherDM" timestamp="1614551565990">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="498" height="446" key="SwitcherDM/0.0.1360.728@0.0.1360.728" timestamp="1614551565990" />
+    <state x="272" y="92" key="Vcs.Push.Dialog.v2" timestamp="1616512549199">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="272" y="92" key="Vcs.Push.Dialog.v2/0.0.1360.728@0.0.1360.728" timestamp="1616512549199" />
+    <state x="307" y="97" key="Vcs.Push.Dialog.v2/64.0.1216.768@64.0.1216.768" timestamp="1615048658725" />
+    <state x="508" y="288" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1615046799634">
+      <screen x="64" y="0" width="1216" height="768" />
+    </state>
+    <state x="497" y="273" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1360.728@0.0.1360.728" timestamp="1614555511131" />
+    <state x="508" y="288" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/64.0.1216.768@64.0.1216.768" timestamp="1615046799634" />
+    <state x="321" y="79" width="700" height="530" key="recent.locations.popup" timestamp="1614551568060">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="321" y="79" width="700" height="530" key="recent.locations.popup/0.0.1360.728@0.0.1360.728" timestamp="1614551568060" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand>
+      <path>
+        <item name="php-ftp-helper" type="b2602c69:ProjectViewProjectNode" />
+        <item name="php-ftp-helper" type="462c0819:PsiDirectoryNode" />
+      </path>
+    </expand>
+    <select />
+  </component>
+</project>

@@ -11,6 +11,7 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
+use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 
@@ -82,16 +83,14 @@ class DataStream extends Stream
     protected function openPassive()
     {
         $this->send('PASV');
-
         $response = new Response($this->commandStream->receive());
-
         if ($response->getCode() !== 227) {
-            return false;
+            return !ErrorTrigger::raise($response->getMessage());
         }
 
-        if (!preg_match('/(\d+,){4}+/', $response->getMessage(), $ipMatches)
-            || !preg_match('/\d+,\d+\)$/', $response->getMessage(), $portMatches)) {
-            return false;
+        if (preg_match('/(\d+,){4}+/', $response->getMessage(), $ipMatches)
+            || preg_match('/\d+,\d+\)$/', $response->getMessage(), $portMatches)) {
+                return !ErrorTrigger::raise("Unable to get the passive IP & PORT from the reply message.");
         }
 
         $ip    = rtrim(str_replace(",", ".", $ipMatches[0]), ".");
