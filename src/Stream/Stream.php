@@ -68,7 +68,7 @@ abstract class Stream implements StreamInterface
     }
 
     /**
-     * Opens a stream socket
+     * Opens an FTP stream socket.
      *
      * @param string $host
      * @param int    $port
@@ -79,11 +79,8 @@ abstract class Stream implements StreamInterface
      */
     final protected function openSocket($host, $port, $timeout, $blocking)
     {
-        if (!($this->stream = @fsockopen($host, $port, $errno, $errMsg))) {
-            return !ErrorTrigger::raise($errMsg);
-        }
-
-        return stream_set_timeout($this->stream, $timeout)
+        return ($this->stream = @fsockopen($host, $port, $errno, $errMsg))
+            && stream_set_timeout($this->stream, $timeout)
             && stream_set_blocking($this->stream, $blocking);
     }
 }

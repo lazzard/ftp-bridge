@@ -70,15 +70,16 @@ class DataStream extends Stream
      */
     public function open()
     {
-        return $this->passive ? $this->openPassiveConnection() : null;
+        return $this->passive ? $this->openPassive() : $this->openActive();
     }
 
     /**
-     * Opens a passive data connection.
+     * Opens the stream data connection to the server port sent via the FTP server after
+     * sending the PASV command.
      *
      * @return bool
      */
-    protected function openPassiveConnection()
+    protected function openPassive()
     {
         $this->send('PASV');
 
@@ -100,7 +101,7 @@ class DataStream extends Stream
         return $this->openSocket($ip, $port, $this->commandStream->timeout, $this->commandStream->blocking);
     }
 
-    protected function openActiveConnection()
+    protected function openActive()
     {
         // TODO
     }
