@@ -12,12 +12,12 @@
 
 namespace Lazzard\FtpBridge;
 
+use Lazzard\FtpBridge\Error\ErrorRaiser;
+use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 use Lazzard\FtpBridge\Stream\CommandStream;
 use Lazzard\FtpBridge\Stream\DataStream;
-use Lazzard\FtpBridge\Error\ErrorRaiser;
-use Lazzard\FtpBridge\Error\ErrorTrigger;
 
 /**
  * @since  1.0
@@ -26,11 +26,15 @@ use Lazzard\FtpBridge\Error\ErrorTrigger;
 class FtpBridge
 {
     /**
-     * Transfers modes.
+     * Transfer type representations.
      */
-    const ASCII  = 'A';
-    const BINARY = 'I';
-    const EBCDIC = 'E';
+    const TR_TYPE_ASCII      = 'A';
+    const TR_TYPE_BINARY     = 'I';
+    const TR_TYPE_EBCDIC     = 'E';
+    const TR_TYPE_LOCAL      = 'L';
+    const TR_TYPE_NON_PRINT  = 'N';
+    const TR_TYPE_TELNET     = 'T';
+    const TR_TYPE_CR_CONTROL = 'C';
 
     /** @var LoggerInterface */
     public $logger;
@@ -68,8 +72,7 @@ class FtpBridge
 
     /**
      * Receives and gets the response from the command stream.
-     *
-     * @return string
+     * @return Response
      */
     public function receive()
     {
@@ -103,8 +106,6 @@ class FtpBridge
         return $this->commandStream->open();
     }
 
-    //public function sslConnect($host, $port = 21, $timeout)
-
     /**
      * Logs into the FTP server.
      *
@@ -131,19 +132,19 @@ class FtpBridge
             if (in_array($this->response->getCode(), array(202, 230))) { // TODO 202 code
                 return true;
             }
-            
-            return !ErrorTrigger::raise(sprintf("PASS command failed : %s", $this->response->getMessage()));
+
+            return !ErrorTrigger::raise($this->response->getMessage());
         }
 
-        return !ErrorTrigger::raise(sprintf("USER command failed : %s", $this->response->getMessage()));
+        return !ErrorTrigger::raise($this->response->getMessage());
     }
 
     /**
-     * Opens the data connection.
+     * Opens the data connection stream.
      *
      * @param bool $passive [optional] Specifies weather to use a passive or active data connection.
      *
-     * @return bool Returns true on success, false on failure and an E_WARNING error raised.
+     * @return bool
      */
     public function openDataConnection($passive = false)
     {
@@ -154,18 +155,20 @@ class FtpBridge
     /**
      * Sets the transfer type for the next transfer operation.
      *
-     * @param string $type The transfer type can be either {@link FtpBridge::BINARY} or {@link FtpBridge::ASCII} or
-     *                     {@link FtpBridge::EBCDIC}.
-     *
-     * @return void
+     * @param string $type The transfer type can be either {@link FtpBridge::TR_TYPE_BINARY} or {@link FtpBridge::TR_TYPE_ASCII} 
+     *                     or {@link FtpBridge::TR_TYPE_EBCDIC}.
+     * @param string|int Specifies how the text should be interpreted for the file types {@link FtpBridge::TR_TYPE_ASCII} 
+     *                   and {@link FtpBridge::TR_TYPE_EBCDIC}, it can be either {@link FtpBridge::TR_TYPE_NON_PRINT},
+     *                   {@link FtpBridge::TR_TYPE_TELNET} or {@link TR_TYPE_CONTROL}.
+     *                   For the {@link FtpBridge::TR_TYPE_LOCAL}
+     *                     
+     * @return bool
      */
-    public function setTransferType($type)
+    public function setTransferType($type, $secondParam = null)
     {
-        if (!in_array($type, [self::BINARY, self::ASCII, self::EBCDIC])) {
-            return ErrorTrigger::raise(sprintf("[%s] is unknown FTP transfer type.", $type));
-        }
-        
-        $this->send(sprintf("TYPE %s", $type));
+        $this->send(sprintf("TYPE %s%s", $type, $secondParam ? " $secondParam" : ''));
         $this->receive();
+
+        return $this->response->getCode() === 200;
     }
 }
