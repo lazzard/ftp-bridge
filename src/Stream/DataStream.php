@@ -88,8 +88,8 @@ class DataStream extends Stream
             return !ErrorTrigger::raise($response->getMessage());
         }
 
-        if (preg_match('/(\d+,){4}+/', $response->getMessage(), $ipMatches)
-            || preg_match('/\d+,\d+\)$/', $response->getMessage(), $portMatches)) {
+        if (!preg_match('/(\d+,){4}+/', $response->getMessage(), $ipMatches)
+            || !preg_match('/\d+,\d+\)$/', $response->getMessage(), $portMatches)) {
                 return !ErrorTrigger::raise("Unable to get the passive IP & PORT from the reply message.");
         }
 

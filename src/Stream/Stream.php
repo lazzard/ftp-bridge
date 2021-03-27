@@ -79,8 +79,13 @@ abstract class Stream implements StreamInterface
      */
     final protected function openSocket($host, $port, $timeout, $blocking)
     {
-        return ($this->stream = @fsockopen($host, $port, $errno, $errMsg))
-            && stream_set_timeout($this->stream, $timeout)
-            && stream_set_blocking($this->stream, $blocking);
+        if (!($this->stream = @fsockopen($host, $port, $errno, $errMsg))) {
+            return !ErrorTrigger::raise($errMsg);
+        }
+
+        stream_set_timeout($this->stream, $timeout);
+        stream_set_blocking($this->stream, $blocking);
+
+        return true;
     }
 }
