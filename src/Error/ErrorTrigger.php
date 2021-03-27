@@ -14,8 +14,6 @@ namespace Lazzard\FtpBridge\Error;
 /**
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
- *
- * @internal
  */
 class ErrorTrigger
 {
