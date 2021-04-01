@@ -72,6 +72,7 @@ class FtpBridge
 
     /**
      * Receives and gets the response from the command stream.
+     * 
      * @return Response
      */
     public function receive()
@@ -121,15 +122,15 @@ class FtpBridge
         $this->send(sprintf("USER %s", $username));
         $this->receive();
 
-        if (in_array($this->response->getCode(), array(230))) {
+        if ($this->response->getCode() === 230) {
             return true;
         }
 
-        if (in_array($this->response->getCode(), array(331))) {
+        if ($this->response->getCode() === 331) {
             $this->send(sprintf('PASS %s', $password));
             $this->receive();
 
-            if (in_array($this->response->getCode(), array(202, 230))) { // TODO 202 code
+            if ($this->response->hasCode(202, 230)) { // TODO 202 code
                 return true;
             }
 

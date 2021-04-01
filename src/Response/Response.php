@@ -85,4 +85,12 @@ class Response
     {
         return $this->multiline;
     }
+
+    /**
+     * @return bool
+     */
+    public function hasCode()
+    {
+        return in_array($this->getCode(), func_get_args(), false);
+    }
 }
