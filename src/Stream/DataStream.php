@@ -75,7 +75,7 @@ class DataStream extends Stream
     }
 
     /**
-     * Opens the stream data connection to the server port sent via the FTP server after
+     * Opens the data connection stream to the server port sent via the FTP server after
      * sending the PASV command.
      *
      * @return bool
@@ -97,11 +97,40 @@ class DataStream extends Stream
         $ports = explode(",", rtrim($portMatches[0], ")"));
         $port  = ($ports[0] * 256) + $ports[1];
 
-        return $this->openSocket($ip, $port, $this->commandStream->timeout, $this->commandStream->blocking);
+        return $this->openStreamSocket($ip, $port, $this->commandStream->timeout, $this->commandStream->blocking);
     }
 
+    /**
+     * Opens a stream socket connection that listening to the local random port sent with 
+     * the PORT command.
+     * 
+     * @return bool
+     */
     protected function openActive()
     {
-        // TODO
+        // Gets the right public IP address either if we are running on the local host or on an actual web host.
+        $hostIp = in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])
+            ? file_get_contents('https://api.ipify.org') : $_SERVER['SERVER_ADDR'];
+
+        // Format the IP.
+        $hostIp = str_replace(".", ",", $hostIp);
+
+        $low  = rand(32, 255);
+        $high = rand(32, 255);
+        // $port = ($low * 256) + $high
+        $port = ($low<<8) + $high;
+
+        if (is_resource($stream = stream_socket_server('tcp://0.0.0.0:'.$port, $errnon, $errstr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN))) {
+            $this->send(sprintf("PORT %s,%s,%s", str_replace('.', ',', $hostIp), $low, $high));
+            $response = new Response($this->commandStream->receive());
+            if ($response->getCode() === 200) {
+                $this->stream = $stream;
+                return true;
+            }
+
+            return !ErrorTrigger::raise($response->getMessage());
+        }
+
+        return !ErrorTrigger::raise("Unable to open the data stream socket connection.");
     }
 }

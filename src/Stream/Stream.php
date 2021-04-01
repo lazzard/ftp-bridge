@@ -16,7 +16,7 @@ use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 
 /**
- * Abstracts FTP streams shared behavior.
+ * Abstracts an FTP stream socket.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
@@ -30,7 +30,7 @@ abstract class Stream implements StreamInterface
     public $logger;
 
     /**
-     * StreamableAbstract constructor.
+     * Stream constructor.
      *
      * @param LoggerInterface $logger
      */
@@ -77,7 +77,7 @@ abstract class Stream implements StreamInterface
      *
      * @return bool
      */
-    final protected function openSocket($host, $port, $timeout, $blocking)
+    final protected function openStreamSocket($host, $port, $timeout, $blocking)
     {
         if (!($this->stream = @fsockopen($host, $port, $errno, $errMsg))) {
             return !ErrorTrigger::raise($errMsg);
@@ -88,4 +88,11 @@ abstract class Stream implements StreamInterface
 
         return true;
     }
+
+    /**
+     * Opens the stream connection.
+     * 
+     * @return bool
+     */
+    abstract public function open();
 }

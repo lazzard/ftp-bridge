@@ -96,7 +96,7 @@ class CommandStream extends Stream
      */
     public function open()
     {
-        if($open = $this->openSocket($this->host, $this->port, $this->timeout, $this->blocking)) {
+        if($open = $this->openStreamSocket($this->host, $this->port, $this->timeout, $this->blocking)) {
             // TODO check the reply
             $this->receive();
         }
