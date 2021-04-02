@@ -97,7 +97,13 @@ class FileLogger extends Logger
         if ($this->mode === self::PLAIN_MODE) {
             return count(explode(self::CRLF, $this->getLogs())) - 1;
         }
+        
         return substr_count($this->getLogs(), 'array');
+    }
+
+    public function __destruct()
+    {
+        $this->close();
     }
 
     protected function open()
@@ -113,10 +119,5 @@ class FileLogger extends Logger
     protected function close()
     {
         fclose($this->handle);
-    }
-
-    public function __destruct()
-    {
-        $this->close();
     }
 }

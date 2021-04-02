@@ -35,7 +35,7 @@ abstract class Logger implements LoggerInterface
      */
     public function info($message)
     {
-        $this->log(LogLevel::INFO, $message);
+        $this->log(LogLevel::$info, $message);
     }
 
     /**
@@ -43,6 +43,14 @@ abstract class Logger implements LoggerInterface
      */
     public function error($message)
     {
-        $this->log(LogLevel::ERROR, $message);
+        $this->log(LogLevel::$error, $message);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function command($message)
+    {
+        $this->log(LogLevel::$command, $message);
     }
 }

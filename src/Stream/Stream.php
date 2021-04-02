@@ -48,10 +48,10 @@ abstract class Stream implements StreamInterface
      */
     final public function write($command)
     {
-        $write = fwrite($this->stream, trim($command) . self::CRLF);
+        $write = fwrite($this->stream, trim($command).self::CRLF);
 
         if ($this->logger) {
-            $this->logger->log(LogLevel::COMMAND, $command . self::CRLF);
+            $this->logger->command($command.self::CRLF);
         }
 
         return $write !== 0 && $write === false ? false : true;
@@ -77,7 +77,7 @@ abstract class Stream implements StreamInterface
         if (!$this->logger) {
             return;
         }
-
+    
         $response = new Response($message);
         call_user_func_array(
             array($this->logger, $response->getCode() < 400 ? 'info' : 'error'),

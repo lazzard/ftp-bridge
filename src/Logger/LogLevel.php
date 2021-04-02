@@ -19,7 +19,22 @@ namespace Lazzard\FtpBridge\Logger;
  */
 class LogLevel
 {
-    const INFO    = 'INFO';
-    const ERROR   = 'ERROR';
-    const COMMAND = 'COMMAND';
+    public static $info      = 'INFO';
+    public static $error     = 'ERROR';
+    public static $command   = 'COMMAND';
+
+    public static function setInfo($string)
+    {
+        self::$info = $string;
+    }
+
+    public static function setError($string)
+    {
+        self::$error = $string;
+    }
+
+    public static function setCommand($string)
+    {
+        self::$command = $string;
+    }
 }

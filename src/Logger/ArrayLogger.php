@@ -51,9 +51,7 @@ class ArrayLogger extends Logger
             $lines = explode(self::CRLF, $message);
             $this->logs[] = sprintf("%s %s", $level, $lines[0]);
             foreach ($lines as $key => $line) {
-                if ($key === 0 || $line === '') {
-                    continue;
-                }
+                if ($key === 0 || $line === '') continue;
                 $this->logs[] = $line;
             }
         }

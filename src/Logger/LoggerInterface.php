@@ -68,6 +68,13 @@ interface LoggerInterface
      */
     public function error($message);
 
+     /**
+     * @param string $string
+     *
+     * @return void
+     */
+    public function command($string);
+
     /**
      * @return void
      */
