@@ -1,14 +1,20 @@
 # TODO
 
-### Issues
+## Issues
 
-- [ ] The infinite loop when calling the `FtpBridge::recieve` with an empty command stream.
+- [ ] Fix the infinite loop when calling the `FtpBridge::recieve` with an empty command stream.
 
-### Code improvements
+## Code improvements
 
 - [ ] Improving FTP logger levels.
 
-### Upcoming features.
+## Upcoming features.
 
-- [ ] The FTP active mode implementation for `openDataConnection($passive)`.
-- [ ] Add a method that allows changing the record structure of the transferred files.
+- [ ] Add a method that allows changing the record structure for transferring files.
+- [ ] Implement `FtpBridge::sslConnect` method.
+- [ ] Allow changing the port range for the active mode connections.
+
+## Testing.
+
+- [ ] Test the active mode implementation.
+ 
