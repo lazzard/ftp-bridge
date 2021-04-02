@@ -14,7 +14,6 @@ namespace Lazzard\FtpBridge\Stream;
 use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
-use Lazzard\FtpBridge\Logger\LogLevel;
 
 /**
  * Abstracts shared implementation of an FTP stream.
@@ -36,7 +35,7 @@ abstract class Stream implements StreamInterface
     /**
      * Stream constructor.
      *
-     * @param LoggerInterface $logger
+     * @param LoggerInterface|null $logger
      */
     public function __construct(LoggerInterface $logger = null)
     {

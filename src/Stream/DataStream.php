@@ -114,6 +114,10 @@ class DataStream extends Stream
         // $port = ($low * 256) + $high
         $port = ($low<<8) + $high;
 
+        // 1- create the stream socket
+        // 2- Bind the socket to a local host address
+        // 3- Listen to the socket on the port $port
+        // 4- Send the PORT command
         if (is_resource($stream = stream_socket_server('tcp://0.0.0.0:'.$port, $errnon, $errstr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN))) {
             $this->commandStream->write("PORT $hostIp,$low,$high");
             $response = new Response($this->commandStream->read());
