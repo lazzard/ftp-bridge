@@ -56,7 +56,7 @@ class FileLogger extends Logger
     public function log($level, $message)
     {
         if ($this->mode === self::PLAIN_MODE) {
-            $this->write(sprintf("[%s] %s", $level, $message));
+            $this->write(sprintf("%s %s", $level, $message));
 
         } elseif ($this->mode === self::ARRAY_MODE) {
             $lines = explode(self::CRLF, $message);
@@ -65,7 +65,7 @@ class FileLogger extends Logger
             $indent = str_repeat(' ', 4);
 
             $output = sprintf(
-                "%s[%s] array() [%s] [%s",
+                "%s[%s] array() %s [%s",
                 ftell($this->handle) ? self::CRLF : '',
                 count($lines),
                 $level,

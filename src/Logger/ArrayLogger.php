@@ -46,10 +46,10 @@ class ArrayLogger extends Logger
     public function log($level, $message)
     {
         if ($this->mode === self::PLAIN_MODE) {
-            $this->logs[] = sprintf("[%s] %s", $level, $message);
+            $this->logs[] = sprintf("%s %s", $level, $message);
         } elseif ($this->mode === self::ARRAY_MODE) {
             $lines = explode(self::CRLF, $message);
-            $this->logs[] = sprintf("[%s] %s", $level, $lines[0]);
+            $this->logs[] = sprintf("%s %s", $level, $lines[0]);
             foreach ($lines as $key => $line) {
                 if ($key === 0 || $line === '') {
                     continue;
