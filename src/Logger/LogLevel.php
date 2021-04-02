@@ -14,8 +14,6 @@ namespace Lazzard\FtpBridge\Logger;
 /**
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
- *
- * @internal
  */
 class LogLevel
 {
