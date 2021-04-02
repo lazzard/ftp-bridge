@@ -12,7 +12,6 @@
 
 namespace Lazzard\FtpBridge;
 
-use Lazzard\FtpBridge\Error\ErrorRaiser;
 use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;

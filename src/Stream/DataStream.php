@@ -76,7 +76,7 @@ class DataStream extends Stream
      */
     protected function openPassive()
     {
-        $this->write('PASV');
+        $this->commandStream->write('PASV');
         $response = new Response($this->commandStream->read());
         if ($response->getCode() !== 227) {
             return !ErrorTrigger::raise($response->getMessage());
@@ -115,7 +115,7 @@ class DataStream extends Stream
         $port = ($low<<8) + $high;
 
         if (is_resource($stream = stream_socket_server('tcp://0.0.0.0:'.$port, $errnon, $errstr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN))) {
-            $this->write(sprintf("PORT %s,%s,%s", str_replace('.', ',', $hostIp), $low, $high));
+            $this->commandStream->write("PORT $hostIp,$low,$high");
             $response = new Response($this->commandStream->read());
             if ($response->getCode() === 200) {
                 $this->stream = $stream;
