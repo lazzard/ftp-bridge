@@ -39,14 +39,14 @@ class FtpBridge
     /** @var LoggerInterface */
     public $logger;
 
-    /** @var CommandStream */
-    public $commandStream;
-
-    /** @var DataStream */
-    public $dataStream;
-
     /** @var Response */
     public $response;
+
+    /** @var CommandStream */
+    protected $commandStream;
+
+    /** @var DataStream */
+    protected $dataStream;
 
     /**
      * FtpBridge constructor
@@ -67,7 +67,19 @@ class FtpBridge
      */
     public function send($command)
     {
-        return $this->commandStream->send($command);
+        return $this->commandStream->write($command);
+    }
+
+    /**
+     * Writes the string content to the data stream.
+     *
+     * @param string $string
+     * 
+     * @return bool
+     */
+    public function write($string)
+    {
+        return $this->dataStream->write($string);
     }
 
     /**
@@ -77,7 +89,7 @@ class FtpBridge
      */
     public function receive()
     {
-        return $this->response = new Response($this->commandStream->receive());
+        return $this->response = new Response($this->commandStream->read());
     }
 
     /**
@@ -87,7 +99,7 @@ class FtpBridge
      */
     public function receiveData()
     {
-        return $this->dataStream->receive();
+        return $this->dataStream->read();
     }
 
     /**
@@ -115,11 +127,12 @@ class FtpBridge
      * @param string $username
      * @param string $password
      *
-     * @return bool Returns true on success, false on failure and an E_WARNING error raised.
+     * @return bool Returns true on success, false on failure and an E_WARNING error 
+     *              will be raised.
      */
     public function login($username, $password)
     {
-        $this->send(sprintf("USER %s", $username));
+        $this->send("USER $username");
         $this->receive();
 
         if ($this->response->getCode() === 230) {
@@ -127,7 +140,7 @@ class FtpBridge
         }
 
         if ($this->response->getCode() === 331) {
-            $this->send(sprintf('PASS %s', $password));
+            $this->send("PASS $password");
             $this->receive();
 
             if ($this->response->hasCode(202, 230)) { // TODO 202 code

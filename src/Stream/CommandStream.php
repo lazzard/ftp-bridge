@@ -20,6 +20,8 @@ use Lazzard\FtpBridge\Logger\LogLevel;
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
+ * 
+ * @internal
  */
 class CommandStream extends Stream
 {
@@ -39,10 +41,10 @@ class CommandStream extends Stream
      * CommandStream constructor.
      *
      * @param LoggerInterface $logger
-     * @param string             $host
-     * @param int                $port
-     * @param int                $timeout
-     * @param bool               $blocking
+     * @param string          $host
+     * @param int             $port
+     * @param int             $timeout
+     * @param bool            $blocking
      */
     public function __construct($logger, $host, $port, $timeout, $blocking)
     {
@@ -56,34 +58,17 @@ class CommandStream extends Stream
     /**
      * @inheritDoc
      */
-    public function send($command)
-    {
-        $write = fwrite($this->stream, trim($command) . self::CRLF);
-
-        if ($this->logger) {
-            $this->logger->log(LogLevel::COMMAND, $command . self::CRLF);
-        }
-
-        return ($write !== 0 && $write === false) ? false : true;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function receive()
+    public function read()
     {
         $response = '';
         while (true) {
             $line     = fgets($this->stream);
-            $response .= $line;
-            
+            $response .= $line; 
             // To distinguish the end of an FTP reply, the RFC959 indicates that the last line of
             // a the reply must be on a special format, it must be begin with 3 digits followed
             // by a space.
             //@link https://tools.ietf.org/html/rfc959#section-4
-            if (preg_match('/^\d{3}+ /', $line) !== 0) {
-                break;
-            }
+            if (preg_match('/^\d{3}+ /', $line) !== 0) break;
         }
 
         $this->log($response);
@@ -98,7 +83,7 @@ class CommandStream extends Stream
     {
         if($open = $this->openStreamSocket($this->host, $this->port, $this->timeout, $this->blocking)) {
             // TODO check the reply
-            $this->receive();
+            $this->read();
         }
 
         return $open;

@@ -16,14 +16,16 @@ use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 
 /**
- * An FTP data stream socket connection.
+ * An FTP data stream socket.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
+ * 
+ * @internal
  */
 class DataStream extends Stream
 {
-    /** @var CommandStream */
+    /** @var StreamInterface */
     public $commandStream;
     
     /** @var bool */
@@ -33,8 +35,8 @@ class DataStream extends Stream
      * Opens a data stream socket.
      *
      * @param LoggerInterface $logger
-     * @param CommandStream      $commandStream
-     * @param bool               $passive
+     * @param StreamInterface $commandStream
+     * @param bool            $passive
      */
     public function __construct($logger, $commandStream, $passive = true)
     {
@@ -46,15 +48,7 @@ class DataStream extends Stream
     /**
      * @inheritDoc
      */
-    public function send($command)
-    {
-        return $this->commandStream->send($command);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function receive()
+    public function read()
     {
         $data = '';
         while (!feof($this->stream)) {
@@ -71,7 +65,7 @@ class DataStream extends Stream
      */
     public function open()
     {
-        return $this->passive ? $this->openPassive() : $this->openActive();
+        return call_user_func_array(array($this, $this->passive ? 'openPassive' : 'openActive'), array());
     }
 
     /**
@@ -82,8 +76,8 @@ class DataStream extends Stream
      */
     protected function openPassive()
     {
-        $this->send('PASV');
-        $response = new Response($this->commandStream->receive());
+        $this->write('PASV');
+        $response = new Response($this->commandStream->read());
         if ($response->getCode() !== 227) {
             return !ErrorTrigger::raise($response->getMessage());
         }
@@ -108,7 +102,7 @@ class DataStream extends Stream
      */
     protected function openActive()
     {
-        // Gets the right public IP address either if we are running on the local host or on an actual web host.
+        // Gets the public IP address either if we are running on the local host or on an actual web host.
         $hostIp = in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])
             ? file_get_contents('https://api.ipify.org') : $_SERVER['SERVER_ADDR'];
 
@@ -121,8 +115,8 @@ class DataStream extends Stream
         $port = ($low<<8) + $high;
 
         if (is_resource($stream = stream_socket_server('tcp://0.0.0.0:'.$port, $errnon, $errstr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN))) {
-            $this->send(sprintf("PORT %s,%s,%s", str_replace('.', ',', $hostIp), $low, $high));
-            $response = new Response($this->commandStream->receive());
+            $this->write(sprintf("PORT %s,%s,%s", str_replace('.', ',', $hostIp), $low, $high));
+            $response = new Response($this->commandStream->read());
             if ($response->getCode() === 200) {
                 $this->stream = $stream;
                 return true;

@@ -16,43 +16,44 @@ namespace Lazzard\FtpBridge\Stream;
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
+ * 
+ * @internal
  */
 interface StreamInterface
 {
     /**
-     * Carriage return and line feed used in the end of FTP commands as defined in RFC959.
+     * Carriage return and line feed used at the end of an FTP command 
+     * string as defined in RFC959.
      */
     const CRLF = "\r\n";
 
     /**
-     * Opens the stream socket.
+     * Opens the stream resource.
      *
      * @return bool Returns true on success, false otherwise, an E_WARNING_ERROR also will raised.
      */
     public function open();
 
     /**
-     * Closes the FTP stream socket.
+     * Closes the stream resource.
      *
      * @return bool
      */
     public function close();
 
     /**
-     * Sends an arbitrary command to the FTP server.
+     * Writes the giving string content to the stream resource.
      *
-     * @param string $command
+     * @param string $string
      *
      * @return bool
      */
-    public function send($command);
+    public function write($string);
 
     /**
-     * Receive the FTP reply.
-     *
-     * Note! no parsing performed on the replay string.
+     * Reads the content from a the stream resource.
      *
      * @return string|false
      */
-    public function receive();
+    public function read();
 }

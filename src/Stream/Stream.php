@@ -14,12 +14,16 @@ namespace Lazzard\FtpBridge\Stream;
 use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
+use Lazzard\FtpBridge\Logger\LogLevel;
 
 /**
- * Abstracts an FTP stream socket.
+ * Abstracts shared implementation of an FTP stream.
+ * Holds the common logic between FTP streams.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
+ * 
+ * @internal
  */
 abstract class Stream implements StreamInterface
 {
@@ -37,6 +41,20 @@ abstract class Stream implements StreamInterface
     public function __construct(LoggerInterface $logger = null)
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    final public function write($command)
+    {
+        $write = fwrite($this->stream, trim($command) . self::CRLF);
+
+        if ($this->logger) {
+            $this->logger->log(LogLevel::COMMAND, $command . self::CRLF);
+        }
+
+        return $write !== 0 && $write === false ? false : true;
     }
 
     /**
@@ -90,9 +108,12 @@ abstract class Stream implements StreamInterface
     }
 
     /**
-     * Opens the stream connection.
-     * 
-     * @return bool
+     * @inheritDoc
      */
     abstract public function open();
+
+    /**
+     * @inheritDoc
+     */
+    abstract public function read();
 }
