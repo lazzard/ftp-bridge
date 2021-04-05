@@ -41,7 +41,7 @@ class DataStream extends Stream
      * @param StreamInterface $commandStream
      * @param bool            $passive
      */
-    public function __construct($logger, $commandStream, $passive = true, $activeIpAddress = null)
+    public function __construct($logger, $commandStream, $passive, $activeIpAddress = null)
     {
         parent::__construct($logger);
         $this->commandStream   = $commandStream;
@@ -105,7 +105,7 @@ class DataStream extends Stream
      */
     protected function openActive()
     {
-        $hostIp = str_replace(".", ",", $this->activeIpAddress ?: $_SERVER['SERVER_ADDR']);
+        $ip = str_replace(".", ",", $this->activeIpAddress ?: $_SERVER['SERVER_ADDR']);
 
         $low  = rand(32, 255);
         $high = rand(32, 255);
@@ -118,7 +118,7 @@ class DataStream extends Stream
         // be send along with PORT comamnd.
         // 4- send the PORT command.
         if (is_resource($stream = stream_socket_server('tcp://0.0.0.0:'.$port, $errnon, $errstr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN))) {
-            $this->commandStream->write("PORT $hostIp,$low,$high");
+            $this->commandStream->write("PORT $ip,$low,$high");
             $response = new Response($this->commandStream->read());
             if ($response->getCode() === 200) {
                 $this->stream = $stream;
