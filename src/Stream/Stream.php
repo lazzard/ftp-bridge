@@ -47,13 +47,11 @@ abstract class Stream implements StreamInterface
      */
     final public function write($command)
     {
-        $write = fwrite($this->stream, trim($command).self::CRLF);
-
-        if ($this->logger) {
+        if (($write = fwrite($this->stream, trim($command).self::CRLF)) !== false && $this->logger) {
             $this->logger->command($command.self::CRLF);
         }
 
-        return $write !== 0 && $write === false ? false : true;
+        return $write;
     }
 
     /**
@@ -85,7 +83,7 @@ abstract class Stream implements StreamInterface
     }
 
     /**
-     * Opens an FTP stream socket.
+     * Opens an FTP stream socket connection.
      *
      * @param string $host
      * @param int    $port
@@ -96,12 +94,10 @@ abstract class Stream implements StreamInterface
      */
     final protected function openStreamSocket($host, $port, $timeout, $blocking)
     {
-        if (!($this->stream = @fsockopen($host, $port, $errno, $errMsg))) {
-            return !ErrorTrigger::raise($errMsg);
+        if (!($this->stream = stream_socket_client("tcp://$host:$port", $errno, $errMsg, $timeout, 
+            $blocking ? STREAM_CLIENT_CONNECT : STREAM_CLIENT_ASYNC_CONNECT))) {
+                return !ErrorTrigger::raise($errMsg);    
         }
-
-        stream_set_timeout($this->stream, $timeout);
-        stream_set_blocking($this->stream, $blocking);
 
         return true;
     }
