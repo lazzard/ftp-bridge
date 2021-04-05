@@ -172,13 +172,26 @@ class FtpBridge
     /**
      * Opens the data connection stream.
      *
-     * @param bool $passive [optional] Specifies weather to use a passive or active data connection.
-     *
+     * @param bool   $passive [optional] Specifies weather to use a passive or active data connection.       
+     * 
      * @return bool
      */
-    public function openDataConnection($passive = false)
+    public function openPassiveDataConnection()
     {
-        $this->dataStream = new DataStream($this->logger, $this->commandStream, $passive);
+        $this->dataStream = new DataStream($this->logger, $this->commandStream, true);
+        return $this->dataStream->open();
+    }
+
+    /**
+     * Opens an active data connection to the FTP server.
+     *
+     * @param string $activeIpAddress [optional] The ip address to send along with the PORT command.
+     * 
+     * @return bool
+     */
+    public function openActiveDataConnection($activeIpAddress)
+    {
+        $this->dataStream = new DataStream($this->logger, $this->commandStream, false, $activeIpAddress);
         return $this->dataStream->open();
     }
 

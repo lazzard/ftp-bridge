@@ -31,6 +31,9 @@ class DataStream extends Stream
     /** @var bool */
     public $passive;
 
+    /** @var string */
+    public $activeIpAddress;
+
     /**
      * Opens a data stream socket.
      *
@@ -38,11 +41,12 @@ class DataStream extends Stream
      * @param StreamInterface $commandStream
      * @param bool            $passive
      */
-    public function __construct($logger, $commandStream, $passive = true)
+    public function __construct($logger, $commandStream, $passive = true, $activeIpAddress = null)
     {
         parent::__construct($logger);
-        $this->commandStream = $commandStream;
-        $this->passive       = $passive;
+        $this->commandStream   = $commandStream;
+        $this->passive         = $passive;
+        $this->activeIpAddress = $activeIpAddress;
     }
 
     /**
@@ -50,10 +54,9 @@ class DataStream extends Stream
      */
     public function read()
     {
-        $data = '';
-        while (!feof($this->stream)) {
-            $data .= fread($this->stream, 8192);
-        }
+        $conn = stream_socket_accept($this->stream);
+        $data = fread($conn, 8192);
+        fclose($conn);
 
         $this->log($data);
 
@@ -102,22 +105,18 @@ class DataStream extends Stream
      */
     protected function openActive()
     {
-        // Gets the public IP address either if we are running on the local host or on an actual web host.
-        $hostIp = in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])
-            ? file_get_contents('https://api.ipify.org') : $_SERVER['SERVER_ADDR'];
-
-        // Format the IP.
-        $hostIp = str_replace(".", ",", $hostIp);
+        $hostIp = str_replace(".", ",", $this->activeIpAddress ?: $_SERVER['SERVER_ADDR']);
 
         $low  = rand(32, 255);
         $high = rand(32, 255);
         // $port = ($low * 256) + $high
         $port = ($low<<8) + $high;
 
-        // 1- create the stream socket
-        // 2- Bind the socket to a local host address
-        // 3- Listen to the socket on the port $port
-        // 4- Send the PORT command
+        // 1- create a stream socket.
+        // 2- bind the socket to a local host address.
+        // 3- listen to the socket on the local port that will
+        // be send along with PORT comamnd.
+        // 4- send the PORT command.
         if (is_resource($stream = stream_socket_server('tcp://0.0.0.0:'.$port, $errnon, $errstr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN))) {
             $this->commandStream->write("PORT $hostIp,$low,$high");
             $response = new Response($this->commandStream->read());
