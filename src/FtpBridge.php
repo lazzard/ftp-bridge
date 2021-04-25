@@ -15,8 +15,10 @@ namespace Lazzard\FtpBridge;
 use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
+use Lazzard\FtpBridge\Stream\ActiveDataStream;
 use Lazzard\FtpBridge\Stream\CommandStream;
 use Lazzard\FtpBridge\Stream\DataStream;
+use Lazzard\FtpBridge\Stream\PassiveDataStream;
 
 /**
  * @since  1.0
@@ -136,6 +138,52 @@ class FtpBridge
     }
 
     /**
+     * Opens a passive data connection.    
+     * 
+     * @return bool
+     */
+    public function openPassive()
+    {
+        $this->dataStream = new PassiveDataStream($this->logger, $this->commandStream);
+        return $this->dataStream->open();
+    }
+
+    /**
+     * Opens an active data connection to the FTP server.
+     *
+     * @param string $activeIpAddress [optional] The IP address to send along with the PORT command, if omitted 
+     *                                           the server IP address in the $_SERVER['SERVER_ADDR'] will be used.
+     * 
+     * @return bool
+     */
+    public function openActive($activeIpAddress = null)
+    {
+        $this->dataStream = new ActiveDataStream($this->logger, $this->commandStream, $activeIpAddress);
+        return $this->dataStream->open();
+    }
+
+    /**
+     * Sets the transfer type for the next transfer operation.
+     *
+     * @param string     $type        The transfer type can be either {@link FtpBridge::TR_TYPE_BINARY} or {@link FtpBridge::TR_TYPE_ASCII} 
+     *                                or {@link FtpBridge::TR_TYPE_EBCDIC}.
+     * @param string|int $secondParam Specifies how the text should be interpreted for the file types {@link FtpBridge::TR_TYPE_ASCII} 
+     *                                and {@link FtpBridge::TR_TYPE_EBCDIC}, it can be either {@link FtpBridge::TR_TYPE_NON_PRINT},
+     *                                {@link FtpBridge::TR_TYPE_TELNET} or {@link TR_TYPE_CONTROL}.
+     *                                For the {@link FtpBridge::TR_TYPE_LOCAL} an integer must be specified to specify the 
+     *                                number of bits per byte on the local system.
+     *                     
+     * @return bool
+     */
+    public function setTransferType($type, $secondParam = null)
+    {
+        $this->send(sprintf("TYPE %s%s", $type, $secondParam ? " $secondParam" : ''));
+        $this->receive();
+
+        return $this->response->getCode() === 200;
+    }
+
+    /**
      * Logs into the FTP server.
      *
      * Note: this method must be called after a successful connection.
@@ -159,59 +207,12 @@ class FtpBridge
             $this->send("PASS $password");
             $this->receive();
 
-            if ($this->response->hasCode(202, 230)) { // TODO 202 code
-                return true;
-            }
+            // TODO 202 code
+            if ($this->response->hasCode(202, 230)) return true;
 
             return !ErrorTrigger::raise($this->response->getMessage());
         }
 
         return !ErrorTrigger::raise($this->response->getMessage());
-    }
-
-    /**
-     * Opens a passive data connection.    
-     * 
-     * @return bool
-     */
-    public function openPassiveConnection()
-    {
-        $this->dataStream = new DataStream($this->logger, $this->commandStream, true);
-        return $this->dataStream->open();
-    }
-
-    /**
-     * Opens an active data connection to the FTP server.
-     *
-     * @param string $activeIpAddress [optional] The IP address to send along with the PORT command, if omitted 
-     *                                           the server IP address in the $_SERVER['SERVER_ADDR'] will be used.
-     * 
-     * @return bool
-     */
-    public function openActiveConnection($activeIpAddress = null)
-    {
-        $this->dataStream = new DataStream($this->logger, $this->commandStream, false, $activeIpAddress);
-        return $this->dataStream->open();
-    }
-
-    /**
-     * Sets the transfer type for the next transfer operation.
-     *
-     * @param string     $type        The transfer type can be either {@link FtpBridge::TR_TYPE_BINARY} or {@link FtpBridge::TR_TYPE_ASCII} 
-     *                                or {@link FtpBridge::TR_TYPE_EBCDIC}.
-     * @param string|int $secondParam Specifies how the text should be interpreted for the file types {@link FtpBridge::TR_TYPE_ASCII} 
-     *                                and {@link FtpBridge::TR_TYPE_EBCDIC}, it can be either {@link FtpBridge::TR_TYPE_NON_PRINT},
-     *                                {@link FtpBridge::TR_TYPE_TELNET} or {@link TR_TYPE_CONTROL}.
-     *                                For the {@link FtpBridge::TR_TYPE_LOCAL} an integer must be specified to specify the 
-     *                                number of bits per byte on the local system.
-     *                     
-     * @return bool
-     */
-    public function setTransferType($type, $secondParam = null)
-    {
-        $this->send(sprintf("TYPE %s%s", $type, $secondParam ? " $secondParam" : ''));
-        $this->receive();
-
-        return $this->response->getCode() === 200;
     }
 }
