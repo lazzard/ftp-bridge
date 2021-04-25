@@ -12,13 +12,13 @@
 
 namespace Lazzard\FtpBridge;
 
-use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 use Lazzard\FtpBridge\Stream\ActiveDataStream;
 use Lazzard\FtpBridge\Stream\CommandStream;
 use Lazzard\FtpBridge\Stream\DataStream;
 use Lazzard\FtpBridge\Stream\PassiveDataStream;
+use Lazzard\FtpBridge\Error\ErrorTrigger;
 
 /**
  * @since  1.0
@@ -69,7 +69,7 @@ class FtpBridge
     public function send($command)
     {
         if (!$this->commandStream || !is_resource($this->commandStream->stream)) {
-            throw new \LogicException("The FTP connection must be established first before try sending any commands.");
+            return !ErrorTrigger::raise("The FTP connection must be established first before try sending any commands.");
         }
 
         return $this->commandStream->write($command);
@@ -85,7 +85,7 @@ class FtpBridge
     public function write($string)
     {
         if (!$this->dataStream || !is_resource($this->dataStream->stream)) {
-            throw new \LogicException("The FTP data connection must be established first 
+            return !ErrorTrigger::raise("The FTP data connection must be established first 
                 before try writing to the data stream.");
         }
 
@@ -100,7 +100,7 @@ class FtpBridge
     public function receive()
     {
         if (!$this->commandStream || !is_resource($this->commandStream->stream)) {
-            throw new \LogicException("The FTP command connection not created yet.");
+            return !ErrorTrigger::raise("The FTP command connection not created yet.");
         }
 
         return $this->response = new Response($this->commandStream->read());
@@ -114,7 +114,7 @@ class FtpBridge
     public function receiveData()
     {
         if (!$this->dataStream || !is_resource($this->dataStream->stream)) {
-            throw new \LogicException("The FTP data connection not created yet.");
+            return !ErrorTrigger::raise("The FTP data connection not created yet.");
         }
 
         return $this->dataStream->read();

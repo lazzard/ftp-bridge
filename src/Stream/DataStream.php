@@ -11,9 +11,7 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
-use Lazzard\FtpBridge\Response\Response;
 
 /**
  * Absracts a data stream socket.

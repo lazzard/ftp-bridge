@@ -11,9 +11,7 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
-use Lazzard\FtpBridge\Logger\LogLevel;
 
 /**
  * Represents an FTP command stream (control channel).

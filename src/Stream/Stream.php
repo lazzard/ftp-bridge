@@ -11,9 +11,9 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
+use Lazzard\FtpBridge\Error\ErrorTrigger;
 
 /**
  * Abstracts shared implementation of an FTP stream.

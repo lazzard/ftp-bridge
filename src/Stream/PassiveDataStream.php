@@ -38,7 +38,7 @@ class PassiveDataStream extends DataStream
 
         if (!preg_match('/(\d+,){4}+/', $response->getMessage(), $ipMatches)
             || !preg_match('/\d+,\d+\)/', $response->getMessage(), $portMatches)) {
-                return !ErrorTrigger::raise("Unable to get the passive IP & PORT from the reply message.");
+            return !ErrorTrigger::raise("Unable to get the passive IP & PORT from the reply message.");
         }
 
         $ip    = rtrim(str_replace(",", ".", $ipMatches[0]), ".");
@@ -59,7 +59,7 @@ class PassiveDataStream extends DataStream
         }
 
         $this->log($data);
-
+        
         return $data;
     }
 }
