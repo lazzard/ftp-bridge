@@ -163,27 +163,6 @@ class FtpBridge
     }
 
     /**
-     * Sets the transfer type for the next transfer operation.
-     *
-     * @param string     $type        The transfer type can be either {@link FtpBridge::TR_TYPE_BINARY} or {@link FtpBridge::TR_TYPE_ASCII} 
-     *                                or {@link FtpBridge::TR_TYPE_EBCDIC}.
-     * @param string|int $secondParam Specifies how the text should be interpreted for the file types {@link FtpBridge::TR_TYPE_ASCII} 
-     *                                and {@link FtpBridge::TR_TYPE_EBCDIC}, it can be either {@link FtpBridge::TR_TYPE_NON_PRINT},
-     *                                {@link FtpBridge::TR_TYPE_TELNET} or {@link TR_TYPE_CONTROL}.
-     *                                For the {@link FtpBridge::TR_TYPE_LOCAL} an integer must be specified to specify the 
-     *                                number of bits per byte on the local system.
-     *                     
-     * @return bool
-     */
-    public function setTransferType($type, $secondParam = null)
-    {
-        $this->send(sprintf("TYPE %s%s", $type, $secondParam ? " $secondParam" : ''));
-        $this->receive();
-
-        return $this->response->getCode() === 200;
-    }
-
-    /**
      * Logs into the FTP server.
      *
      * Note: this method must be called after a successful connection.
@@ -208,11 +187,34 @@ class FtpBridge
             $this->receive();
 
             // TODO 202 code
-            if ($this->response->hasCode(202, 230)) return true;
+            if ($this->response->hasCode(202, 230)) {
+                return true;
+            }
 
             return !ErrorTrigger::raise($this->response->getMessage());
         }
 
         return !ErrorTrigger::raise($this->response->getMessage());
+    }
+
+    /**
+     * Sets the transfer type for the next transfer operation.
+     *
+     * @param string     $type        The transfer type can be either {@link FtpBridge::TR_TYPE_BINARY} or {@link FtpBridge::TR_TYPE_ASCII} 
+     *                                or {@link FtpBridge::TR_TYPE_EBCDIC}.
+     * @param string|int $secondParam Specifies how the text should be interpreted for the file types {@link FtpBridge::TR_TYPE_ASCII} 
+     *                                and {@link FtpBridge::TR_TYPE_EBCDIC}, it can be either {@link FtpBridge::TR_TYPE_NON_PRINT},
+     *                                {@link FtpBridge::TR_TYPE_TELNET} or {@link TR_TYPE_CONTROL}.
+     *                                For the {@link FtpBridge::TR_TYPE_LOCAL} an integer must be specified to specify the 
+     *                                number of bits per byte on the local system.
+     *                     
+     * @return bool
+     */
+    public function setTransferType($type, $secondParam = null)
+    {
+        $this->send(sprintf("TYPE %s%s", $type, $secondParam ? " $secondParam" : ''));
+        $this->receive();
+
+        return $this->response->getCode() === 200;
     }
 }

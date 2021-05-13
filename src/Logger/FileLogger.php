@@ -34,7 +34,7 @@ class FileLogger extends Logger
      * @param string $filePath
      * @param bool   $append
      */
-    public function __construct($mode = LoggerInterface::PLAIN_MODE, $filePath, $append = false)
+    public function __construct($filePath, $mode = LoggerInterface::PLAIN_MODE, $append = false)
     {
         parent::__construct($mode);
         $this->filePath = $filePath;
