@@ -2,12 +2,10 @@
 
 ## Issues
 
-- [ ]  The infinite loop when calling the `FtpBridge::recieve` && `FtpBridge::recieve` with an empty command stream.
+- [ ] The infinite loop when calling the `FtpBridge::recieve` or `FtpBridge::recieveData` when the control channel stream resource is empty.
 
-## Upcoming features.
+## Upcoming features
 
 - [ ] Adding method that allows changing the record structure used in file transfers.
 - [ ] Allow changing the port range for the active mode connections.
-- [ ] Add possiblity for using the passive address in the control channel (When using the active mode).
-
- 
+- [ ] Add possibility for using the passive address in the control channel (When using the active mode).
