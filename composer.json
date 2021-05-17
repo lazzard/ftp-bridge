@@ -1,6 +1,6 @@
 {
     "name": "lazzard/ftp-bridge",
-    "description": "A low-level implementation library of the File Transfer Protocol (FTP) in PHP that follows the RFC 959 standards and others RFC extensions",
+    "description": "A low-level implementation library of the File Transfer Protocol (FTP) in PHP that follows the RFC 959 standards and others related RFC extensions",
     "type": "library",
     "license": "MIT",
     "keywords": ["php", "ftp-protocol", "ftp", "low-level"],
