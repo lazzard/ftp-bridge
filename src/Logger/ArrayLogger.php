@@ -70,6 +70,6 @@ class ArrayLogger extends Logger
      */
     public function count()
     {
-        return count($this->logs) - 1;
+        return count($this->logs);
     }
 }
