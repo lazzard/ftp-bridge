@@ -62,7 +62,7 @@ class ArrayLogger extends Logger
      */
     public function clear()
     {
-        $this->logs[] = null;
+        $this->logs = [];
     }
 
     /**
