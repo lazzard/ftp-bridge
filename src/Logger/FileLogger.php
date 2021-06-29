@@ -12,16 +12,17 @@
 
 namespace Lazzard\FtpBridge\Logger;
 
+use Lazzard\FtpBridge\Exception\FileLoggerException;
+
 /**
  * FileLogger
- *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
 class FileLogger extends Logger
 {
     /** @var resource */
-    protected $handle;
+    protected $stream;
 
     /** @var string */
     protected $filePath;
@@ -30,43 +31,63 @@ class FileLogger extends Logger
     protected $append;
 
     /**
-     * @param int    $mode
      * @param string $filePath
+     * @param int    $mode
      * @param bool   $append
      */
     public function __construct($filePath, $mode = LoggerInterface::PLAIN_MODE, $append = false)
     {
         parent::__construct($mode);
+
         $this->filePath = $filePath;
         $this->append   = $append;
+
         $this->open();
     }
 
-    /**
-     * @return string|false
-     */
-    public function getLogs()
+    public function getStream()
     {
-        return file_get_contents($this->filePath);
+        return $this->stream;
     }
 
     /**
-     * @inheritDoc
+     * @return string
+     *
+     * @throws FileLoggerException
+     */
+    public function getLogs()
+    {
+        if (!file_exists($this->filePath) || !is_readable($this->filePath)) {
+            throw new FileLoggerException($this->filePath . " file is not found or isn't readable.");
+        }
+
+        if (($content = file_get_contents($this->filePath)) === false) {
+            throw new FileLoggerException("Failed to get the " . $this->filePath . " content.");
+        }
+
+        return $content;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws FileLoggerException
      */
     public function log($level, $message)
     {
         if ($this->mode === self::PLAIN_MODE) {
+
             $this->write(sprintf("%s %s", $level, $message));
 
         } elseif ($this->mode === self::ARRAY_MODE) {
-            $lines = explode(self::CRLF, $message);
-            array_pop($lines);
-
-            $indent = str_repeat(' ', 4);
+            // remove the '\r\n' from the end of the message
+            $message = preg_replace("/[\r\n]$/", '', $message);
+            $lines   = explode(self::CRLF, $message);
+            $indent  = str_repeat(' ', 4);
 
             $output = sprintf(
                 "%s[%s] array() %s [%s",
-                ftell($this->handle) ? self::CRLF : '',
+                ftell($this->stream) ? self::CRLF : '',
                 count($lines),
                 $level,
                 self::CRLF
@@ -77,16 +98,25 @@ class FileLogger extends Logger
             }
 
             $output .= ']';
-            $this->write($output);
+
+            if ($this->write($output) === false) {
+                throw new FileLoggerException("Cannot write to file " . $this->filePath.".");
+            }
         }
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
+     * @throws FileLoggerException
      */
     public function clear()
     {
-        fwrite($this->handle, '');
+        if ($this->write('') === false) {
+            throw new FileLoggerException("Unable to clear the file " . $this->filePath . " content.");
+        }
+
+        return true;
     }
 
     /**
@@ -97,7 +127,7 @@ class FileLogger extends Logger
         if ($this->mode === self::PLAIN_MODE) {
             return count(explode(self::CRLF, $this->getLogs())) - 1;
         }
-        
+
         return substr_count($this->getLogs(), 'array');
     }
 
@@ -108,16 +138,16 @@ class FileLogger extends Logger
 
     protected function open()
     {
-        $this->handle = fopen($this->filePath, $this->append ? 'a' : 'w');
+        return $this->stream = fopen($this->filePath, $this->append ? 'a' : 'w');
     }
 
     protected function write($content)
     {
-        fwrite($this->handle, $content);
+        return fwrite($this->stream, $content);
     }
 
     protected function close()
     {
-        fclose($this->handle);
+        return fclose($this->stream);
     }
 }
