@@ -51,7 +51,7 @@ abstract class Stream implements StreamInterface
             $this->logger->command($command.self::CRLF);
         }
 
-        return $write;
+        return true;
     }
 
     /**
