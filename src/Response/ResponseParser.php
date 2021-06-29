@@ -11,43 +11,79 @@
 
 namespace Lazzard\FtpBridge\Response;
 
+use Lazzard\FtpBridge\Exception\ResponseParserException;
+
 /**
- * @internal
+ * Provides methods to parse a raw FTP response string.
  */
 class ResponseParser
 {
     /** @var string */
-    protected $reply;
+    protected $raw;
 
-    public function __construct($reply)
+    const MATCHES = [
+        'code'      => '/^\d+/',
+        'message'   => '/[A-z ]+.*/',
+        'multiline' => '/^\d{2,}-/',
+    ];
+
+    /**
+     * @param string $raw
+     */
+    public function __construct($raw)
     {
-        $this->reply = $reply;
+        $this->raw = $raw;
     }
 
-    public function parse()
+    /**
+     * Parses a raw FTP response string into an array representation.
+     *
+     * @return array
+     */
+    public function parseToArray()
     {
         return array(
-          'code' => $this->parseCode(),
-          'message' => $this->parseMessage(),
-          'multiline' => $this->isMultiline(),
+            'code'      => $this->parseCode(),
+            'message'   => $this->parseMessage(),
+            'multiline' => $this->isMultiline(),
         );
     }
 
+    /**
+     * @return false|int
+     */
     protected function parseCode()
     {
-        if (preg_match('/^\d+/', $this->reply, $match) === 1) {
-            return (int)$match[0];
+        $result = preg_match(self::MATCHES['code'], $this->raw, $matches);
+
+        if ($result === false) {
+            throw new ResponseParserException("Failed to match " . self::MATCHES['code'] . " pattern.");
         }
+
+        if (count($matches) > 0) {
+            return (int)$matches[0];
+        }
+
+        return false;
     }
 
+    /**
+     * @return string
+     */
     protected function parseMessage()
     {
-        if (preg_match('/[A-z ]+.*/', $this->reply, $matches)) {
-            // remove the carriage return from the end
-            return str_replace("\r", '', $matches[0]);
+        $result = preg_match(self::MATCHES['message'], $this->raw, $matches);
+
+        if ($result === false) {
+            throw new ResponseParserException("Failed to match " . self::MATCHES['message'] . " pattern.");
         }
+
+        return str_replace("\r",'',$matches[0]);  // remove the carriage return from the end
     }
 
+    /**
+     * @return bool
+     */
     protected function isMultiline()
     {
         // according to RFC959, an FTP replay may consists of multiple lines and at least one line,
@@ -55,6 +91,12 @@ class ResponseParser
         // for multiple lines replies the first line must be on a special format, the replay code
         // must immediately followed by a minus "-" character.
         //@link https://tools.ietf.org/html/rfc959#section-4
-        return preg_match('/^\d{2,}-/', $this->reply);
+        $match = preg_match(self::MATCHES['multiline'], $this->raw);
+
+        if ($match === false) {
+            throw new ResponseParserException("Failed to match the response multiline pattern.");
+        }
+
+        return $match === 1;
     }
 }

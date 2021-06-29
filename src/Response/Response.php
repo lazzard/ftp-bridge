@@ -16,13 +16,11 @@ namespace Lazzard\FtpBridge\Response;
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
- *
- * @internal
  */
 class Response
 {
     /** @var string */
-    protected $reply;
+    protected $raw;
 
     /** @var int */
     protected $code;
@@ -38,9 +36,10 @@ class Response
      */
     public function __construct($reply)
     {
-        $parser          = new ResponseParser($reply);
-        $response        = $parser->parse();
-        $this->reply     = $reply;
+        $parser   = new ResponseParser($reply);
+        $response = $parser->parseToArray();
+
+        $this->raw       = $reply;
         $this->code      = $response['code'];
         $this->message   = $response['message'];
         $this->multiline = $response['multiline'];
@@ -51,9 +50,9 @@ class Response
      * 
      * @return string
      */
-    public function getReply()
+    public function getRaw()
     {
-        return $this->reply;
+        return $this->raw;
     }
 
     /**
