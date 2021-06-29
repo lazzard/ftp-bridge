@@ -27,5 +27,10 @@
         "psr-4": {
             "Lazzard\\FtpBridge\\": "src/"
         }
+    },
+    "config": {
+        "platform": {
+            "php": "7.3.0"
+        }
     }
 }
