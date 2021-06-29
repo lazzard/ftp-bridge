@@ -10,10 +10,7 @@ class ArrayLoggerTest extends TestCase
 {
     public function testConstructor()
     {
-        $logger = $this
-            ->getMockBuilder(ArrayLogger::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $logger = new ArrayLogger;
 
         $this->assertInstanceOf(ArrayLogger::class, $logger);
     }
@@ -66,12 +63,42 @@ class ArrayLoggerTest extends TestCase
         $this->assertSame($expected, $logger->getLogs());
     }
 
-    public function testLog()
+    public function testLogWithPlainMode()
     {
-        $logger = new ArrayLogger;
+        $logger = new ArrayLogger(LoggerInterface::PLAIN_MODE);
 
-        $this->assertNull($logger->log('-->', 'USER username'));
-        $this->assertSame([0 => '--> USER username'], $logger->getLogs());
+        $response = "220---------- Welcome to Pure-FTPd [privsep] [TLS] ----------
+                220-You are user number 231 of 6900 allowed.
+                220-Local time is now 18:54. Server port: 21.
+                220-This is a private system - No anonymous login
+                220 You will be disconnected after 60 seconds of inactivity";
+
+        $this->assertNull($logger->log('<--', $response . LoggerInterface::CRLF));
+        $this->assertSame([0 => '<-- ' . $response . LoggerInterface::CRLF], $logger->getLogs());
+    }
+
+    public function testLogWithArrayMode()
+    {
+        $logger = new ArrayLogger(LoggerInterface::ARRAY_MODE);
+
+        $response = "220---------- Welcome to Pure-FTPd [privsep] [TLS] ----------
+220-You are user number 267 of 6900 allowed.
+220-Local time is now 22:48. Server port: 21.
+220-This is a private system - No anonymous login
+220 You will be disconnected after 60 seconds of inactivity.
+";
+
+        $this->assertNull($logger->log('<--', $response));
+
+        $this->assertSame(
+            [
+                0 => "<-- 220---------- Welcome to Pure-FTPd [privsep] [TLS] ----------",
+                1 => "220-You are user number 267 of 6900 allowed.",
+                2 => "220-Local time is now 22:48. Server port: 21.",
+                3 => "220-This is a private system - No anonymous login",
+                4 => "220 You will be disconnected after 60 seconds of inactivity."
+            ],
+            $logger->getLogs());
     }
 
     public function testClear()
@@ -88,8 +115,8 @@ class ArrayLoggerTest extends TestCase
 
         $logger->log('<--',
         "220---------- Welcome to Pure-FTPd [privsep] [TLS] ----------
-                220-You are user number 231 of 6900 allowed.
-                220-Local time is now 18:54. Server port: 21.
+    220-You are user number 231 of 6900 allowed.
+    220-Local time is now 18:54. Server port: 21.
                 220-This is a private system - No anonymous login
                 220 You will be disconnected after 60 seconds of inactivity"
         );
@@ -103,8 +130,8 @@ class ArrayLoggerTest extends TestCase
 
         $logger->log('<--',
             "220---------- Welcome to Pure-FTPd [privsep] [TLS] ----------
-                220-You are user number 231 of 6900 allowed.
-                220-Local time is now 18:54. Server port: 21.
+    220-You are user number 231 of 6900 allowed.
+    220-Local time is now 18:54. Server port: 21.
                 220-This is a private system - No anonymous login
                 220 You will be disconnected after 60 seconds of inactivity"
         );
