@@ -42,7 +42,7 @@ class ResponseParser
      *
      * @throws ResponseParserException
      */
-    public function parseToArray()
+    public function toArray()
     {
         return array(
             'code'      => $this->parseCode(),

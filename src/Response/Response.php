@@ -11,6 +11,8 @@
 
 namespace Lazzard\FtpBridge\Response;
 
+use Lazzard\FtpBridge\Exception\ResponseParserException;
+
 /**
  * Represents an FTP replay.
  *
@@ -39,7 +41,7 @@ class Response
     public function __construct($reply)
     {
         $parser   = new ResponseParser($reply);
-        $response = $parser->parseToArray();
+        $response = $parser->toArray();
 
         $this->raw       = $reply;
         $this->code      = $response['code'];
