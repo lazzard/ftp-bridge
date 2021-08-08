@@ -21,11 +21,11 @@ class ResponseParser
     /** @var string */
     protected $raw;
 
-    const MATCHES = [
+    protected static $matches = array(
         'code'      => '/^\d+/',
         'message'   => '/[A-z ]+.*/',
         'multiline' => '/^\d{2,}-/',
-    ];
+    );
 
     /**
      * @param string $raw
@@ -58,10 +58,10 @@ class ResponseParser
      */
     protected function parseCode()
     {
-        $result = preg_match(self::MATCHES['code'], $this->raw, $matches);
+        $result = preg_match(self::$matches['code'], $this->raw, $matches);
 
         if ($result === false) {
-            throw new ResponseParserException("Failed to match " . self::MATCHES['code'] . " pattern.");
+            throw new ResponseParserException("Failed to match " . self::$matches['code'] . " pattern.");
         }
 
         if (count($matches) > 0) {
@@ -78,10 +78,10 @@ class ResponseParser
      */
     protected function parseMessage()
     {
-        $result = preg_match(self::MATCHES['message'], $this->raw, $matches);
+        $result = preg_match(self::$matches['message'], $this->raw, $matches);
 
         if ($result === false) {
-            throw new ResponseParserException("Failed to match " . self::MATCHES['message'] . " pattern.");
+            throw new ResponseParserException("Failed to match " . self::$matches['message'] . " pattern.");
         }
 
         return str_replace("\r",'',$matches[0]);  // remove the carriage return from the end
@@ -99,7 +99,7 @@ class ResponseParser
         // for multiple lines replies the first line must be on a special format, the replay code
         // must immediately followed by a minus "-" character.
         //@link https://tools.ietf.org/html/rfc959#section-4
-        $match = preg_match(self::MATCHES['multiline'], $this->raw);
+        $match = preg_match(self::$matches['multiline'], $this->raw);
 
         if ($match === false) {
             throw new ResponseParserException("Failed to match the response multiline pattern.");
