@@ -2,7 +2,7 @@
 
 namespace Lazzard\FtpBridge\Exception;
 
-class FileLoggerException extends \Exception implements FtpBridgeException
+class FileLoggerException extends FtpBridgeException
 {
 
 }

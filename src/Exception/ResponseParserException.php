@@ -2,7 +2,7 @@
 
 namespace Lazzard\FtpBridge\Exception;
 
-class ResponseParserException extends \RuntimeException implements FtpBridgeException
+class ResponseParserException extends FtpBridgeException
 {
 
 }

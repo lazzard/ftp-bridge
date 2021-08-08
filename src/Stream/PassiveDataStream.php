@@ -12,12 +12,13 @@
 namespace Lazzard\FtpBridge\Stream;
 
 use Lazzard\FtpBridge\Response\Response;
-use Lazzard\FtpBridge\Error\ErrorTrigger;
+use Lazzard\FtpBridge\Exception\PassiveDataStreamException;
+use Lazzard\FtpBridge\Exception\StreamException;
 
 /**
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
- * 
+ *
  * @internal
  */
 class PassiveDataStream extends DataStream
@@ -26,26 +27,35 @@ class PassiveDataStream extends DataStream
      * Opens the data connection stream to the server port sent via the FTP server after
      * sending the PASV command.
      *
-     *  {@inheritDoc}
+     * {@inheritDoc}
+     *
+     * @throws PassiveDataStreamException|StreamException
      */
     public function open()
     {
         $this->commandStream->write('PASV');
+
         $response = new Response($this->commandStream->read());
+
         if ($response->getCode() !== 227) {
-            return !ErrorTrigger::raise($response->getMessage());
+            throw new PassiveDataStreamException($response->getMessage());
         }
 
         if (!preg_match('/(\d+,){4}+/', $response->getMessage(), $ipMatches)
             || !preg_match('/\d+,\d+\)/', $response->getMessage(), $portMatches)) {
-            return !ErrorTrigger::raise("Unable to get the passive IP & PORT from the reply message.");
+            throw new PassiveDataStreamException('Unable to get the passive IP & PORT from the reply message.');
         }
 
-        $ip    = rtrim(str_replace(",", ".", $ipMatches[0]), ".");
-        $ports = explode(",", rtrim($portMatches[0], ")"));
+        $ip    = rtrim(str_replace(',', '.', $ipMatches[0]), '.');
+        $ports = explode(',', rtrim($portMatches[0], ')'));
         $port  = ($ports[0] * 256) + $ports[1];
 
-        return $this->openStreamSocket($ip, $port, $this->commandStream->timeout, $this->commandStream->blocking);
+        return $this->openStreamSocket(
+            $ip,
+            $port,
+            $this->commandStream->timeout,
+            $this->commandStream->blocking
+        );
     }
 
     /**
@@ -59,7 +69,7 @@ class PassiveDataStream extends DataStream
         }
 
         $this->log($data);
-        
+
         return $data;
     }
 }

@@ -65,11 +65,14 @@ class FtpBridge
      * @param string $command
      *
      * @return bool
+     *
+     * @throws FtpBridgeException
      */
     public function send($command)
     {
         if (!$this->commandStream || !is_resource($this->commandStream->stream)) {
-            return !ErrorTrigger::raise("The FTP connection must be established first before try sending any commands.");
+            throw new FtpBridgeException('The FTP connection must be established'
+                . ' first before try sending any commands.');
         }
 
         return $this->commandStream->write($command);
@@ -79,14 +82,16 @@ class FtpBridge
      * Writes the string content to the data stream.
      *
      * @param string $string
-     * 
+     *
      * @return bool
+     *
+     * @throws FtpBridgeException
      */
     public function write($string)
     {
         if (!$this->dataStream || !is_resource($this->dataStream->stream)) {
-            return !ErrorTrigger::raise("The FTP data connection must be established first 
-                before try writing to the data stream.");
+            throw new FtpBridgeException('The FTP data connection must be established'
+                . 'first before try writing to the data stream.');
         }
 
         return $this->dataStream->write($string);
@@ -94,27 +99,35 @@ class FtpBridge
 
     /**
      * Receives and gets the response from the command stream.
-     * 
-     * @return Response
+     *
+     * @return Response Returns a {@link Response} object.
+     *
+     * @throws FtpBridgeException
      */
     public function receive()
     {
         if (!$this->commandStream || !is_resource($this->commandStream->stream)) {
-            return !ErrorTrigger::raise("The FTP command connection not created yet.");
+            throw new FtpBridgeException('The FTP command connection not created yet.');
         }
 
-        return $this->response = new Response($this->commandStream->read());
+        if (!$raw = $this->commandStream->read()) {
+            throw new FtpBridgeException('Failed to retrieve data from the command stream.');
+        }
+
+        return $this->response = new Response($raw);
     }
 
     /**
      * Receives and reads the data from the data stream.
      *
      * @return string
+     *
+     * @throws FtpBridgeException
      */
     public function receiveData()
     {
         if (!$this->dataStream || !is_resource($this->dataStream->stream)) {
-            return !ErrorTrigger::raise("The FTP data connection not created yet.");
+            throw new FtpBridgeException('The FTP data connection not created yet.');
         }
 
         return $this->dataStream->read();
@@ -127,9 +140,11 @@ class FtpBridge
      * @param int    $port     [optional] The remote server port to connect to, if omitted the port 21 will be used.
      * @param int    $timeout  [optional] Specifies the connection timeout of all FTP transfer operations, default sets
      *                         to 90.
-     * @param        $blocking $blocking [optional] The transfer mode, the blocking mode is the default.
+     * @param bool   $blocking $blocking [optional] The transfer mode, the blocking mode is the default.
      *
      * @return bool Returns true on success, false on failure and an E_WARNING error raised.
+     *
+     * @throws StreamException
      */
     public function connect($host, $port = 21, $timeout = 90, $blocking = true)
     {
@@ -138,9 +153,11 @@ class FtpBridge
     }
 
     /**
-     * Opens a passive data connection.    
-     * 
+     * Opens a passive data connection.
+     *
      * @return bool
+     *
+     * @throws PassiveDataStreamException|StreamException
      */
     public function openPassive()
     {
@@ -151,10 +168,12 @@ class FtpBridge
     /**
      * Opens an active data connection to the FTP server.
      *
-     * @param string $activeIpAddress [optional] The IP address to send along with the PORT command, if omitted 
+     * @param string $activeIpAddress            [optional] The IP address to send along with the PORT command, if omitted
      *                                           the server IP address in the $_SERVER['SERVER_ADDR'] will be used.
-     * 
+     *
      * @return bool
+     *
+     * @throws ActiveDataStreamException
      */
     public function openActive($activeIpAddress = null)
     {
@@ -170,8 +189,10 @@ class FtpBridge
      * @param string $username
      * @param string $password
      *
-     * @return bool Returns true on success, false on failure and an E_WARNING error 
+     * @return bool Returns true on success, false on failure and an E_WARNING error
      *              will be raised.
+     *
+     * @throws FtpBridgeException
      */
     public function login($username, $password)
     {
@@ -191,24 +212,27 @@ class FtpBridge
                 return true;
             }
 
-            return !ErrorTrigger::raise($this->response->getMessage());
+            throw new FtpBridgeException($this->response->getMessage());
         }
 
-        return !ErrorTrigger::raise($this->response->getMessage());
+        throw new FtpBridgeException($this->response->getMessage());
     }
 
     /**
      * Sets the transfer type for the next transfer operation.
      *
-     * @param string     $type        The transfer type can be either {@link FtpBridge::TR_TYPE_BINARY} or {@link FtpBridge::TR_TYPE_ASCII} 
-     *                                or {@link FtpBridge::TR_TYPE_EBCDIC}.
-     * @param string|int $secondParam Specifies how the text should be interpreted for the file types {@link FtpBridge::TR_TYPE_ASCII} 
-     *                                and {@link FtpBridge::TR_TYPE_EBCDIC}, it can be either {@link FtpBridge::TR_TYPE_NON_PRINT},
-     *                                {@link FtpBridge::TR_TYPE_TELNET} or {@link TR_TYPE_CONTROL}.
-     *                                For the {@link FtpBridge::TR_TYPE_LOCAL} an integer must be specified to specify the 
+     * @param string     $type        The transfer type can be either {@link FtpBridge2::TR_TYPE_BINARY}
+     *                                or {@link FtpBridge2::TR_TYPE_ASCII} or {@link FtpBridge2::TR_TYPE_EBCDIC}.
+     * @param string|int $secondParam Specifies how the text should be interpreted for the file types
+     *                                {@link FtpBridge2::TR_TYPE_ASCII} and {@link FtpBridge2::TR_TYPE_EBCDIC},
+     *                                it can be either {@link FtpBridge2::TR_TYPE_NON_PRINT},
+     *                                {@link FtpBridge2::TR_TYPE_TELNET} or {@link TR_TYPE_CONTROL}.
+     *                                For the {@link FtpBridge2::TR_TYPE_LOCAL} an integer must be specified to specify the
      *                                number of bits per byte on the local system.
-     *                     
+     *
      * @return bool
+     *
+     * @throws FtpBridgeException
      */
     public function setTransferType($type, $secondParam = null)
     {

@@ -39,6 +39,8 @@ class ResponseParser
      * Parses a raw FTP response string into an array representation.
      *
      * @return array
+     *
+     * @throws ResponseParserException
      */
     public function parseToArray()
     {
@@ -51,6 +53,8 @@ class ResponseParser
 
     /**
      * @return false|int
+     *
+     * @throws ResponseParserException
      */
     protected function parseCode()
     {
@@ -69,6 +73,8 @@ class ResponseParser
 
     /**
      * @return string
+     *
+     * @throws ResponseParserException
      */
     protected function parseMessage()
     {
@@ -83,6 +89,8 @@ class ResponseParser
 
     /**
      * @return bool
+     *
+     * @throws ResponseParserException
      */
     protected function isMultiline()
     {

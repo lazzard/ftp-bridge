@@ -12,12 +12,13 @@
 namespace Lazzard\FtpBridge\Stream;
 
 use Lazzard\FtpBridge\Response\Response;
-use Lazzard\FtpBridge\Error\ErrorTrigger;
+use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
+use Lazzard\FtpBridge\Logger\LoggerInterface;
 
 /**
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
- * 
+ *
  * @internal
  */
 class ActiveDataStream extends DataStream
@@ -29,24 +30,26 @@ class ActiveDataStream extends DataStream
      * Opens a data stream socket.
      *
      * @param LoggerInterface $logger
-     * @param StreamInterface $commandStream
+     * @param CommandStream   $commandStream
      * @param string          $activeIpAddress
      */
-    public function __construct($logger, $commandStream, $activeIpAddress = null)
+    public function __construct(LoggerInterface $logger, CommandStream $commandStream, $activeIpAddress = null)
     {
         parent::__construct($logger, $commandStream);
         $this->activeIpAddress = $activeIpAddress;
     }
 
     /**
-     * Opens a stream socket connection that listening to the local random port sent with 
+     * Opens a stream socket connection that listening to the local random port sent with
      * the PORT command.
-     * 
+     *
      * {@inheritDoc}
+     *
+     * @throws ActiveDataStreamException
      */
     public function open()
     {
-        $ip = str_replace(".", ",", $this->activeIpAddress ?: $_SERVER['SERVER_ADDR']);
+        $ip = str_replace('.', ',', $this->activeIpAddress ?: $_SERVER['SERVER_ADDR']);
 
         $low  = rand(32, 255);
         $high = rand(32, 255);
@@ -56,7 +59,7 @@ class ActiveDataStream extends DataStream
         // 1- create a stream socket.
         // 2- bind the socket to a local host address.
         // 3- listen to the socket on the local port that will
-        // be send along with PORT comamnd.
+        // be send along with PORT command.
         // 4- send the PORT command.
         if (is_resource($stream = stream_socket_server('tcp://0.0.0.0:'.$port, $errnon, $errstr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN))) {
             $this->commandStream->write("PORT $ip,$low,$high");
@@ -66,10 +69,10 @@ class ActiveDataStream extends DataStream
                 return true;
             }
 
-            return !ErrorTrigger::raise($response->getMessage());
+            throw new ActiveDataStreamException($response->getMessage());
         }
 
-        return !ErrorTrigger::raise("Unable to open the data stream socket connection.");
+        throw new ActiveDataStreamException('Unable to open the data stream socket connection.');
     }
 
     /**

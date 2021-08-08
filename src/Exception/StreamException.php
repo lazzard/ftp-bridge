@@ -2,7 +2,7 @@
 
 namespace Lazzard\FtpBridge\Exception;
 
-class FtpBridgeException extends \Exception
+class StreamException extends FtpBridgeException
 {
 
 }

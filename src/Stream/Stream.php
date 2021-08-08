@@ -13,15 +13,15 @@ namespace Lazzard\FtpBridge\Stream;
 
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
-use Lazzard\FtpBridge\Error\ErrorTrigger;
+use Lazzard\FtpBridge\Exception\StreamException;
 
 /**
- * Abstracts shared implementation of an FTP stream.
- * Holds the common logic between FTP streams.
+ * Abstracts shared implementation of FTP stream classes.
+ * Holds the common logic between FTP stream classes.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
- * 
+ *
  * @internal
  */
 abstract class Stream implements StreamInterface
@@ -74,7 +74,7 @@ abstract class Stream implements StreamInterface
         if (!$this->logger) {
             return;
         }
-    
+
         $response = new Response($message);
         call_user_func_array(
             array($this->logger, $response->getCode() < 400 ? 'info' : 'error'),
@@ -91,12 +91,14 @@ abstract class Stream implements StreamInterface
      * @param bool   $blocking
      *
      * @return bool
+     *
+     * @throws StreamException
      */
     final protected function openStreamSocket($host, $port, $timeout, $blocking)
     {
-        if (!($this->stream = stream_socket_client("tcp://$host:$port", $errno, $errMsg, $timeout, 
+        if (!($this->stream = @stream_socket_client("tcp://$host:$port", $errno, $errMsg, $timeout,
             $blocking ? STREAM_CLIENT_CONNECT : STREAM_CLIENT_ASYNC_CONNECT))) {
-                return !ErrorTrigger::raise($errMsg);    
+            throw new StreamException($errMsg);
         }
 
         return true;

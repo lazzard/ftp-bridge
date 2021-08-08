@@ -12,6 +12,7 @@
 namespace Lazzard\FtpBridge\Stream;
 
 use Lazzard\FtpBridge\Logger\LoggerInterface;
+use Lazzard\FtpBridge\Exception\StreamException;
 
 /**
  * Represents an FTP command stream (control channel).
@@ -78,7 +79,9 @@ class CommandStream extends Stream
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
+     * @throws StreamException
      */
     public function open()
     {
