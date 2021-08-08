@@ -12,13 +12,16 @@
 
 namespace Lazzard\FtpBridge;
 
+use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
+use Lazzard\FtpBridge\Exception\FtpBridgeException;
+use Lazzard\FtpBridge\Exception\PassiveDataStreamException;
+use Lazzard\FtpBridge\Exception\StreamException;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 use Lazzard\FtpBridge\Stream\ActiveDataStream;
 use Lazzard\FtpBridge\Stream\CommandStream;
 use Lazzard\FtpBridge\Stream\DataStream;
 use Lazzard\FtpBridge\Stream\PassiveDataStream;
-use Lazzard\FtpBridge\Error\ErrorTrigger;
 
 /**
  * @since  1.0
@@ -65,6 +68,14 @@ class FtpBridge
     public function setCommandStream(CommandStream $stream)
     {
         $this->commandStream = $stream;
+    }
+
+    /**
+     * @param DataStream $stream
+     */
+    public function setDataStream(DataStream $stream)
+    {
+        $this->dataStream = $stream;
     }
 
     /**
