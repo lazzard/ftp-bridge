@@ -60,6 +60,14 @@ class FtpBridge
     }
 
     /**
+     * @param CommandStream $stream
+     */
+    public function setCommandStream(CommandStream $stream)
+    {
+        $this->commandStream = $stream;
+    }
+
+    /**
      * Sends a command to the server thought the control channel.
      *
      * @param string $command
