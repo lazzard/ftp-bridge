@@ -1,6 +1,6 @@
 <?php
 
-namespace Logger;
+namespace Lazzard\FtpBridge\Tests;
 
 use Lazzard\FtpBridge\Exception\FileLoggerException;
 use Lazzard\FtpBridge\Logger\FileLogger;

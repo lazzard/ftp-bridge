@@ -29,7 +29,7 @@ class ResponseParserTest extends TestCase
 ";
 
         $parser   = new ResponseParser($rawResponse);
-        $response = $parser->parseToArray();
+        $response = $parser->toArray();
 
         $this->assertSame(214, $response['code']);
         $this->assertSame("The following SITE commands are recognized", $response['message']);
@@ -41,7 +41,7 @@ class ResponseParserTest extends TestCase
         $rawResponse = "200 Zzz..";
 
         $parser   = new ResponseParser($rawResponse);
-        $response = $parser->parseToArray();
+        $response = $parser->toArray();
 
         $this->assertSame(200, $response['code']);
         $this->assertSame(" Zzz..", $response['message']);
@@ -122,6 +122,7 @@ class ResponseParserTest extends TestCase
     {
         $class  = new ReflectionClass(ResponseParser::class);
         $method = $class->getMethod($name);
+        
         $method->setAccessible(true);
         return $method;
     }
