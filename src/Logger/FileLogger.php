@@ -15,7 +15,8 @@ namespace Lazzard\FtpBridge\Logger;
 use Lazzard\FtpBridge\Exception\FileLoggerException;
 
 /**
- * FileLogger
+ * Logs the FTP session into a file system.
+ * 
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
@@ -58,11 +59,11 @@ class FileLogger extends Logger
     public function getLogs()
     {
         if (!file_exists($this->filePath) || !is_readable($this->filePath)) {
-            throw new FileLoggerException($this->filePath . " file is not found or isn't readable.");
+            throw new FileLoggerException("$this->filePath file is not found or isn't readable.");
         }
 
         if (($content = file_get_contents($this->filePath)) === false) {
-            throw new FileLoggerException("Failed to get the " . $this->filePath . " content.");
+            throw new FileLoggerException("Failed to get the $this->filePath content.");
         }
 
         return $content;
@@ -76,9 +77,7 @@ class FileLogger extends Logger
     public function log($level, $message)
     {
         if ($this->mode === self::PLAIN_MODE) {
-
             $this->write(sprintf("%s %s", $level, $message));
-
         } elseif ($this->mode === self::ARRAY_MODE) {
             // remove the '\r\n' from the end of the message
             $message = preg_replace("/[\r\n]$/", '', $message);
@@ -100,7 +99,7 @@ class FileLogger extends Logger
             $output .= ']';
 
             if ($this->write($output) === false) {
-                throw new FileLoggerException("Cannot write to file " . $this->filePath.".");
+                throw new FileLoggerException("Cannot write to file $this->filePath.");
             }
         }
     }
@@ -113,7 +112,7 @@ class FileLogger extends Logger
     public function clear()
     {
         if ($this->write('') === false) {
-            throw new FileLoggerException("Unable to clear the file " . $this->filePath . " content.");
+            throw new FileLoggerException("Unable to clear the file {$this->filePath}'s content.");
         }
 
         return true;

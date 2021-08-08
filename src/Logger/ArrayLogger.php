@@ -13,7 +13,7 @@
 namespace Lazzard\FtpBridge\Logger;
 
 /**
- * ArrayLogger
+ * Logs an FTP session to an array.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
@@ -29,6 +29,7 @@ class ArrayLogger extends Logger
     public function __construct($mode = LoggerInterface::PLAIN_MODE)
     {
         parent::__construct($mode);
+        
         $this->logs = array();
     }
 
