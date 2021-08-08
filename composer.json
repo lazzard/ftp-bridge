@@ -28,6 +28,11 @@
             "Lazzard\\FtpBridge\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Lazzard\\FtpBridge\\Tests\\": "tests/"
+        }
+    },
     "config": {
         "platform": {
             "php": "7.3.0"
