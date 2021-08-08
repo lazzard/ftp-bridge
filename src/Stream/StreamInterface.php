@@ -12,7 +12,7 @@
 namespace Lazzard\FtpBridge\Stream;
 
 /**
- * StreamInterface defines an FTP stream behavior.
+ * StreamInterface defines an FTP stream class behavior.
  *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
@@ -51,7 +51,7 @@ interface StreamInterface
     public function write($string);
 
     /**
-     * Reads the content from a the stream resource.
+     * Reads the content from the stream resource.
      *
      * @return string|false
      */
