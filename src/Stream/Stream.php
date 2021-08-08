@@ -47,11 +47,13 @@ abstract class Stream implements StreamInterface
      */
     final public function write($command)
     {
-        if (($write = fwrite($this->stream, trim($command).self::CRLF)) !== false && $this->logger) {
+        $write = fwrite($this->stream, trim($command).self::CRLF);
+
+        if ($write !== false && $this->logger instanceof LoggerInterface) {
             $this->logger->command($command.self::CRLF);
         }
 
-        return true;
+        return $write;
     }
 
     /**
