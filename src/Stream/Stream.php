@@ -11,9 +11,11 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
+use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Exception\StreamException;
+use Lazzard\FtpBridge\Exception\ResponseParserException;
+use Lazzard\FtpBridge\FtpBridge;
 
 /**
  * Abstracts shared implementation of FTP stream classes.
@@ -47,10 +49,12 @@ abstract class Stream implements StreamInterface
      */
     final public function write($command)
     {
-        $write = fwrite($this->stream, trim($command).self::CRLF);
+        $command = $this->prepareCommand($command);
+
+        $write = fwrite($this->stream, $command);
 
         if ($write !== false && $this->logger instanceof LoggerInterface) {
-            $this->logger->command($command.self::CRLF);
+            $this->logger->command($command);
         }
 
         return $write;
@@ -70,6 +74,8 @@ abstract class Stream implements StreamInterface
      * @param string $message
      *
      * @return void
+     *
+     * @throws ResponseParserException
      */
     final protected function log($message)
     {
@@ -104,6 +110,18 @@ abstract class Stream implements StreamInterface
         }
 
         return true;
+    }
+
+    /**
+     * Sanitize and prepare a client command to be send to the serever.
+     * 
+     * @param string $command
+     * 
+     * @return string
+     */
+    final protected function prepareCommand($command)
+    {
+        return trim($command) . FtpBridge::CRLF;
     }
 
     /**
