@@ -14,7 +14,6 @@ class ExceptionTestCase extends TestCase
     {
         $this->expectException($this->exceptionClass);
         $this->expectExceptionMessage("some exception message.");
-
         throw new $this->exceptionClass("some exception message.");
     }
 
