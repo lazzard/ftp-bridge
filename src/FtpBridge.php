@@ -30,6 +30,15 @@ use Lazzard\FtpBridge\Stream\PassiveDataStream;
 class FtpBridge
 {
     /**
+     * @var string 
+     * 
+     * The Carriage return and line feed represents an end of line of an FTP reply/command.
+     * 
+     * @link https://tools.ietf.org/html/rfc959#section-4 (4.2. FTP REPLIES)
+     */
+    const CRLF = "\r\n";
+    
+    /**
      * Transfer type representations.
      */
     const TR_TYPE_ASCII      = 'A';

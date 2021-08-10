@@ -22,12 +22,6 @@ namespace Lazzard\FtpBridge\Stream;
 interface StreamInterface
 {
     /**
-     * Carriage return and line feed used at the end of an FTP command 
-     * string as defined in RFC959.
-     */
-    const CRLF = "\r\n";
-
-    /**
      * Opens the stream resource.
      *
      * @return bool Returns true on success, false otherwise, an E_WARNING_ERROR also will raised.
