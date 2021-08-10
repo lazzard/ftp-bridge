@@ -20,39 +20,9 @@ namespace Lazzard\FtpBridge\Logger;
 interface LoggerInterface
 {
     /**
-     * @var string 
-     * 
-     * FTP reply end of line.
-     */
-    const CRLF = "\r\n";
-
-    /**
-     * @var int
-     *
-     * The plain mode logs the FTP server response as they are,
-     * no parsing performed on the response string.
-     */
-    const PLAIN_MODE = 0;
-
-    /**
-     * @var int
-     *
-     * Array mode parses the remote reply as an array.
-     */
-    const ARRAY_MODE = 1;
-
-    /**
      * @return mixed
      */
     public function getLogs();
-
-    /**
-     * @param int    $level
-     * @param string $message
-     *
-     * @return void
-     */
-    public function log($level, $message);
 
     /**
      * @param string $message
@@ -74,6 +44,14 @@ interface LoggerInterface
      * @return void
      */
     public function command($string);
+
+        /**
+     * @param int    $level
+     * @param string $message
+     *
+     * @return void
+     */
+    public function log($level, $message);
 
     /**
      * @return void

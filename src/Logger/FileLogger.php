@@ -13,6 +13,7 @@
 namespace Lazzard\FtpBridge\Logger;
 
 use Lazzard\FtpBridge\Exception\FileLoggerException;
+use Lazzard\FtpBridge\FtpBridge;
 
 /**
  * Logs the FTP session into a file system.
@@ -36,13 +37,10 @@ class FileLogger extends Logger
      * @param int    $mode
      * @param bool   $append
      */
-    public function __construct($filePath, $mode = LoggerInterface::PLAIN_MODE, $append = false)
+    public function __construct($filePath, $append = false)
     {
-        parent::__construct($mode);
-
         $this->filePath = $filePath;
         $this->append   = $append;
-
         $this->open();
     }
 
@@ -63,7 +61,7 @@ class FileLogger extends Logger
         }
 
         if (($content = file_get_contents($this->filePath)) === false) {
-            throw new FileLoggerException("Failed to get the $this->filePath content.");
+            throw new FileLoggerException("Failed to retrieve logs from $this->filePath.");
         }
 
         return $content;
@@ -76,32 +74,7 @@ class FileLogger extends Logger
      */
     public function log($level, $message)
     {
-        if ($this->mode === self::PLAIN_MODE) {
-            $this->write(sprintf("%s %s", $level, $message));
-        } elseif ($this->mode === self::ARRAY_MODE) {
-            // remove the '\r\n' from the end of the message
-            $message = preg_replace("/[\r\n]$/", '', $message);
-            $lines   = explode(self::CRLF, $message);
-            $indent  = str_repeat(' ', 4);
-
-            $output = sprintf(
-                "%s[%s] array() %s [%s",
-                ftell($this->stream) ? self::CRLF : '',
-                count($lines),
-                $level,
-                self::CRLF
-            );
-
-            foreach ($lines as $line) {
-                $output .= sprintf("%s%s%s", $indent, $line, self::CRLF);
-            }
-
-            $output .= ']';
-
-            if ($this->write($output) === false) {
-                throw new FileLoggerException("Cannot write to file $this->filePath.");
-            }
-        }
+        $this->write(sprintf("%s %s", $level, $message));
     }
 
     /**
@@ -123,16 +96,14 @@ class FileLogger extends Logger
      */
     public function count()
     {
-        if ($this->mode === self::PLAIN_MODE) {
-            return count(explode(self::CRLF, $this->getLogs())) - 1;
-        }
-
-        return substr_count($this->getLogs(), 'array');
+        return count(explode(FtpBridge::CRLF, $this->getLogs())) - 1;
     }
 
     public function __destruct()
     {
-        $this->close();
+        if (file_exists($this->filePath)) {
+            $this->close();
+        }
     }
 
     protected function open()

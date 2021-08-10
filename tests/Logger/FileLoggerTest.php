@@ -1,142 +1,78 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests;
+namespace Lazzard\FtpBridge\Tests\Logger;
 
-use Lazzard\FtpBridge\Exception\FileLoggerException;
+use Lazzard\FtpBridge\FtpBridge;
+use Lazzard\FtpBridge\Logger\LogLevel;
 use Lazzard\FtpBridge\Logger\FileLogger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
-use PHPUnit\Framework\TestCase;
 
-class FileLoggerTest extends TestCase
+class FileLoggerTest extends LoggerTest
 {
+    public static function setUpBeforeClass(): void
+    {
+        parent::setUpBeforeClass();
+
+        self::$logger = FileLogger::class;
+    }
+
     public function testConstructor()
     {
-        $file = tempnam(sys_get_temp_dir(), 'lazzard_ftp_bridge_temp_file');
+        $file = tempnam(sys_get_temp_dir(), 'testConstructor');
 
         $logger = new FileLogger($file);
 
-        $this->assertInstanceOf(FileLogger::class, $logger);
-        $this->assertIsResource($logger->getStream());
+        $this->assertInstanceOf(LoggerInterface::class, $logger);
 
         unlink($file);
     }
 
-
-    public function testGetLogsWithPlainMode()
+    public function testLog()
     {
-        $file = tempnam(sys_get_temp_dir(), 'lazzard_ftp_bridge_temp_file');
-
-        $logger = new FileLogger($file, LoggerInterface::PLAIN_MODE);
-
-        $logger->log('-->', 'HELP');
-
-        $this->assertSame('--> HELP', $logger->getLogs());
-
-        unlink($file);
-    }
-
-    public function testGetLogsWithArrayMode()
-    {
-        $file = tempnam(sys_get_temp_dir(), 'lazzard_ftp_bridge_temp_file');
-
-        $logger = new FileLogger($file, LoggerInterface::ARRAY_MODE);
-
-        $logger->log('-->', 'HELP' . LoggerInterface::CRLF);
-
-        $this->assertSame("[1] array() --> [
-    HELP
-]",
-            $logger->getLogs()
-        );
-
-        unlink($file);
-    }
-
-    public function testGetLogsIfFileNotExists()
-    {
-        $file = tempnam(sys_get_temp_dir(), 'lazzard_ftp_bridge_temp_file');
+        $file = tempnam(sys_get_temp_dir(), 'testLog');
 
         $logger = new FileLogger($file);
 
-        unlink($file);
-
-        $logger->log('-->', 'HELP' . LoggerInterface::CRLF);
-
-        $this->expectException(FileLoggerException::class);
-
-        $logger->getLogs();
-    }
-
-    public function testCountWithPlainMode()
-    {
-        $file = tempnam(sys_get_temp_dir(), 'lazzard_ftp_bridge_temp_file');
-
-        $logger = new FileLogger($file, LoggerInterface::PLAIN_MODE);
-
-        $logger->log('<--',
-            "220---------- Welcome to Pure-FTPd [privsep] [TLS] ----------
-                220-You are user number 231 of 6900 allowed.
-                220-Local time is now 18:54. Server port: 21.
-                220-This is a private system - No anonymous login
-                220 You will be disconnected after 60 seconds of inactivity" . LoggerInterface::CRLF);
-
-        $this->assertSame(5, $logger->count());
+        $this->assertNull($logger->log(LogLevel::$command, 'USER username'));
+        $this->assertFileExists($file);
+        $this->assertStringNotEqualsFile($file, '');
 
         unlink($file);
     }
 
-    public function testCountWithArrayMode()
+    public function testGetLogs()
     {
-        $file = tempnam(sys_get_temp_dir(), 'lazzard_ftp_bridge_temp_file');
-
-        $logger = new FileLogger($file, LoggerInterface::ARRAY_MODE);
-
-        $logger->log('<--',
-            "220---------- Welcome to Pure-FTPd [privsep] [TLS] ----------
-                220-You are user number 231 of 6900 allowed.
-                220-Local time is now 18:54. Server port: 21.
-                220-This is a private system - No anonymous login
-                220 You will be disconnected after 60 seconds of inactivity" . LoggerInterface::CRLF);
-
-        $this->assertSame(1, $logger->count());
-
-        unlink($file);
-    }
-
-    public function testLogWithPlainMode()
-    {
-        $file = tempnam(sys_get_temp_dir(), 'lazzard_ftp_bridge_temp_file');
-
-        $logger = new FileLogger($file, LoggerInterface::PLAIN_MODE);
-
-        $this->assertNull($logger->log('-->', 'NOOP' . LoggerInterface::CRLF));
-        $this->assertSame('--> NOOP' . LoggerInterface::CRLF, $logger->getLogs());
-
-        unlink($file);
-    }
-
-    public function testLogWithArrayMode()
-    {
-        $file = tempnam(sys_get_temp_dir(), 'lazzard_ftp_bridge_temp_file');
-
-        $logger = new FileLogger($file, LoggerInterface::ARRAY_MODE);
-
-        $this->assertNull($logger->log('-->', 'NOOP' . LoggerInterface::CRLF));
-        $this->assertSame('[1] array() --> [
-    NOOP
-]', $logger->getLogs());
-
-        unlink($file);
-    }
-
-    public function testClear()
-    {
-        $file = tempnam(sys_get_temp_dir(), 'lazzard_ftp_bridge_temp_file');
+        $file = tempnam(sys_get_temp_dir(), 'testGetLogs');
 
         $logger = new FileLogger($file);
 
-        $this->assertTrue($logger->clear());
+        self::logFakeSession($logger);
 
-        unlink($file);
+        $crlf = FtpBridge::CRLF;
+
+        $infoLvl    = LogLevel::$info;
+        $commandLvl = LogLevel::$command;
+        $errorLvl   = LogLevel::$error;
+
+        $expected =
+            "{$infoLvl} 220 FTP Server ready.{$crlf}" .
+            "{$commandLvl} USER username{$crlf}" .
+            "{$infoLvl} 331 Password required for username{$crlf}" .
+            "{$commandLvl} PASS password{$crlf}" .
+            "{$infoLvl} 230 User u852470563 logged in{$crlf}" .
+            "{$commandLvl} PWD{$crlf}" .
+            "{$infoLvl} 257 \"root\" is the current directory{$crlf}" .
+            "{$commandLvl} NLST .{$crlf}" .
+            "{$infoLvl} 150 Opening ASCII mode data connection for file list{$crlf}" .
+            "{$infoLvl} file1.txt{$crlf}" .
+            "file2.txt{$crlf}" .
+            "file3.txt{$crlf}" .
+            "{$infoLvl} 226 Transfer complete{$crlf}" .
+            "{$commandLvl} UNKNOWN{$crlf}" .
+            "{$errorLvl} 500 UNKNOWN not understood{$crlf}" .
+            "{$commandLvl} QUIT{$crlf}" .
+            "{$infoLvl} 221 Goodbye.{$crlf}";
+
+        $this->assertSame($expected, file_get_contents($file));
     }
 }
