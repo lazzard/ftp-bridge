@@ -34,7 +34,6 @@ class FileLogger extends Logger
 
     /**
      * @param string $filePath
-     * @param int    $mode
      * @param bool   $append
      */
     public function __construct($filePath, $append = false)
@@ -68,9 +67,7 @@ class FileLogger extends Logger
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @throws FileLoggerException
+     * @inheritDoc
      */
     public function log($level, $message)
     {
@@ -84,19 +81,25 @@ class FileLogger extends Logger
      */
     public function clear()
     {
-        if ($this->write('') === false) {
+        if (file_put_contents($this->filePath, '') === false) {
             throw new FileLoggerException("Unable to clear the file {$this->filePath}'s content.");
         }
-
-        return true;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
+     * @throws FileLoggerException
      */
     public function count()
     {
-        return count(explode(FtpBridge::CRLF, $this->getLogs())) - 1;
+        $logs = $this->getLogs();
+
+        if (!empty($logs)) {
+            return count(explode(FtpBridge::CRLF, $logs)) - 1;
+        }
+
+        return 0;
     }
 
     public function __destruct()
