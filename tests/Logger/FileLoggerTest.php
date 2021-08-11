@@ -75,4 +75,31 @@ class FileLoggerTest extends LoggerTest
 
         $this->assertSame($expected, file_get_contents($file));
     }
+
+    public function testClear()
+    {
+        $file = tempnam(sys_get_temp_dir(), 'testClear');
+
+        $logger = new FileLogger($file);
+
+        self::logFakeSession($logger);
+
+        $this->assertNull($logger->clear());
+        $this->assertStringEqualsFile($file, '');
+
+        unlink($file);
+    }
+
+    public function testCount()
+    {
+        $file = tempnam(sys_get_temp_dir(), 'testCount');
+
+        $logger = new FileLogger($file);
+
+        self::logFakeSession($logger);
+
+        $this->assertSame(17, $logger->count());
+
+        unlink($file);
+    }
 }
