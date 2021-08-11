@@ -21,7 +21,7 @@ class ResponseParser
 
     protected static $matches = array(
         'code'      => '/^\d{3}/',
-        'message'   => '/(\s|-)(.*)/',
+        'message'   => '/^\d{3}(\s|-)(.*)/',
         'multiline' => '/^\d{3}-/',
     );
 
