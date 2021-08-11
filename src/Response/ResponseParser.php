@@ -11,8 +11,6 @@
 
 namespace Lazzard\FtpBridge\Response;
 
-use Lazzard\FtpBridge\Exception\ResponseParserException;
-
 /**
  * Provides methods to parse a raw FTP response string.
  */
@@ -22,9 +20,9 @@ class ResponseParser
     protected $raw;
 
     protected static $matches = array(
-        'code'      => '/^\d+/',
-        'message'   => '/[A-z ]+.*/',
-        'multiline' => '/^\d{2,}-/',
+        'code'      => '/^\d{3}/',
+        'message'   => '/(\s|-)(.*)/',
+        'multiline' => '/^\d{3}-/',
     );
 
     /**
@@ -39,8 +37,6 @@ class ResponseParser
      * Parses a raw FTP response string into an array representation.
      *
      * @return array
-     *
-     * @throws ResponseParserException
      */
     public function toArray()
     {
@@ -52,45 +48,31 @@ class ResponseParser
     }
 
     /**
-     * @return false|int
-     *
-     * @throws ResponseParserException
+     * @return int|false
      */
     protected function parseCode()
     {
-        $result = preg_match(self::$matches['code'], $this->raw, $matches);
-
-        if ($result === false) {
-            throw new ResponseParserException("Failed to match " . self::$matches['code'] . " pattern.");
+        if (!preg_match(self::$matches['code'], $this->raw, $matches)) {
+            return false;
         }
 
-        if (count($matches) > 0) {
-            return (int)$matches[0];
-        }
-
-        return false;
+        return (int)$matches[0];
     }
 
     /**
-     * @return string
-     *
-     * @throws ResponseParserException
+     * @return string|false
      */
     protected function parseMessage()
     {
-        $result = preg_match(self::$matches['message'], $this->raw, $matches);
-
-        if ($result === false) {
-            throw new ResponseParserException("Failed to match " . self::$matches['message'] . " pattern.");
+        if (!preg_match(self::$matches['message'], $this->raw, $matches)) {
+            return false;
         }
 
-        return str_replace("\r",'',$matches[0]);  // remove the carriage return from the end
+        return str_replace("\r",'', $matches[2]);  // remove the carriage return from the end
     }
 
     /**
      * @return bool
-     *
-     * @throws ResponseParserException
      */
     protected function isMultiline()
     {
@@ -99,12 +81,6 @@ class ResponseParser
         // for multiple lines replies the first line must be on a special format, the replay code
         // must immediately followed by a minus "-" character.
         //@link https://tools.ietf.org/html/rfc959#section-4
-        $match = preg_match(self::$matches['multiline'], $this->raw);
-
-        if ($match === false) {
-            throw new ResponseParserException("Failed to match the response multiline pattern.");
-        }
-
-        return $match === 1;
+        return (bool)@preg_match(self::$matches['multiline'], $this->raw);
     }
 }

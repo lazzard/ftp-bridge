@@ -14,7 +14,6 @@ namespace Lazzard\FtpBridge\Stream;
 use Lazzard\FtpBridge\Response\Response;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Exception\StreamException;
-use Lazzard\FtpBridge\Exception\ResponseParserException;
 use Lazzard\FtpBridge\FtpBridge;
 
 /**
@@ -74,8 +73,6 @@ abstract class Stream implements StreamInterface
      * @param string $message
      *
      * @return void
-     *
-     * @throws ResponseParserException
      */
     final protected function log($message)
     {

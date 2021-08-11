@@ -11,8 +11,6 @@
 
 namespace Lazzard\FtpBridge\Response;
 
-use Lazzard\FtpBridge\Exception\ResponseParserException;
-
 /**
  * Represents an FTP replay.
  *
@@ -35,8 +33,6 @@ class Response
 
     /**
      * @param string $reply The raw FTP reply string.
-     *
-     * @throws ResponseParserException
      */
     public function __construct($reply)
     {
