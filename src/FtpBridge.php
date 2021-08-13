@@ -110,11 +110,11 @@ class FtpBridge
     }
 
     /**
-     * Writes the string content to the data stream.
+     * Writes the provided string content to the data channel.
      *
      * @param string $string
      *
-     * @return bool
+     * @return void
      *
      * @throws FtpBridgeException
      */
@@ -122,10 +122,12 @@ class FtpBridge
     {
         if (!$this->dataStream || !is_resource($this->dataStream->stream)) {
             throw new FtpBridgeException('The FTP data connection must be established'
-                . 'first before try writing to the data stream.');
+                . 'first before try writing content to the data channel.');
         }
 
-        return $this->dataStream->write($string);
+        if (!$this->dataStream->write($string)) {
+            throw new FtpBridgeException("Unable to write content to the data channel.");
+        }
     }
 
     /**
