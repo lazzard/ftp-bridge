@@ -92,18 +92,21 @@ class FtpBridge
      *
      * @param string $command
      *
-     * @return bool
+     * @return void
      *
      * @throws FtpBridgeException
      */
     public function send($command)
     {
         if (!$this->commandStream || !is_resource($this->commandStream->stream)) {
-            throw new FtpBridgeException('The FTP connection must be established'
-                . ' first before try sending any commands.');
+            throw new FtpBridgeException('The FTP connection must be established ' .
+                'first before try sending any commands.');
         }
 
-        return $this->commandStream->write($command);
+        if (!$this->commandStream->write($command)) {
+            throw new FtpBridgeException("Unable to send the command \"$command\" " .
+                'through the control channel.');
+        }
     }
 
     /**
