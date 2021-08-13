@@ -7,7 +7,7 @@ use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Logger\LogLevel;
 use Lazzard\FtpBridge\FtpBridge;
 
-class ArrayLoggerTestCase extends LoggerTest
+class ArrayLoggerTest extends LoggerTest
 {
     public static function setUpBeforeClass(): void
     {
@@ -72,6 +72,8 @@ class ArrayLoggerTestCase extends LoggerTest
     public function testCount()
     {
         $logger = new ArrayLogger;
+
+        $this->assertSame(0, $logger->count());
 
         self::logFakeSession($logger);
 

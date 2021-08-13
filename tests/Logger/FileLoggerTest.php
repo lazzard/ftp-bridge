@@ -46,6 +46,8 @@ class FileLoggerTest extends LoggerTest
 
         $logger = new FileLogger($file);
 
+        $this->assertEmpty($logger->getLogs());
+
         self::logFakeSession($logger);
 
         $crlf = FtpBridge::CRLF;
@@ -95,6 +97,8 @@ class FileLoggerTest extends LoggerTest
         $file = tempnam(sys_get_temp_dir(), 'testCount');
 
         $logger = new FileLogger($file);
+
+        $this->assertSame(0, $logger->count());
 
         self::logFakeSession($logger);
 
