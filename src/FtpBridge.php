@@ -133,7 +133,7 @@ class FtpBridge
     /**
      * Receives and gets the response from the command stream.
      *
-     * @return Response Returns a {@link Response} object.
+     * @return Response Returns a {@see Response} object.
      *
      * @throws FtpBridgeException
      */
@@ -144,7 +144,7 @@ class FtpBridge
         }
 
         if (!$raw = $this->commandStream->read()) {
-            throw new FtpBridgeException('Failed to retrieve data from the command stream.');
+            throw new FtpBridgeException('Failed to retrieve data from the control channel.');
         }
 
         return $this->response = new Response($raw);
@@ -258,13 +258,13 @@ class FtpBridge
     /**
      * Sets the transfer type for the next transfer operation.
      *
-     * @param string     $type        The transfer type can be either {@link FtpBridge2::TR_TYPE_BINARY}
-     *                                or {@link FtpBridge2::TR_TYPE_ASCII} or {@link FtpBridge2::TR_TYPE_EBCDIC}.
+     * @param string     $type        The transfer type can be either {@see FtpBridge::TR_TYPE_BINARY}
+     *                                or {@see FtpBridge::TR_TYPE_ASCII} or {@see FtpBridge::TR_TYPE_EBCDIC}.
      * @param string|int $secondParam Specifies how the text should be interpreted for the file types
-     *                                {@link FtpBridge2::TR_TYPE_ASCII} and {@link FtpBridge2::TR_TYPE_EBCDIC},
-     *                                it can be either {@link FtpBridge2::TR_TYPE_NON_PRINT},
-     *                                {@link FtpBridge2::TR_TYPE_TELNET} or {@link TR_TYPE_CONTROL}.
-     *                                For the {@link FtpBridge2::TR_TYPE_LOCAL} an integer must be specified to specify the
+     *                                {@see FtpBridge::TR_TYPE_ASCII} and {@see FtpBridge::TR_TYPE_EBCDIC},
+     *                                it can be either {@see FtpBridge::TR_TYPE_NON_PRINT},
+     *                                {@see FtpBridge::TR_TYPE_TELNET} or {@see TR_TYPE_CONTROL}.
+     *                                For the {@see FtpBridge::TR_TYPE_LOCAL} an integer must be specified to specify the
      *                                number of bits per byte on the local system.
      *
      * @return bool
