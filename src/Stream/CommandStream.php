@@ -11,8 +11,8 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Exception\StreamException;
+use Lazzard\FtpBridge\Logger\LoggerInterface;
 
 /**
  * Represents an FTP command stream (control channel).
@@ -60,8 +60,12 @@ class CommandStream extends Stream
     public function read()
     {
         $response = '';
+
         while (true) {
-            $line      = fgets($this->stream);
+            if (!$line = $this->streamWrapper->fgets()) {
+                break;
+            }
+
             $response .= $line;
 
             // To distinguish the end of an FTP reply, the RFC959 indicates that the last line of
@@ -73,7 +77,9 @@ class CommandStream extends Stream
             }
         }
 
-        $this->log($response);
+        if ($response) {
+            $this->log($response);
+        }
 
         return $response;
     }
@@ -85,11 +91,12 @@ class CommandStream extends Stream
      */
     public function open()
     {
-        if($open = $this->openStreamSocket($this->host, $this->port, $this->timeout, $this->blocking)) {
-            // TODO check the reply
-            $this->read();
+        if (!$this->openSocketConnection($this->host, $this->port, $this->timeout, $this->blocking)) {
+            return false;
         }
 
-        return $open;
+        $this->read();
+
+        return true;
     }
 }

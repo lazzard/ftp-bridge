@@ -11,10 +11,11 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Response\Response;
-use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Exception\StreamException;
 use Lazzard\FtpBridge\FtpBridge;
+use Lazzard\FtpBridge\Logger\LoggerInterface;
+use Lazzard\FtpBridge\Response\Response;
+use Lazzard\FtpBridge\Util\StreamWrapper;
 
 /**
  * Abstracts shared implementation of FTP stream classes.
@@ -33,6 +34,9 @@ abstract class Stream implements StreamInterface
     /** @var LoggerInterface */
     public $logger;
 
+    /** @var StreamWrapper */
+    public $streamWrapper;
+
     /**
      * Stream constructor.
      *
@@ -41,6 +45,8 @@ abstract class Stream implements StreamInterface
     public function __construct(LoggerInterface $logger = null)
     {
         $this->logger = $logger;
+
+        $this->streamWrapper = new StreamWrapper();
     }
 
     /**
@@ -50,13 +56,13 @@ abstract class Stream implements StreamInterface
     {
         $command = $this->prepareCommand($command);
 
-        $write = fwrite($this->stream, $command);
+        $write = $this->streamWrapper->fwrite($command);
 
         if ($write !== false && $this->logger instanceof LoggerInterface) {
             $this->logger->command($command);
         }
 
-        return $write;
+        return (bool)$write;
     }
 
     /**
@@ -76,7 +82,7 @@ abstract class Stream implements StreamInterface
      */
     final protected function log($message)
     {
-        if (!$this->logger) {
+        if (!$this->logger instanceof LoggerInterface) {
             return;
         }
 
@@ -99,24 +105,34 @@ abstract class Stream implements StreamInterface
      *
      * @throws StreamException
      */
-    final protected function openStreamSocket($host, $port, $timeout, $blocking)
+    final protected function openSocketConnection($host, $port, $timeout, $blocking)
     {
-        if (!($this->stream = @stream_socket_client("tcp://$host:$port", $errno, $errMsg, $timeout,
-            $blocking ? STREAM_CLIENT_CONNECT : STREAM_CLIENT_ASYNC_CONNECT))) {
-            throw new StreamException($errMsg);
+        if (!$stream = $this->streamWrapper->streamSocketClient("tcp://$host:$port", $timeout,
+            $blocking ? STREAM_CLIENT_CONNECT : STREAM_CLIENT_ASYNC_CONNECT,
+            function ($errMsg) {
+                if ($errMsg) {
+                    throw new StreamException($errMsg);
+                }
+            }
+        )) {
+            return false;
         }
+
+        $this->stream = $stream;
+
+        $this->streamWrapper->setHandle($stream);
 
         return true;
     }
 
     /**
-     * Sanitize and prepare a client command to be send to the serever.
-     * 
+     * Sanitize and prepare a client command to be send to the server.
+     *
      * @param string $command
-     * 
+     *
      * @return string
      */
-    final protected function prepareCommand($command)
+    private function prepareCommand($command)
     {
         return trim($command) . FtpBridge::CRLF;
     }

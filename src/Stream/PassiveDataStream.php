@@ -27,7 +27,7 @@ class PassiveDataStream extends DataStream
      * Opens the data connection stream to the server port sent via the FTP server after
      * sending the PASV command.
      *
-     * {@inheritDoc}
+     * @return bool
      *
      * @throws PassiveDataStreamException|StreamException
      */
@@ -36,23 +36,25 @@ class PassiveDataStream extends DataStream
         $this->commandStream->write('PASV');
 
         $response = new Response($this->commandStream->read());
+        $message  = $response->getMessage();
 
         if ($response->getCode() !== 227) {
-            throw new PassiveDataStreamException($response->getMessage());
+            throw new PassiveDataStreamException($message);
         }
 
-        if (!preg_match('/(\d+,){4}+/', $response->getMessage(), $ipMatches)
-            || !preg_match('/\d+,\d+\)/', $response->getMessage(), $portMatches)) {
-            throw new PassiveDataStreamException('Unable to get the passive IP & PORT from the reply message.');
+        if (!$hostip = $this->parseIPFromMessage($message)) {
+            throw new PassiveDataStreamException('Failed to parse the host IP from the "PASV" command reply.');
         }
 
-        $ip    = rtrim(str_replace(',', '.', $ipMatches[0]), '.');
-        $ports = explode(',', rtrim($portMatches[0], ')'));
-        $port  = ($ports[0] * 256) + $ports[1];
+        if (!$portNumbers = $this->parsePortNumbersFromMessage($message)) {
+            throw new PassiveDataStreamException('Failed to parse the data port numbers from the "PASV" command reply.');
+        }
 
-        return $this->openStreamSocket(
-            $ip,
-            $port,
+        $dataPort = $this->calculateDataPortNumber($portNumbers);
+
+        return $this->openSocketConnection(
+            $hostip,
+            $dataPort,
             $this->commandStream->timeout,
             $this->commandStream->blocking
         );
@@ -71,5 +73,45 @@ class PassiveDataStream extends DataStream
         $this->log($data);
 
         return $data;
+    }
+
+    /**
+     * @param string $message
+     *
+     * @return bool
+     */
+    private function parseIPFromMessage($message)
+    {
+        if (!preg_match('/(\d+,){4}/', $message, $matches)) {
+            return false;
+        }
+
+        return substr(str_replace(',', '.', $matches[0]), 0, -1);
+    }
+
+    /**
+     * @param string $message
+     *
+     * @return array|false
+     */
+    private function parsePortNumbersFromMessage($message)
+    {
+        // TODO the FTP replay format to 'PASV' is not standardized
+        // @link https://datatracker.ietf.org/doc/html/rfc1123#page-31
+        if (!preg_match('/(\d{2,},\d{2,})\)/', $message, $matches)) {
+            return false;
+        }
+
+        return explode(',', $matches[1]);
+    }
+
+    /**
+     * @param array $portNumbers
+     *
+     * @return int
+     */
+    private function calculateDataPortNumber($portNumbers)
+    {
+        return ($portNumbers[0] * 256) + $portNumbers[1];
     }
 }

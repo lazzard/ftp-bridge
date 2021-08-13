@@ -62,14 +62,20 @@ class ActiveDataStream extends DataStream
         // be send along with PORT command.
         // 4- send the PORT command.
         if (is_resource($stream = stream_socket_server('tcp://0.0.0.0:'.$port, $errnon, $errstr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN))) {
-            $this->commandStream->write("PORT $ip,$low,$high");
-            $response = new Response($this->commandStream->read());
-            if ($response->getCode() === 200) {
-                $this->stream = $stream;
-                return true;
+
+            if(!$this->commandStream->write("PORT $ip,$low,$high")) {
+                throw new ActiveDataStreamException('Unable to send the PORT command to the server.');
             }
 
-            throw new ActiveDataStreamException($response->getMessage());
+            $response = new Response($this->commandStream->read());
+
+            if ($response->getCode() !== 200) {
+                throw new ActiveDataStreamException($response->getMessage());
+            }
+
+            $this->stream = $stream;
+
+            return true;
         }
 
         throw new ActiveDataStreamException('Unable to open the data stream socket connection.');
