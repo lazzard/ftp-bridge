@@ -163,7 +163,11 @@ class FtpBridge
             throw new FtpBridgeException('The FTP data connection not created yet.');
         }
 
-        return $this->dataStream->read();
+        if (!$data = $this->dataStream->read()) {
+            throw new FtpBridgeException('Failed to retrieve data from the data channel.');
+        }
+
+        return $data;
     }
 
     /**
