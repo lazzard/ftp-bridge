@@ -22,6 +22,7 @@ use Lazzard\FtpBridge\Stream\ActiveDataStream;
 use Lazzard\FtpBridge\Stream\CommandStream;
 use Lazzard\FtpBridge\Stream\DataStream;
 use Lazzard\FtpBridge\Stream\PassiveDataStream;
+use Lazzard\FtpBridge\Util\StreamWrapper;
 
 /**
  * @since  1.0
@@ -177,7 +178,7 @@ class FtpBridge
      * @param int    $port     [optional] The remote server port to connect to, if omitted the port 21 will be used.
      * @param int    $timeout  [optional] Specifies the connection timeout of all FTP transfer operations, default sets
      *                         to 90.
-     * @param bool   $blocking $blocking [optional] The transfer mode, the blocking mode is the default.
+     * @param bool   $blocking [optional] The transfer mode, the blocking mode is the default.
      *
      * @return bool Returns true on success, false on failure and an E_WARNING error raised.
      *
@@ -185,7 +186,14 @@ class FtpBridge
      */
     public function connect($host, $port = 21, $timeout = 90, $blocking = true)
     {
-        $this->commandStream = new CommandStream($this->logger, $host, $port, $timeout, $blocking);
+        $this->commandStream = new CommandStream($host,
+            $port,
+            $timeout,
+            $blocking,
+            new StreamWrapper,
+            $this->logger
+        );
+
         return $this->commandStream->open();
     }
 
@@ -198,15 +206,20 @@ class FtpBridge
      */
     public function openPassive()
     {
-        $this->dataStream = new PassiveDataStream($this->logger, $this->commandStream);
+        $this->dataStream = new PassiveDataStream(
+            $this->commandStream,
+            new StreamWrapper,
+            $this->logger
+        );
+
         return $this->dataStream->open();
     }
 
     /**
      * Opens an active data connection to the FTP server.
      *
-     * @param string $activeIpAddress            [optional] The IP address to send along with the PORT command, if omitted
-     *                                           the server IP address in the $_SERVER['SERVER_ADDR'] will be used.
+     * @param string $activeIpAddress [optional] The IP address to send along with the PORT command, if omitted
+     *                                the server IP address in the $_SERVER['SERVER_ADDR'] will be used.
      *
      * @return bool
      *
@@ -214,7 +227,13 @@ class FtpBridge
      */
     public function openActive($activeIpAddress = null)
     {
-        $this->dataStream = new ActiveDataStream($this->logger, $this->commandStream, $activeIpAddress);
+        $this->dataStream = new ActiveDataStream(
+            $this->commandStream,
+            new StreamWrapper,
+            $this->logger,
+            $activeIpAddress
+        );
+
         return $this->dataStream->open();
     }
 

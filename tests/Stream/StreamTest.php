@@ -23,6 +23,7 @@ class StreamTest extends TestCase
             ->willReturn(true);
 
         $stream = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
             ->onlyMethods([])
             ->getMockForAbstractClass();
 
@@ -42,6 +43,7 @@ class StreamTest extends TestCase
             ->willReturn(false);
 
         $stream = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
             ->onlyMethods([])
             ->getMockForAbstractClass();
 
@@ -68,6 +70,7 @@ class StreamTest extends TestCase
             ->method('command');
 
         $stream = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
             ->getMockForAbstractClass();
 
         $stream->streamWrapper = $wrapper;
@@ -79,6 +82,7 @@ class StreamTest extends TestCase
     public function testClose()
     {
         $stream = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
             ->getMockForAbstractClass();
 
         $stream->stream = self::getFakeStream();
@@ -89,6 +93,7 @@ class StreamTest extends TestCase
     public function testLogReturnsNullWhereLoggerIsNotAvailable()
     {
         $stream = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
             ->getMockForAbstractClass();
 
         $method = self::getMethod('log');
@@ -109,6 +114,7 @@ class StreamTest extends TestCase
             ->with($message);
 
         $stream = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
             ->getMockForAbstractClass();
 
         $stream->logger = $logger;
@@ -131,6 +137,7 @@ class StreamTest extends TestCase
             ->with($message);
 
         $stream = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
             ->getMockForAbstractClass();
 
         $stream->logger = $logger;

@@ -40,13 +40,13 @@ abstract class Stream implements StreamInterface
     /**
      * Stream constructor.
      *
+     * @param StreamWrapper        $streamWrapper
      * @param LoggerInterface|null $logger
      */
-    public function __construct(LoggerInterface $logger = null)
+    public function __construct($streamWrapper, LoggerInterface $logger = null)
     {
-        $this->logger = $logger;
-
-        $this->streamWrapper = new StreamWrapper();
+        $this->streamWrapper = $streamWrapper;
+        $this->logger        = $logger;
     }
 
     /**
@@ -107,7 +107,9 @@ abstract class Stream implements StreamInterface
      */
     final protected function openSocketConnection($host, $port, $timeout, $blocking)
     {
-        if (!$stream = $this->streamWrapper->streamSocketClient("tcp://$host:$port", $timeout,
+        if (!$stream = $this->streamWrapper->streamSocketClient(
+            "tcp://$host:$port",
+            $timeout,
             $blocking ? STREAM_CLIENT_CONNECT : STREAM_CLIENT_ASYNC_CONNECT,
             function ($errMsg) {
                 if ($errMsg) {

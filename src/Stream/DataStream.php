@@ -12,6 +12,7 @@
 namespace Lazzard\FtpBridge\Stream;
 
 use Lazzard\FtpBridge\Logger\LoggerInterface;
+use Lazzard\FtpBridge\Util\StreamWrapper;
 
 /**
  * @since  1.0
@@ -23,12 +24,15 @@ abstract class DataStream extends Stream
     public $commandStream;
 
     /**
-     * @param LoggerInterface $logger
-     * @param CommandStream $commandStream
+     * DataStream Constructor
+     *
+     * @param CommandStream        $commandStream
+     * @param StreamWrapper        $streamWrapper
+     * @param LoggerInterface|null $logger
      */
-    public function __construct(LoggerInterface $logger, CommandStream $commandStream)
+    public function __construct(CommandStream $commandStream, $streamWrapper, $logger)
     {
-        parent::__construct($logger);
+        parent::__construct($streamWrapper, $logger);
         $this->commandStream = $commandStream;
     }
 }

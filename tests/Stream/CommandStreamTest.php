@@ -25,7 +25,7 @@ class CommandStreamTest extends TestCase
             ->disableOriginalConstructor()
             ->getMockForAbstractClass();
 
-        $this->assertInstanceOf(StreamInterface::class, new CommandStream($logger, "foo.bar.com", 21, 90, true));
+        $this->assertInstanceOf(StreamInterface::class, new CommandStream("foo.bar.com", 21, 90, true, new StreamWrapper, $logger));
     }
 
     public function testReadWithSingleLineReply()
@@ -131,7 +131,7 @@ class CommandStreamTest extends TestCase
         $blocking = true;
 
         $stream = $this->getMockBuilder(CommandStream::class)
-            ->setConstructorArgs([$logger, $host, $port, $timeout, $blocking])
+            ->setConstructorArgs([$host, $port, $timeout, $blocking, new StreamWrapper, $logger])
             ->onlyMethods(['openSocketConnection', 'read'])
             ->getMock();
 
@@ -158,7 +158,7 @@ class CommandStreamTest extends TestCase
         $blocking = true;
 
         $stream = $this->getMockBuilder(CommandStream::class)
-            ->setConstructorArgs([$logger, $host, $port, $timeout, $blocking])
+            ->setConstructorArgs([$host, $port, $timeout, $blocking, new StreamWrapper, $logger])
             ->onlyMethods(['openSocketConnection', 'read'])
             ->getMock();
 

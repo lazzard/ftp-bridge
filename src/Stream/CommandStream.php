@@ -13,6 +13,7 @@ namespace Lazzard\FtpBridge\Stream;
 
 use Lazzard\FtpBridge\Exception\StreamException;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
+use Lazzard\FtpBridge\Util\StreamWrapper;
 
 /**
  * Represents an FTP command stream (control channel).
@@ -39,15 +40,16 @@ class CommandStream extends Stream
     /**
      * CommandStream constructor.
      *
-     * @param LoggerInterface $logger
-     * @param string          $host
-     * @param int             $port
-     * @param int             $timeout
-     * @param bool            $blocking
+     * @param string               $host
+     * @param int                  $port
+     * @param int                  $timeout
+     * @param bool                 $blocking
+     * @param StreamWrapper        $streamWrapper
+     * @param LoggerInterface|null $logger
      */
-    public function __construct($logger, $host, $port, $timeout, $blocking)
+    public function __construct($host, $port, $timeout, $blocking, $streamWrapper, $logger)
     {
-        parent::__construct($logger);
+        parent::__construct($streamWrapper, $logger);
         $this->host     = $host;
         $this->port     = $port;
         $this->timeout  = $timeout;

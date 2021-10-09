@@ -11,9 +11,9 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Response\Response;
-use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
+use Lazzard\FtpBridge\Util\StreamWrapper;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
+use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
 
 /**
  * @since  1.0
@@ -29,13 +29,14 @@ class ActiveDataStream extends DataStream
     /**
      * Opens a data stream socket.
      *
-     * @param LoggerInterface $logger
-     * @param CommandStream   $commandStream
-     * @param string          $activeIpAddress
+     * @param CommandStream        $commandStream
+     * @param string|null          $activeIpAddress
+     * @param StreamWrapper        $streamWrapper
+     * @param LoggerInterface|null $logger
      */
-    public function __construct(LoggerInterface $logger, CommandStream $commandStream, $activeIpAddress = null)
+    public function __construct(CommandStream $commandStream, $streamWrapper, $logger, $activeIpAddress = null)
     {
-        parent::__construct($logger, $commandStream);
+        parent::__construct($commandStream, $streamWrapper, $logger);
         $this->activeIpAddress = $activeIpAddress;
     }
 

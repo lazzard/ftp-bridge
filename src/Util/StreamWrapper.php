@@ -2,7 +2,7 @@
 
 namespace Lazzard\FtpBridge\Util;
 
-final class StreamWrapper
+class StreamWrapper
 {
     private $handle;
 
@@ -39,7 +39,7 @@ final class StreamWrapper
     }
 
     /**
-     * @return string[false
+     * @return string|false
      */
     public function fgets()
     {
