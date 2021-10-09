@@ -29,6 +29,17 @@ class StreamWrapper
     }
 
     /**
+     * @param string $filename
+     * @param string $mode
+     *
+     * @return resource|false
+     */
+    public function fopen($filename, $mode)
+    {
+        return fopen($filename, $mode);
+    }
+
+    /**
      * @param string $string
      *
      * @return int|false
@@ -44,5 +55,23 @@ class StreamWrapper
     public function fgets()
     {
         return fgets($this->handle);
+    }
+
+    /**
+     * @return bool
+     */
+    public function fclose()
+    {
+        return fclose($this->handle);
+    }
+
+    /**
+     * @param int $offset
+     *
+     * @return int
+     */
+    public function fseek($offset)
+    {
+        return fseek($this->handle, $offset);
     }
 }

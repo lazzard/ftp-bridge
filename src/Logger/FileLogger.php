@@ -14,6 +14,7 @@ namespace Lazzard\FtpBridge\Logger;
 
 use Lazzard\FtpBridge\Exception\FileLoggerException;
 use Lazzard\FtpBridge\FtpBridge;
+use Lazzard\FtpBridge\Util\StreamWrapper;
 
 /**
  * Logs the FTP session into a file system.
@@ -32,14 +33,22 @@ class FileLogger extends Logger
     /** @var bool */
     protected $append;
 
+    /** @var StreamWrapper */
+    protected $streamWrapper;
+
     /**
-     * @param string $filePath
-     * @param bool   $append
+     * @param string             $filePath
+     * @param bool               $append
+     * @param StreamWrapper|null $streamWrapper
+     *
+     * @throws FileLoggerException
      */
-    public function __construct($filePath, $append = false)
+    public function __construct($filePath, $append = false, $streamWrapper = null)
     {
-        $this->filePath = $filePath;
-        $this->append   = $append;
+        $this->filePath      = $filePath;
+        $this->append        = $append;
+        $this->streamWrapper = $streamWrapper ?: new StreamWrapper;
+
         $this->open();
     }
 
@@ -56,11 +65,16 @@ class FileLogger extends Logger
     public function getLogs()
     {
         if (!file_exists($this->filePath) || !is_readable($this->filePath)) {
-            throw new FileLoggerException("$this->filePath file is not found or isn't readable.");
+            throw new FileLoggerException("($this->filePath) not found or isn't readable.");
         }
 
-        if (($content = file_get_contents($this->filePath)) === false) {
-            throw new FileLoggerException("Failed to retrieve logs from $this->filePath.");
+        // rewind pointer position to 0
+        $this->streamWrapper->fseek(0);
+
+        $content = '';
+
+        while (($line = $this->streamWrapper->fgets()) !== false) {
+            $content .= $line;
         }
 
         return $content;
@@ -71,7 +85,7 @@ class FileLogger extends Logger
      */
     public function log($level, $message)
     {
-        $this->write(sprintf("%s %s", $level, $message));
+        $this->streamWrapper->fwrite(sprintf("%s %s", $level, $message));
     }
 
     /**
@@ -81,8 +95,8 @@ class FileLogger extends Logger
      */
     public function clear()
     {
-        if (file_put_contents($this->filePath, '') === false) {
-            throw new FileLoggerException("Unable to clear the file {$this->filePath}'s content.");
+        if (ftruncate($this->stream, 0) === false) {
+            throw new FileLoggerException("Unable to clear the file ($this->filePath) content.");
         }
     }
 
@@ -102,25 +116,25 @@ class FileLogger extends Logger
         return 0;
     }
 
+
     public function __destruct()
     {
         if (file_exists($this->filePath)) {
-            $this->close();
+            $this->streamWrapper->fclose();
         }
     }
 
+    /**
+     * @throws FileLoggerException
+     */
     protected function open()
     {
-        return $this->stream = fopen($this->filePath, $this->append ? 'a' : 'w');
-    }
+        if (($stream = fopen($this->filePath, $this->append ? 'a+' : 'w+')) === false) {
+            throw new FileLoggerException("Cannot open/create the logging file ($this->filePath).");
+        }
 
-    protected function write($content)
-    {
-        return fwrite($this->stream, $content);
-    }
+        $this->stream = $stream;
 
-    protected function close()
-    {
-        return fclose($this->stream);
+        $this->streamWrapper->setHandle($stream);
     }
 }
