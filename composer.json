@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": ">=5.3",
+        "php": ">=5.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^9",
@@ -25,6 +25,7 @@
         "symfony/var-dumper": "^5.3",
         "filp/whoops": "^2.13"
     },
+    "prefer-stable" : true,
     "autoload": {
         "psr-4": {
             "Lazzard\\FtpBridge\\": "src/"
@@ -37,7 +38,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.3.0"
+            "php": "7.3"
         }
     }
 }
