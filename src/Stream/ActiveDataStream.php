@@ -46,21 +46,26 @@ class ActiveDataStream extends DataStream
      */
     public function open()
     {
-        $ip = str_replace('.', ',', $this->activeIpAddress ?: $_SERVER['SERVER_ADDR']);
+        // minimum port number will be 1024 because 4 * 256 + 0 = 1024
+        // maximum port number will be 65535 because 255 * 256 + 255 = 65535
+        $p1  = rand(4, 255);
+        $p2 = rand(0, 255);
 
-        $low  = rand(32, 255);
-        $high = rand(32, 255);
-        // $port = ($low * 256) + $high
-        $port = ($low<<8) + $high;
+        // calculate the port number based on the rule ($p1 * 256 + $p2)
+        $port = $p1 * 256 + $p2;
 
-        // 1- create a stream socket.
-        // 2- bind the socket to a local host address.
-        // 3- listen to the socket on the local port that will
-        // be send along with PORT command.
+        // 1- create a server socket
+        // 2- bind the socket into a local host address
+        // 3- listen to the socket on the local port that will be send along with PORT command
         // 4- send the PORT command.
-        if (is_resource($stream = stream_socket_server('tcp://0.0.0.0:'.$port, $errnon, $errstr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN))) {
+        if (is_resource($stream = $this->streamWrapper->streamSocketServer(
+            "tcp://0.0.0.0:$port",
+            STREAM_SERVER_BIND | STREAM_SERVER_LISTEN)
+        )) {
+            $name = stream_socket_get_name($this->commandStream->stream, false);
+            $ip   = str_replace('.', ',', preg_replace('/:\d+/', '', $name));
 
-            if(!$this->commandStream->write("PORT $ip,$low,$high")) {
+            if(!$this->commandStream->write("PORT $ip,$p1,$p2")) {
                 throw new ActiveDataStreamException('Unable to send the PORT command to the server.');
             }
 

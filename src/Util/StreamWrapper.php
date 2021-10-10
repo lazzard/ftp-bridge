@@ -12,20 +12,26 @@ class StreamWrapper
     }
 
     /**
-     * @param string   $host
-     * @param string   $timeout
-     * @param string   $blocking
-     * @param callable $callback
+     * @param string $host
+     * @param string $timeout
+     * @param string $blocking
      *
      * @return resource|false
      */
-    public function streamSocketClient($host, $timeout, $blocking, $callback)
+    public function streamSocketClient($host, $timeout, $blocking)
     {
-        if (!$resource = @stream_socket_client($host, $errno, $errMsg, $timeout, $blocking)) {
-            call_user_func($callback, $errMsg);
-        }
+        return @stream_socket_client($host, $errno, $errMsg, $timeout, $blocking);
+    }
 
-        return $resource;
+    /**
+     * @param string $host
+     * @param int    $context
+     *
+     * @return resource|false
+     */
+    public function streamSocketServer($host, $context)
+    {
+        return @stream_socket_server($host, $errno, $errMsg, $context);
     }
 
     /**
