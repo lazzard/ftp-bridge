@@ -6,9 +6,21 @@ use Lazzard\FtpBridge\FtpBridge;
 use Lazzard\FtpBridge\Logger\LogLevel;
 use Lazzard\FtpBridge\Logger\FileLogger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
 
 class FileLoggerTest extends LoggerTest
 {
+    /** @var vfsStreamDirectory */
+    private $root;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->root = vfsStream::setup();
+    }
+
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
@@ -18,31 +30,34 @@ class FileLoggerTest extends LoggerTest
 
     public function testConstructor()
     {
-        $file = tempnam(sys_get_temp_dir(), 'testConstructor');
+        vfsStream::newFile('logs.txt', 0777)
+            ->at($this->root);
 
-        $logger = new FileLogger($file);
+        $logger = new FileLogger($this->root->url() . '/logs.txt');
 
         $this->assertInstanceOf(LoggerInterface::class, $logger);
-
-        unlink($file);
     }
 
     public function testLog()
     {
-        $file = tempnam(sys_get_temp_dir(), 'testLog');
+        $file = 'logs.txt';
+
+        vfsStream::newFile($file, 0777)
+            ->at($this->root);
 
         $logger = new FileLogger($file);
 
         $this->assertNull($logger->log(LogLevel::$command, 'USER username'));
         $this->assertFileExists($file);
         $this->assertStringNotEqualsFile($file, '');
-
-        unlink($file);
     }
 
     public function testGetLogs()
     {
-        $file = tempnam(sys_get_temp_dir(), 'testGetLogs');
+        $file = 'logs.txt';
+
+        vfsStream::newFile($file, 0777)
+            ->at($this->root);
 
         $logger = new FileLogger($file);
 
@@ -80,7 +95,10 @@ class FileLoggerTest extends LoggerTest
 
     public function testClear()
     {
-        $file = tempnam(sys_get_temp_dir(), 'testClear');
+        $file = 'logs.txt';
+
+        vfsStream::newFile($file, 0777)
+            ->at($this->root);
 
         $logger = new FileLogger($file);
 
@@ -88,13 +106,14 @@ class FileLoggerTest extends LoggerTest
 
         $this->assertNull($logger->clear());
         $this->assertStringEqualsFile($file, '');
-
-        unlink($file);
     }
 
     public function testCount()
     {
-        $file = tempnam(sys_get_temp_dir(), 'testCount');
+        $file = 'logs.txt';
+
+        vfsStream::newFile($file, 0777)
+            ->at($this->root);
 
         $logger = new FileLogger($file);
 
@@ -103,7 +122,5 @@ class FileLoggerTest extends LoggerTest
         self::logFakeSession($logger);
 
         $this->assertSame(17, $logger->count());
-
-        unlink($file);
     }
 }
