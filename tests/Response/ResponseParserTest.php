@@ -34,20 +34,20 @@ class ResponseParserTest extends TestCase
 
     public function testToArrayWithOneLineReply()
     {
-        $reply = "227 Entering Passive Mode (109,106,246,248,140,108).";
+        $reply = "227 Entering Passive Mode (192,168,1,9,140,108).";
 
         $response = (new ResponseParser($reply))->toArray();
 
         $this->assertSame([
             'code'      => 227,
-            'message'   => 'Entering Passive Mode (109,106,246,248,140,108).',
+            'message'   => 'Entering Passive Mode (192,168,1,9,140,108).',
             'multiline' => false,
         ], $response);
     }
 
     public function testParseCodeReturnsIntegerWithAValidReply()
     {
-        $reply = "227 Entering Passive Mode (109,106,246,248,140,108).";
+        $reply = "227 Entering Passive Mode (192,168,1,9,140,108).";
 
         $method = self::getMethod('parseCode');
         $parser = new ResponseParser($reply);
@@ -67,12 +67,12 @@ class ResponseParserTest extends TestCase
 
     public function testParseMessageReturnsStringWithOneLineReply()
     {
-        $reply = "227 Entering Passive Mode (109,106,246,248,140,108).";
+        $reply = "227 Entering Passive Mode (192,168,1,9,140,108).";
 
         $method = self::getMethod('parseMessage');
         $parser = new ResponseParser($reply);
 
-        $this->assertSame("Entering Passive Mode (109,106,246,248,140,108).", $method->invoke($parser));
+        $this->assertSame("Entering Passive Mode (192,168,1,9,140,108).", $method->invoke($parser));
     }
 
     public function testParseMessageReturnsStingWithMultilineReply()
@@ -109,7 +109,7 @@ class ResponseParserTest extends TestCase
     {
         $method = self::getMethod('isMultiline');
 
-        $parser = new ResponseParser("227 Entering Passive Mode (109,106,246,248,140,108).");
+        $parser = new ResponseParser("227 Entering Passive Mode (192,168,1,9,140,108).");
 
         $this->assertFalse($method->invoke($parser));
     }

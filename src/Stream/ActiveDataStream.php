@@ -11,10 +11,10 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Util\StreamWrapper;
-use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
+use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
+use Lazzard\FtpBridge\Util\StreamWrapper;
 
 /**
  * @since  1.0
@@ -51,21 +51,25 @@ class ActiveDataStream extends DataStream
         $p1  = rand(4, 255);
         $p2 = rand(0, 255);
 
-        // calculate the port number based on the rule ($p1 * 256 + $p2)
-        $port = $p1 * 256 + $p2;
+        $port = $this->calculatePortNumber($p1, $p2);
 
         // 1- create a server socket
         // 2- bind the socket into a local host address
         // 3- listen to the socket on the local port that will be send along with PORT command
         // 4- send the PORT command.
-        if (is_resource($stream = $this->streamWrapper->streamSocketServer(
+        if ($stream = $this->streamWrapper->streamSocketServer(
             "tcp://0.0.0.0:$port",
             STREAM_SERVER_BIND | STREAM_SERVER_LISTEN)
-        )) {
-            $name = stream_socket_get_name($this->commandStream->stream, false);
+        ) {
+            $this->stream = $stream;
+
+            $this->streamWrapper->setHandle($stream);
+
+            // get the local socket name of the socket resource created by the commandStream instance
+            $name = $this->commandStream->streamWrapper->streamSocketGetName();
             $ip   = str_replace('.', ',', preg_replace('/:\d+/', '', $name));
 
-            if(!$this->commandStream->write("PORT $ip,$p1,$p2")) {
+            if (!$this->commandStream->write("PORT $ip,$p1,$p2")) {
                 throw new ActiveDataStreamException('Unable to send the PORT command to the server.');
             }
 
@@ -74,8 +78,6 @@ class ActiveDataStream extends DataStream
             if ($response->getCode() !== 200) {
                 throw new ActiveDataStreamException($response->getMessage());
             }
-
-            $this->stream = $stream;
 
             return true;
         }
@@ -88,16 +90,41 @@ class ActiveDataStream extends DataStream
      */
     public function read()
     {
-        if (($conn = stream_socket_accept($this->stream)) === false) {
+        if (($connection = $this->streamWrapper->streamSocketAccept()) === false) {
             return false;
         }
 
-        $data = fread($conn, 8192);
+        $this->streamWrapper->setHandle($connection);
 
-        fclose($conn);
+        $data = '';
+
+        while (($chunk = $this->streamWrapper->fread(64)) !== false) {
+            $data .= $chunk;
+
+            if ($this->streamWrapper->feof()) {
+               break;
+            }
+        }
+
+        $this->streamWrapper->fclose();
+
+        // revert to the original server socket stream
+        $this->streamWrapper->setHandle($this->stream);
 
         $this->log($data);
 
         return $data;
+    }
+
+    /**
+     * @param int $p1
+     * @param int $p2
+     *
+     * @return int
+     */
+    protected function calculatePortNumber($p1, $p2)
+    {
+        // calculate the port number based on the rule ($p1 * 256 + $p2)
+        return $p1 * 256 + $p2;
     }
 }

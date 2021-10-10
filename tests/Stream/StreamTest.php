@@ -79,15 +79,38 @@ class StreamTest extends TestCase
         $stream->write('USER username');
     }
 
-    public function testClose()
+    public function testCloseSuccess()
     {
+        $wrapper = $this->getMockBuilder(StreamWrapper::class)
+            ->onlyMethods(['fclose'])
+            ->getMock();
+
+        $wrapper->expects($this->once())
+            ->method('fclose')
+            ->willReturn(true);
+
         $stream = $this->getMockBuilder(Stream::class)
-            ->disableOriginalConstructor()
+            ->setConstructorArgs([$wrapper, null])
             ->getMockForAbstractClass();
 
-        $stream->stream = self::getFakeStream();
-
         $this->assertTrue($stream->close());
+    }
+
+    public function testCloseFailure()
+    {
+        $wrapper = $this->getMockBuilder(StreamWrapper::class)
+            ->onlyMethods(['fclose'])
+            ->getMock();
+
+        $wrapper->expects($this->once())
+            ->method('fclose')
+            ->willReturn(false);
+
+        $stream = $this->getMockBuilder(Stream::class)
+            ->setConstructorArgs([$wrapper, null])
+            ->getMockForAbstractClass();
+
+        $this->assertFalse($stream->close());
     }
 
     public function testLogReturnsNullWhereLoggerIsNotAvailable()
@@ -160,7 +183,6 @@ class StreamTest extends TestCase
 
         $wrapper->expects($this->once())
             ->method('streamSocketClient')
-            //->with($host, $port, $timeout, $blocking)
             ->willReturn(true);
 
         $stream = $this->getMockBuilder(Stream::class)
@@ -203,24 +225,6 @@ class StreamTest extends TestCase
         $this->assertFalse($method->invoke($stream, $host, $port, $timeout, $blocking));
     }
 
-    public function testOpenSocketConnectionThrowsStreamException()
-    {
-        $wrapper = $this->getMockBuilder(StreamWrapper::class)
-            ->onlyMethods([])
-            ->getMock();
-
-        $stream = $this->getMockBuilder(Stream::class)
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
-
-        $stream->streamWrapper = $wrapper;
-
-        $method = self::getMethod('openSocketConnection');
-
-        $this->expectException(StreamException::class);
-        $method->invoke($stream, 'foo.bar.com', 21, 90, true);
-    }
-
     public function testPrepareCommand()
     {
         $stream = $this->getMockBuilder(Stream::class)
@@ -234,11 +238,6 @@ class StreamTest extends TestCase
         $command = " USER username ";
 
         $this->assertSame("USER username$crlf", $method->invoke($stream, $command));
-    }
-
-    protected static function getFakeStream($mode = 'r+')
-    {
-        return fopen('php://memory', $mode);
     }
 
     protected static function getMethod($name)

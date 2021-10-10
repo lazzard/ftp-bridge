@@ -35,6 +35,19 @@ class StreamWrapper
     }
 
     /**
+     * @return false|string
+     */
+    public function streamSocketGetName()
+    {
+        return stream_socket_get_name($this->handle, false);
+    }
+
+    public function streamSocketAccept()
+    {
+        return stream_socket_accept($this->handle);
+    }
+
+    /**
      * @param string $filename
      * @param string $mode
      *
@@ -79,5 +92,18 @@ class StreamWrapper
     public function fseek($offset)
     {
         return fseek($this->handle, $offset);
+    }
+
+    /**
+     * @return bool
+     */
+    public function feof()
+    {
+        return feof($this->handle);
+    }
+
+    public function fread($length)
+    {
+        return fread($this->handle, $length);
     }
 }

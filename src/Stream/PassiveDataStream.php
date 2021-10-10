@@ -13,7 +13,6 @@ namespace Lazzard\FtpBridge\Stream;
 
 use Lazzard\FtpBridge\Response\Response;
 use Lazzard\FtpBridge\Exception\PassiveDataStreamException;
-use Lazzard\FtpBridge\Exception\StreamException;
 
 /**
  * @since  1.0
@@ -66,8 +65,9 @@ class PassiveDataStream extends DataStream
     public function read()
     {
         $data = '';
-        while (!feof($this->stream)) {
-            $data .= fread($this->stream, 8192);
+
+        while ($this->streamWrapper->feof() !== true) {
+            $data .= $this->streamWrapper->fread(1024);
         }
 
         $this->log($data);

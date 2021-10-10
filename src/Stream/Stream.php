@@ -11,7 +11,6 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Exception\StreamException;
 use Lazzard\FtpBridge\FtpBridge;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
@@ -70,7 +69,7 @@ abstract class Stream implements StreamInterface
      */
     final public function close()
     {
-        return fclose($this->stream);
+        return $this->streamWrapper->fclose();
     }
 
     /**

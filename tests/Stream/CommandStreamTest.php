@@ -30,7 +30,7 @@ class CommandStreamTest extends TestCase
 
     public function testReadWithSingleLineReply()
     {
-        $reply = "227 Entering Passive Mode (109,106,246,248,139,252).";
+        $reply = "227 Entering Passive Mode (192,168,1,9,139,252).";
 
         $wrapper = $this->getMockBuilder(StreamWrapper::class)
             ->getMock();
