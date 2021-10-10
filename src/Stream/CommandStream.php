@@ -87,18 +87,15 @@ class CommandStream extends Stream
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @throws StreamException
+     * @inheritDoc
      */
     public function open()
     {
-        if (!$this->openSocketConnection($this->host, $this->port, $this->timeout, $this->blocking)) {
-            return false;
+        if ($this->openSocketConnection($this->host, $this->port, $this->timeout, $this->blocking)) {
+            $this->read();
+            return true;
         }
 
-        $this->read();
-
-        return true;
+        return false;
     }
 }

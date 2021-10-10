@@ -14,6 +14,7 @@ namespace Lazzard\FtpBridge\Stream;
 use Lazzard\FtpBridge\Util\StreamWrapper;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
+use Lazzard\FtpBridge\Response\Response;
 
 /**
  * @since  1.0
@@ -23,21 +24,16 @@ use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
  */
 class ActiveDataStream extends DataStream
 {
-    /** @var string */
-    public $activeIpAddress;
-
     /**
      * Opens a data stream socket.
      *
      * @param CommandStream        $commandStream
-     * @param string|null          $activeIpAddress
      * @param StreamWrapper        $streamWrapper
      * @param LoggerInterface|null $logger
      */
-    public function __construct(CommandStream $commandStream, $streamWrapper, $logger, $activeIpAddress = null)
+    public function __construct(CommandStream $commandStream, $streamWrapper, $logger)
     {
         parent::__construct($commandStream, $streamWrapper, $logger);
-        $this->activeIpAddress = $activeIpAddress;
     }
 
     /**
@@ -79,7 +75,7 @@ class ActiveDataStream extends DataStream
             return true;
         }
 
-        throw new ActiveDataStreamException('Unable to open the data stream socket connection.');
+        return false;
     }
 
     /**
@@ -87,8 +83,12 @@ class ActiveDataStream extends DataStream
      */
     public function read()
     {
-        $conn = stream_socket_accept($this->stream);
+        if (($conn = stream_socket_accept($this->stream)) === false) {
+            return false;
+        }
+
         $data = fread($conn, 8192);
+
         fclose($conn);
 
         $this->log($data);

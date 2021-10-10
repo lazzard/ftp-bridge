@@ -102,20 +102,13 @@ abstract class Stream implements StreamInterface
      * @param bool   $blocking
      *
      * @return bool
-     *
-     * @throws StreamException
      */
     final protected function openSocketConnection($host, $port, $timeout, $blocking)
     {
         if (!$stream = $this->streamWrapper->streamSocketClient(
             "tcp://$host:$port",
             $timeout,
-            $blocking ? STREAM_CLIENT_CONNECT : STREAM_CLIENT_ASYNC_CONNECT,
-            function ($errMsg) {
-                if ($errMsg) {
-                    throw new StreamException($errMsg);
-                }
-            }
+            $blocking ? STREAM_CLIENT_CONNECT : STREAM_CLIENT_ASYNC_CONNECT
         )) {
             return false;
         }

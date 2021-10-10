@@ -12,10 +12,10 @@
 
 namespace Lazzard\FtpBridge;
 
+use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
 use Lazzard\FtpBridge\Exception\FtpBridgeException;
 use Lazzard\FtpBridge\Exception\PassiveDataStreamException;
-use Lazzard\FtpBridge\Exception\StreamException;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 use Lazzard\FtpBridge\Stream\ActiveDataStream;
@@ -31,14 +31,14 @@ use Lazzard\FtpBridge\Util\StreamWrapper;
 class FtpBridge
 {
     /**
-     * @var string 
-     * 
+     * @var string
+     *
      * The Carriage return and line feed represents an end of line of an FTP reply/command.
-     * 
+     *
      * @link https://tools.ietf.org/html/rfc959#section-4 (4.2. FTP REPLIES)
      */
     const CRLF = "\r\n";
-    
+
     /**
      * Transfer type representations.
      */
@@ -93,9 +93,9 @@ class FtpBridge
      *
      * @param string $command
      *
-     * @return void
+     * @return bool
      *
-     * @throws FtpBridgeException
+     * @throws FtpBridgeException if the connection not created yet.
      */
     public function send($command)
     {
@@ -105,9 +105,11 @@ class FtpBridge
         }
 
         if (!$this->commandStream->write($command)) {
-            throw new FtpBridgeException("Unable to send the command \"$command\" " .
+            return !ErrorTrigger::raise("Unable to send the command \"$command\" " .
                 'through the control channel.');
         }
+
+        return true;
     }
 
     /**
@@ -115,7 +117,7 @@ class FtpBridge
      *
      * @param string $string
      *
-     * @return void
+     * @return bool
      *
      * @throws FtpBridgeException
      */
@@ -127,14 +129,16 @@ class FtpBridge
         }
 
         if (!$this->dataStream->write($string)) {
-            throw new FtpBridgeException("Unable to write content to the data channel.");
+            return !ErrorTrigger::raise("Unable to write content to the data channel.");
         }
+
+        return true;
     }
 
     /**
      * Receives and gets the response from the command stream.
      *
-     * @return Response Returns a {@see Response} object.
+     * @return Response|false Returns a {@see Response} object in success, false otherwise.
      *
      * @throws FtpBridgeException
      */
@@ -145,7 +149,7 @@ class FtpBridge
         }
 
         if (!$raw = $this->commandStream->read()) {
-            throw new FtpBridgeException('Failed to retrieve data from the control channel.');
+            return !ErrorTrigger::raise('Failed to retrieve data from the control channel.');
         }
 
         return $this->response = new Response($raw);
@@ -154,7 +158,7 @@ class FtpBridge
     /**
      * Receives and reads the data from the data stream.
      *
-     * @return string
+     * @return string|bool
      *
      * @throws FtpBridgeException
      */
@@ -165,7 +169,7 @@ class FtpBridge
         }
 
         if (!$data = $this->dataStream->read()) {
-            throw new FtpBridgeException('Failed to retrieve data from the data channel.');
+            return !ErrorTrigger::raise('Failed to retrieve data from the data channel.');
         }
 
         return $data;
@@ -180,9 +184,7 @@ class FtpBridge
      *                         to 90.
      * @param bool   $blocking [optional] The transfer mode, the blocking mode is the default.
      *
-     * @return bool Returns true on success, false on failure and an E_WARNING error raised.
-     *
-     * @throws StreamException
+     * @return bool Returns true if successfully connected, false otherwise.
      */
     public function connect($host, $port = 21, $timeout = 90, $blocking = true)
     {
@@ -194,7 +196,18 @@ class FtpBridge
             $this->logger
         );
 
-        return $this->commandStream->open();
+        if (!$this->commandStream->open()) {
+            $error = error_get_last();
+            return !ErrorTrigger::raise(
+                sprintf(
+                    "Failed to establish a successful connection in the control channel to the (%s) : %s",
+                    $host,
+                    $error['message']
+                )
+            );
+        }
+
+        return true;
     }
 
     /**
@@ -202,7 +215,7 @@ class FtpBridge
      *
      * @return bool
      *
-     * @throws PassiveDataStreamException|StreamException
+     * @throws PassiveDataStreamException
      */
     public function openPassive()
     {
@@ -212,29 +225,47 @@ class FtpBridge
             $this->logger
         );
 
-        return $this->dataStream->open();
+        if (!$this->dataStream->open()) {
+            $error = error_get_last();
+            return !ErrorTrigger::raise(
+                sprintf(
+                    "Failed to establish a successful passive data connection to the (%s) : %s",
+                    $this->commandStream->host,
+                    $error['message']
+                )
+            );
+        }
+
+        return true;
     }
 
     /**
      * Opens an active data connection to the FTP server.
      *
-     * @param string $activeIpAddress [optional] The IP address to send along with the PORT command, if omitted
-     *                                the server IP address in the $_SERVER['SERVER_ADDR'] will be used.
-     *
-     * @return bool
+     * @return bool Returns true on success, false in failure and an E_USER_WARNING error will be raised also.
      *
      * @throws ActiveDataStreamException
      */
-    public function openActive($activeIpAddress = null)
+    public function openActive()
     {
         $this->dataStream = new ActiveDataStream(
             $this->commandStream,
             new StreamWrapper,
-            $this->logger,
-            $activeIpAddress
+            $this->logger
         );
 
-        return $this->dataStream->open();
+        if (!$this->dataStream->open()) {
+            $error = error_get_last();
+            return !ErrorTrigger::raise(
+                sprintf(
+                    "Failed to establish a successful active data connection to the (%s) : %s",
+                    $this->commandStream->host,
+                    $error['message']
+                )
+            );
+        }
+
+        return true;
     }
 
     /**
@@ -245,8 +276,7 @@ class FtpBridge
      * @param string $username
      * @param string $password
      *
-     * @return bool Returns true on success, false on failure and an E_WARNING error
-     *              will be raised.
+     * @return bool Returns true on success, false in failure and an E_USER_WARNING error will be raised also.
      *
      * @throws FtpBridgeException
      */
@@ -268,10 +298,10 @@ class FtpBridge
                 return true;
             }
 
-            throw new FtpBridgeException($this->response->getMessage());
+            return !ErrorTrigger::raise($this->response->getMessage());
         }
 
-        throw new FtpBridgeException($this->response->getMessage());
+        return !ErrorTrigger::raise($this->response->getMessage());
     }
 
     /**
@@ -283,8 +313,8 @@ class FtpBridge
      *                                {@see FtpBridge::TR_TYPE_ASCII} and {@see FtpBridge::TR_TYPE_EBCDIC},
      *                                it can be either {@see FtpBridge::TR_TYPE_NON_PRINT},
      *                                {@see FtpBridge::TR_TYPE_TELNET} or {@see TR_TYPE_CONTROL}.
-     *                                For the {@see FtpBridge::TR_TYPE_LOCAL} an integer must be specified to specify the
-     *                                number of bits per byte on the local system.
+     *                                For the {@see FtpBridge::TR_TYPE_LOCAL} an integer must be specified
+     *                                to specify the number of bits per byte on the local system.
      *
      * @return bool
      *
@@ -292,9 +322,16 @@ class FtpBridge
      */
     public function setTransferType($type, $secondParam = null)
     {
-        $this->send(sprintf("TYPE %s%s", $type, $secondParam ? " $secondParam" : ''));
-        $this->receive();
+        $this->send(sprintf(
+            "TYPE %s%s", $type, $secondParam ? " $secondParam" : ''
+        ));
 
-        return $this->response->getCode() === 200;
+        $code = $this->receive()->getCode();
+
+        if ($code !== 200) {
+            return !ErrorTrigger::raise($this->response->getMessage());
+        }
+
+        return true;
     }
 }

@@ -29,7 +29,7 @@ class PassiveDataStream extends DataStream
      *
      * @return bool
      *
-     * @throws PassiveDataStreamException|StreamException
+     * @throws PassiveDataStreamException
      */
     public function open()
     {
