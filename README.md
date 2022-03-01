@@ -1,95 +1,77 @@
+[![Version](https://img.shields.io/github/v/release/lazzard/ftp-bridge?include_prereleases)](https://packagist.org/packages/lazzard/ftp-bridge)
+[![Minimum PHP version](https://img.shields.io/badge/php-%3E%3D5.3.0-blue)](https://packagist.org/packages/lazzard/ftp-bridge)
+[![tests](https://github.com/lazzard/ftp-bridge/actions/workflows/tests.yml/badge.svg)](https://github.com/lazzard/ftp-bridge/actions/workflows/tests.yml)
+[![codecov](https://img.shields.io/codecov/c/github/lazzard/ftp-bridge)](https://codecov.io/gh/lazzard/ftp-bridge)
+[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/quality/g/lazzard/ftp-bridge/master)](https://scrutinizer-ci.com/g/lazzard/ftp-bridge/?branch=master)
+[![LICENSE](https://img.shields.io/packagist/l/lazzard/ftp-bridge)](https://packagist.org/packages/lazzard/ftp-bridge)
+
 # Lazzard/FtpBridge
 
-[![Version](https://img.shields.io/github/v/release/lazzard/ftp-bridge?include_prereleases&style=flat-square)](https://packagist.org/packages/lazzard/ftp-bridge)
-[![Minimum PHP version](https://img.shields.io/badge/php-%3E%3D5.3.0-blue?style=flat-square)](https://packagist.org/packages/lazzard/ftp-bridge)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/lazzard/ftp-bridge/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/lazzard/ftp-bridge/?branch=master)
-[![LICENSE](https://img.shields.io/packagist/l/lazzard/ftp-bridge?style=flat-square)](https://packagist.org/packages/lazzard/ftp-bridge)
+Allows free communication with FTP servers according to RFC959 specification and others related RFC extensions.
 
-A low-level implementation library of the File Transfer Protocol (FTP) in PHP that follows the RFC 959 standards and others related RFC extensions.
-  
-> This library can be used to communicate with FTP servers, so you can send any FTP commands you want and receive data from the server very simply without writing the sockets/streams logic on yourself, in addition to that, the library provides a logging system to keep track of your FTP sessions.  
-
-## Requirements
-
-* PHP version >= 5.3.0
-
-## Installation
-
-This library is available via composer.
-
-**method 1 :**
-
-Require the exact version directly: 
+## Getting started
 
 ```console
-composer require lazzard/ftp-bridge:v1.0.0-RC1
+composer require lazzard/ftp-bridge:v1.0.0-RC2
 ```
 
-**method 2 :**
-
- Add this two lines in your `composer.json` file :
-
-```json
-"minimum-stability": "dev",
-"prefer-stable": true
-```
-
-Then require the package :
-
-```console
-composer require lazzard/ftp-bridge
-```
-
-## Usage
+### Usage Example
 
  ```php
+<?php
+
+require __DIR__ . "/vendor/autoload.php";
+
 use Lazzard\FtpBridge\Logger\ArrayLogger;
 use Lazzard\FtpBridge\Logger\LogLevel;
 use Lazzard\FtpBridge\FtpBridge;
 
-require dirname(__DIR__) . "/vendor/autoload.php";
+try {
+    // Logger is optional
+    $logger = new ArrayLogger;
 
-// Logger is optional
-$logger = new ArrayLogger();
+    // set log levels prefixes
+    LogLevel::setInfo('<--');
+    LogLevel::setError('<--');
+    LogLevel::setCommand('-->');
 
-// set log levels prefixes
-LogLevel::setInfo('<--');
-LogLevel::setError('<--');
-LogLevel::setCommand('-->');
+    // create bridge instance
+    $ftp = new FtpBridge($logger);
 
-// create bridge instance
-$ftp = new FtpBridge($logger);
+    $hostname = 'foo@bar.com';
+    $username = 'username';
+    $password = 'password';
 
-$hostname = 'foo@bar.com';
-$username = 'username';
-$password = 'password';
+    if ($ftp->connect($hostname, 21)) {
+        // connected
+        if ($ftp->login($username, $password)) {
+            // logged
 
-if ($ftp->connect($hostname, 21)) {
-    // connected
-    if ($ftp->login($username, $password)) {
-        // logged
-
-        $ftp->send("PWD");
-        $ftp->receive();
-
-        // open a passive data connection
-        if ($ftp->openPassive()) {
-            $ftp->send("NLST .");
+            $ftp->send("PWD");
             $ftp->receive();
-    
-            $ftp->receiveData();
-            $ftp->receive();
+
+            // open a passive data connection
+            if ($ftp->openPassive()) {
+                $ftp->send("NLST .");
+                $ftp->receive();
+
+                $ftp->receiveData();
+                $ftp->receive();
+            }
         }
+
+        $ftp->send("QUIT");
+        $ftp->receive();
     }
 
-    $ftp->send("QUIT");
-    $ftp->receive();
+    print_r($logger->getLogs());
+    
+} catch (Exception $ex) {
+    print_r($ex->getMessage();
 }
-
-print_r($logger->getLogs());
  ```
 
-**Result :** 
+**Result :**
 
 ```
 Array
@@ -137,4 +119,4 @@ lazzard.org
 221 Logout.
 
 )
-```	
+```
