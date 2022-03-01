@@ -15,6 +15,7 @@ namespace Lazzard\FtpBridge;
 use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
 use Lazzard\FtpBridge\Exception\CommandStreamException;
 use Lazzard\FtpBridge\Exception\FtpBridgeException;
+use Lazzard\FtpBridge\Exception\ResponseException;
 use Lazzard\FtpBridge\Exception\PassiveDataStreamException;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
@@ -31,23 +32,23 @@ use Lazzard\FtpBridge\Util\StreamWrapper;
 class FtpBridge
 {
     /**
+     * @link https://tools.ietf.org/html/rfc959#section-4 (4.2. FTP REPLIES)
      * @var string
      *
      * The Carriage return and line feed represents an end of line of an FTP reply/command.
      *
-     * @link https://tools.ietf.org/html/rfc959#section-4 (4.2. FTP REPLIES)
      */
     const CRLF = "\r\n";
 
     /**
      * Transfer type representations.
      */
-    const TR_TYPE_ASCII      = 'A';
-    const TR_TYPE_BINARY     = 'I';
-    const TR_TYPE_EBCDIC     = 'E';
-    const TR_TYPE_LOCAL      = 'L';
-    const TR_TYPE_NON_PRINT  = 'N';
-    const TR_TYPE_TELNET     = 'T';
+    const TR_TYPE_ASCII = 'A';
+    const TR_TYPE_BINARY = 'I';
+    const TR_TYPE_EBCDIC = 'E';
+    const TR_TYPE_LOCAL = 'L';
+    const TR_TYPE_NON_PRINT = 'N';
+    const TR_TYPE_TELNET = 'T';
     const TR_TYPE_CR_CONTROL = 'C';
 
     /** @var LoggerInterface */
@@ -108,23 +109,26 @@ class FtpBridge
     }
 
     /**
-     * Writes the provided string content to the data channel.
+     * Writes the provided string content to the data stream.
      *
      * @param string $string
      *
      * @return bool
      *
-     * @throws FtpBridgeException
+     * @throws ActiveDataStreamException|PassiveDataStreamException
      */
     public function write($string)
     {
-        if (!$this->dataStream || !is_resource($this->dataStream->stream)) {
-            throw new FtpBridgeException('The FTP data connection must be established'
-                . 'first before try writing content to the data channel.');
-        }
-
         if (!$this->dataStream->write($string)) {
-            return !ErrorTrigger::raise("Unable to write content to the data channel.");
+            if ($this->dataStream instanceof ActiveDataStream) {
+                throw new ActiveDataStreamException(
+                    'Failed to write data to data stream using the active mode.');
+            }
+
+            if ($this->dataStream instanceof PassiveDataStream) {
+                throw new PassiveDataStreamException(
+                    'Failed to write data to data stream using the passive mode.');
+            }
         }
 
         return true;
@@ -155,12 +159,16 @@ class FtpBridge
      */
     public function receiveData()
     {
-        if (!$this->dataStream || !is_resource($this->dataStream->stream)) {
-            throw new FtpBridgeException('The FTP data connection not created yet.');
-        }
+        if (($data = $this->dataStream->read()) === false) {
+            if ($this->dataStream instanceof ActiveDataStream) {
+                throw new ActiveDataStreamException(
+                    'Failed to retrieve data from the data stream using the active mode.');
+            }
 
-        if (!$data = $this->dataStream->read()) {
-            return !ErrorTrigger::raise('Failed to retrieve data from the data channel.');
+            if ($this->dataStream instanceof PassiveDataStream) {
+                throw new PassiveDataStreamException(
+                    'Failed to retrieve data from the data channel using the passive mode.');
+            }
         }
 
         return $data;
@@ -200,15 +208,11 @@ class FtpBridge
      *
      * @return bool
      *
-     * @throws PassiveDataStreamException
+     * @throws PassiveDataStreamException|ResponseException
      */
     public function openPassive()
     {
-        $this->dataStream = new PassiveDataStream(
-            $this->commandStream,
-            new StreamWrapper,
-            $this->logger
-        );
+        $this->dataStream = new PassiveDataStream($this->commandStream, new StreamWrapper, $this->logger);
 
         if (!$this->dataStream->open()) {
             $error = error_get_last();
@@ -229,15 +233,11 @@ class FtpBridge
      *
      * @return bool Returns true on success, false in failure and an E_USER_WARNING error will be raised also.
      *
-     * @throws ActiveDataStreamException
+     * @throws ActiveDataStreamException|ResponseException
      */
     public function openActive()
     {
-        $this->dataStream = new ActiveDataStream(
-            $this->commandStream,
-            new StreamWrapper,
-            $this->logger
-        );
+        $this->dataStream = new ActiveDataStream($this->commandStream, new StreamWrapper, $this->logger);
 
         if (!$this->dataStream->open()) {
             $error = error_get_last();
@@ -263,7 +263,7 @@ class FtpBridge
      *
      * @return bool Returns true on success, false in failure and an E_USER_WARNING error will be raised also.
      *
-     * @throws FtpBridgeException
+     * @throws CommandStreamException|ResponseException
      */
     public function login($username, $password)
     {
@@ -283,10 +283,10 @@ class FtpBridge
                 return true;
             }
 
-            return !ErrorTrigger::raise($this->response->getMessage());
+            throw new ResponseException($this->response->getMessage());
         }
 
-        return !ErrorTrigger::raise($this->response->getMessage());
+        throw new ResponseException($this->response->getMessage());
     }
 
     /**
@@ -303,13 +303,11 @@ class FtpBridge
      *
      * @return bool
      *
-     * @throws FtpBridgeException
+     * @throws CommandStreamException|ResponseException
      */
     public function setTransferType($type, $secondParam = null)
     {
-        $this->send(sprintf(
-            "TYPE %s%s", $type, $secondParam ? " $secondParam" : ''
-        ));
+        $this->send(sprintf("TYPE %s%s", $type, $secondParam ? " $secondParam" : ''));
 
         $code = $this->receive()->getCode();
 

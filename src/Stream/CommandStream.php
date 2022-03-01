@@ -70,7 +70,7 @@ class CommandStream extends Stream
             $response .= $line;
 
             // To distinguish the end of an FTP reply, the RFC959 indicates that the last line of
-            // a the reply must be on a special format, it must be begin with 3 digits followed
+            // a reply must be on a special format, it must start with 3 digits followed
             // by a space.
             //@link https://tools.ietf.org/html/rfc959#section-4
             if (preg_match('/^\d{3}+ /', $line) !== 0) {

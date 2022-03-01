@@ -11,6 +11,7 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
+use Lazzard\FtpBridge\Exception\ResponseException;
 use Lazzard\FtpBridge\Response\Response;
 use Lazzard\FtpBridge\Exception\PassiveDataStreamException;
 
@@ -24,11 +25,11 @@ class PassiveDataStream extends DataStream
 {
     /**
      * Opens the data connection stream to the server port sent via the FTP server after
-     * sending the PASV command.
+     * sending the 'PASV' command.
      *
      * @return bool
      *
-     * @throws PassiveDataStreamException
+     * @throws PassiveDataStreamException|ResponseException
      */
     public function open()
     {
@@ -38,7 +39,7 @@ class PassiveDataStream extends DataStream
         $message  = $response->getMessage();
 
         if ($response->getCode() !== 227) {
-            throw new PassiveDataStreamException($message);
+            throw new ResponseException($message);
         }
 
         if (!$hostip = $this->parseIPFromMessage($message)) {

@@ -12,6 +12,7 @@
 namespace Lazzard\FtpBridge\Stream;
 
 use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
+use Lazzard\FtpBridge\Exception\ResponseException;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 use Lazzard\FtpBridge\Util\StreamWrapper;
@@ -42,7 +43,7 @@ class ActiveDataStream extends DataStream
      *
      * {@inheritDoc}
      *
-     * @throws ActiveDataStreamException
+     * @throws ActiveDataStreamException|ResponseException
      */
     public function open()
     {
@@ -55,7 +56,7 @@ class ActiveDataStream extends DataStream
 
         // 1- create a server socket
         // 2- bind the socket into a local host address
-        // 3- listen to the socket on the local port that will be send along with PORT command
+        // 3- listen to the socket on the local port that will be sent along with PORT command
         // 4- send the PORT command.
         if ($stream = $this->streamWrapper->streamSocketServer(
             "tcp://0.0.0.0:$port",
@@ -76,7 +77,7 @@ class ActiveDataStream extends DataStream
             $response = new Response($this->commandStream->read());
 
             if ($response->getCode() !== 200) {
-                throw new ActiveDataStreamException($response->getMessage());
+                throw new ResponseException($response->getMessage());
             }
 
             return true;

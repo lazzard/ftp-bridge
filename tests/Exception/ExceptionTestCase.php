@@ -17,7 +17,7 @@ class ExceptionTestCase extends TestCase
         throw new $this->exceptionClass("some exception message.");
     }
 
-    public function testExceptionExtendsFtpBridgeException()
+    public function testExceptionExtendsFtpBridgeExceptionClass()
     {
         $this->assertTrue(new $this->exceptionClass("some exception message.") instanceof FtpBridgeException);
     }

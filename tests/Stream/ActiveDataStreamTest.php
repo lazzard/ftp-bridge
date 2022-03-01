@@ -4,6 +4,7 @@ namespace Lazzard\FtpBridge\Tests\Stream;
 
 use DG\BypassFinals;
 use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
+use Lazzard\FtpBridge\Exception\ResponseException;
 use PHPUnit\Framework\TestCase;
 use Lazzard\FtpBridge\Stream\ActiveDataStream;
 use Lazzard\FtpBridge\Stream\StreamInterface;
@@ -165,7 +166,7 @@ class ActiveDataStreamTest extends TestCase
             ->method('calculatePortNumber')
             ->willReturn($port);
 
-        $this->expectException(ActiveDataStreamException::class);
+        $this->expectException(ResponseException::class);
         $this->expectExceptionMessage('Service not available, closing control connection.');
 
         $activeStream->open();
