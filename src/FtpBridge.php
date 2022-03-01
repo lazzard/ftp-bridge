@@ -14,7 +14,6 @@ namespace Lazzard\FtpBridge;
 
 use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
 use Lazzard\FtpBridge\Exception\CommandStreamException;
-use Lazzard\FtpBridge\Exception\FtpBridgeException;
 use Lazzard\FtpBridge\Exception\ResponseException;
 use Lazzard\FtpBridge\Exception\PassiveDataStreamException;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
@@ -137,7 +136,7 @@ class FtpBridge
     /**
      * Receives and gets the response from the command stream.
      *
-     * @return Response Returns a {@see Response} object in success, false otherwise.
+     * @return Response Returns a {@see Response} object in success, an exception thrown otherwise.
      *
      * @throws CommandStreamException
      */
@@ -155,7 +154,7 @@ class FtpBridge
      *
      * @return string|bool
      *
-     * @throws FtpBridgeException
+     * @throws ActiveDataStreamException|PassiveDataStreamException
      */
     public function receiveData()
     {
@@ -183,7 +182,7 @@ class FtpBridge
      *                         to 90.
      * @param bool   $blocking [optional] The transfer mode, the blocking mode is the default.
      *
-     * @return bool Returns true if successfully connected, false otherwise.
+     * @return bool
      *
      * @throws CommandStreamException
      */
@@ -229,7 +228,7 @@ class FtpBridge
     /**
      * Opens an active data connection to the FTP server.
      *
-     * @return bool Returns true on success, false in failure and an E_USER_WARNING error will be raised also.
+     * @return bool
      *
      * @throws ActiveDataStreamException|ResponseException
      */
@@ -257,7 +256,7 @@ class FtpBridge
      * @param string $username
      * @param string $password
      *
-     * @return bool Returns true on success, false in failure and an E_USER_WARNING error will be raised also.
+     * @return bool
      *
      * @throws CommandStreamException|ResponseException
      */
@@ -301,13 +300,11 @@ class FtpBridge
      *
      * @throws CommandStreamException|ResponseException
      */
-    public function setTransferType($type, $secondParam = null)
+    public function setTransferType($type, $secondParam = "")
     {
         $this->send(sprintf("TYPE %s%s", $type, $secondParam ? " $secondParam" : ''));
 
-        $code = $this->receive()->getCode();
-
-        if ($code !== 200) {
+        if ($this->receive()->getCode() !== 200) {
             throw new ResponseException($this->response->getMessage());
         }
 
