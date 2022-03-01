@@ -215,14 +215,12 @@ class FtpBridge
         $this->dataStream = new PassiveDataStream($this->commandStream, new StreamWrapper, $this->logger);
 
         if (!$this->dataStream->open()) {
-            $error = error_get_last();
-            return !ErrorTrigger::raise(
-                sprintf(
-                    "Failed to establish a successful passive data connection to the (%s) : %s",
-                    $this->commandStream->host,
-                    $error['message']
-                )
-            );
+            $lastError = error_get_last();
+            throw new PassiveDataStreamException(sprintf(
+                "Failed to establish a successful passive data connection to the (%s) : %s",
+                $this->commandStream->host,
+                $lastError['message']
+            ));
         }
 
         return true;
@@ -240,14 +238,12 @@ class FtpBridge
         $this->dataStream = new ActiveDataStream($this->commandStream, new StreamWrapper, $this->logger);
 
         if (!$this->dataStream->open()) {
-            $error = error_get_last();
-            return !ErrorTrigger::raise(
-                sprintf(
-                    "Failed to establish a successful active data connection to the (%s) : %s",
-                    $this->commandStream->host,
-                    $error['message']
-                )
-            );
+            $lastError = error_get_last();
+            throw new ActiveDataStreamException(sprintf(
+                "Failed to establish a successful active data connection to the (%s) : %s",
+                $this->commandStream->host,
+                $lastError['message']
+            ));
         }
 
         return true;
@@ -312,7 +308,7 @@ class FtpBridge
         $code = $this->receive()->getCode();
 
         if ($code !== 200) {
-            return !ErrorTrigger::raise($this->response->getMessage());
+            throw new ResponseException($this->response->getMessage());
         }
 
         return true;
