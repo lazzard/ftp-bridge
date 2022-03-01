@@ -111,7 +111,7 @@ class CommandStreamTest extends TestCase
             ->onlyMethods(['log'])
             ->getMock();
 
-        $stream->expects($this->never())
+        $stream->expects($this->once())
             ->method('log');
 
         $stream->streamWrapper = $wrapper;

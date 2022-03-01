@@ -12,8 +12,8 @@
 
 namespace Lazzard\FtpBridge;
 
-use Lazzard\FtpBridge\Error\ErrorTrigger;
 use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
+use Lazzard\FtpBridge\Exception\CommandStreamException;
 use Lazzard\FtpBridge\Exception\FtpBridgeException;
 use Lazzard\FtpBridge\Exception\PassiveDataStreamException;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
@@ -95,17 +95,12 @@ class FtpBridge
      *
      * @return bool
      *
-     * @throws FtpBridgeException if the connection not created yet.
+     * @throws CommandStreamException
      */
     public function send($command)
     {
-        if (!$this->commandStream || !is_resource($this->commandStream->stream)) {
-            throw new FtpBridgeException('The FTP connection must be established ' .
-                'first before try sending any commands.');
-        }
-
         if (!$this->commandStream->write($command)) {
-            return !ErrorTrigger::raise("Unable to send the command \"$command\" " .
+            throw new CommandStreamException("Unable to send the command '\"$command\"' " .
                 'through the control channel.');
         }
 
@@ -138,18 +133,14 @@ class FtpBridge
     /**
      * Receives and gets the response from the command stream.
      *
-     * @return Response|false Returns a {@see Response} object in success, false otherwise.
+     * @return Response Returns a {@see Response} object in success, false otherwise.
      *
-     * @throws FtpBridgeException
+     * @throws CommandStreamException
      */
     public function receive()
     {
-        if (!$this->commandStream || !is_resource($this->commandStream->stream)) {
-            throw new FtpBridgeException('The FTP command connection not created yet.');
-        }
-
-        if (!$raw = $this->commandStream->read()) {
-            return !ErrorTrigger::raise('Failed to retrieve data from the control channel.');
+        if (($raw = $this->commandStream->read()) === false) {
+            throw new CommandStreamException('Failed to retrieve data from the command stream.');
         }
 
         return $this->response = new Response($raw);
@@ -185,26 +176,20 @@ class FtpBridge
      * @param bool   $blocking [optional] The transfer mode, the blocking mode is the default.
      *
      * @return bool Returns true if successfully connected, false otherwise.
+     *
+     * @throws CommandStreamException
      */
     public function connect($host, $port = 21, $timeout = 90, $blocking = true)
     {
-        $this->commandStream = new CommandStream($host,
-            $port,
-            $timeout,
-            $blocking,
-            new StreamWrapper,
-            $this->logger
-        );
+        $this->commandStream = new CommandStream($host, $port, $timeout, $blocking, new StreamWrapper, $this->logger);
 
         if (!$this->commandStream->open()) {
-            $error = error_get_last();
-            return !ErrorTrigger::raise(
-                sprintf(
-                    "Failed to establish a successful connection in the control channel to the (%s) : %s",
-                    $host,
-                    $error['message']
-                )
-            );
+            $lastError = error_get_last();
+            throw new CommandStreamException(sprintf(
+                "Failed to establish a successful connection in the control channel to the (%s) : %s",
+                $host,
+                $lastError['message']
+            ));
         }
 
         return true;

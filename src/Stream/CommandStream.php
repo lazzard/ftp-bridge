@@ -11,7 +11,6 @@
 
 namespace Lazzard\FtpBridge\Stream;
 
-use Lazzard\FtpBridge\Exception\StreamException;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Util\StreamWrapper;
 
@@ -79,9 +78,7 @@ class CommandStream extends Stream
             }
         }
 
-        if ($response) {
-            $this->log($response);
-        }
+        $this->log($response);
 
         return $response;
     }
