@@ -1,15 +1,15 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests\Stream;
+namespace Lazzard\FtpBridge\Tests\Unit\Stream;
 
 use DG\BypassFinals;
 use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
 use Lazzard\FtpBridge\Exception\ResponseException;
-use PHPUnit\Framework\TestCase;
 use Lazzard\FtpBridge\Stream\ActiveDataStream;
+use Lazzard\FtpBridge\Stream\CommandStream;
 use Lazzard\FtpBridge\Stream\StreamInterface;
 use Lazzard\FtpBridge\Util\StreamWrapper;
-use Lazzard\FtpBridge\Stream\CommandStream;
+use PHPUnit\Framework\TestCase;
 
 class ActiveDataStreamTest extends TestCase
 {

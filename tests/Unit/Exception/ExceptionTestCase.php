@@ -1,9 +1,9 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests\Exception;
+namespace Lazzard\FtpBridge\Tests\Unit\Exception;
 
-use PHPUnit\Framework\TestCase;
 use Lazzard\FtpBridge\Exception\FtpBridgeException;
+use PHPUnit\Framework\TestCase;
 
 class ExceptionTestCase extends TestCase
 {

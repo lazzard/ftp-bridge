@@ -1,11 +1,11 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests\Logger;
+namespace Lazzard\FtpBridge\Tests\Unit\Logger;
 
 use Lazzard\FtpBridge\FtpBridge;
-use Lazzard\FtpBridge\Logger\LogLevel;
 use Lazzard\FtpBridge\Logger\FileLogger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
+use Lazzard\FtpBridge\Logger\LogLevel;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
@@ -67,9 +67,9 @@ class FileLoggerTest extends LoggerTest
 
         $crlf = FtpBridge::CRLF;
 
-        $infoLvl    = LogLevel::$info;
+        $infoLvl = LogLevel::$info;
         $commandLvl = LogLevel::$command;
-        $errorLvl   = LogLevel::$error;
+        $errorLvl = LogLevel::$error;
 
         $expected =
             "{$infoLvl} 220 FTP Server ready.{$crlf}" .

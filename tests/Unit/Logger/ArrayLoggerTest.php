@@ -1,11 +1,11 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests\Logger;
+namespace Lazzard\FtpBridge\Tests\Unit\Logger;
 
+use Lazzard\FtpBridge\FtpBridge;
 use Lazzard\FtpBridge\Logger\ArrayLogger;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Logger\LogLevel;
-use Lazzard\FtpBridge\FtpBridge;
 
 class ArrayLoggerTest extends LoggerTest
 {

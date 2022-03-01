@@ -1,14 +1,12 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests\Stream;
+namespace Lazzard\FtpBridge\Tests\Unit\Stream;
 
-use Lazzard\FtpBridge\Exception\StreamException;
 use Lazzard\FtpBridge\FtpBridge;
 use Lazzard\FtpBridge\Logger\Logger;
 use Lazzard\FtpBridge\Stream\Stream;
 use Lazzard\FtpBridge\Util\StreamWrapper;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 
 class StreamTest extends TestCase
 {
@@ -74,7 +72,7 @@ class StreamTest extends TestCase
             ->getMockForAbstractClass();
 
         $stream->streamWrapper = $wrapper;
-        $stream->logger        = $logger;
+        $stream->logger = $logger;
 
         $stream->write('USER username');
     }
@@ -172,9 +170,9 @@ class StreamTest extends TestCase
 
     public function testOpenSocketConnectionReturnsTrue()
     {
-        $host     = 'foo.bar.com';
-        $port     = 21;
-        $timeout  = 90;
+        $host = 'foo.bar.com';
+        $port = 21;
+        $timeout = 90;
         $blocking = true;
 
         $wrapper = $this->getMockBuilder(StreamWrapper::class)
@@ -199,9 +197,9 @@ class StreamTest extends TestCase
 
     public function testOpenSocketConnectionReturnsFalse()
     {
-        $host     = 'foo.bar.com';
-        $port     = 21;
-        $timeout  = 90;
+        $host = 'foo.bar.com';
+        $port = 21;
+        $timeout = 90;
         $blocking = true;
 
         $wrapper = $this->getMockBuilder(StreamWrapper::class)
@@ -242,7 +240,7 @@ class StreamTest extends TestCase
 
     protected static function getMethod($name)
     {
-        $class  = new ReflectionClass(Stream::class);
+        $class = new \ReflectionClass(Stream::class);
         $method = $class->getMethod($name);
 
         $method->setAccessible(true);

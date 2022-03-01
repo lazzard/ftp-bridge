@@ -1,11 +1,10 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests\Response;
+namespace Lazzard\FtpBridge\Tests\Unit\Response;
 
 use Lazzard\FtpBridge\FtpBridge;
 use Lazzard\FtpBridge\Response\ResponseParser;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 
 class ResponseParserTest extends TestCase
 {
@@ -26,8 +25,8 @@ class ResponseParserTest extends TestCase
         $response = (new ResponseParser($reply))->toArray();
 
         $this->assertSame([
-            'code'      => 214,
-            'message'   => 'The following commands are recognized (* =>\'s unimplemented):',
+            'code' => 214,
+            'message' => 'The following commands are recognized (* =>\'s unimplemented):',
             'multiline' => true,
         ], $response);
     }
@@ -39,8 +38,8 @@ class ResponseParserTest extends TestCase
         $response = (new ResponseParser($reply))->toArray();
 
         $this->assertSame([
-            'code'      => 227,
-            'message'   => 'Entering Passive Mode (192,168,1,9,140,108).',
+            'code' => 227,
+            'message' => 'Entering Passive Mode (192,168,1,9,140,108).',
             'multiline' => false,
         ], $response);
     }
@@ -136,7 +135,7 @@ class ResponseParserTest extends TestCase
 
     protected static function getMethod($name)
     {
-        $class  = new ReflectionClass(ResponseParser::class);
+        $class = new \ReflectionClass(ResponseParser::class);
         $method = $class->getMethod($name);
 
         $method->setAccessible(true);

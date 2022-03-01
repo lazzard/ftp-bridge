@@ -1,6 +1,6 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests\Response;
+namespace Lazzard\FtpBridge\Tests\Unit\Response;
 
 use Lazzard\FtpBridge\FtpBridge;
 use Lazzard\FtpBridge\Response\Response;

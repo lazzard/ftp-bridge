@@ -1,6 +1,6 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests;
+namespace Lazzard\FtpBridge\Tests\Unit;
 
 use DG\BypassFinals;
 use Lazzard\FtpBridge\Exception\ActiveDataStreamException;

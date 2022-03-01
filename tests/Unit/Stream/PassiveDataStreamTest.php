@@ -1,6 +1,6 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests\Stream;
+namespace Lazzard\FtpBridge\Tests\Unit\Stream;
 
 use Lazzard\FtpBridge\Exception\PassiveDataStreamException;
 use Lazzard\FtpBridge\Exception\ResponseException;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests\Logger;
+namespace Lazzard\FtpBridge\Tests\Unit\Logger;
 
 use Lazzard\FtpBridge\FtpBridge;
 use Lazzard\FtpBridge\Logger\LogLevel;

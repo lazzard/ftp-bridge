@@ -1,6 +1,6 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests\Stream;
+namespace Lazzard\FtpBridge\Tests\Unit\Stream;
 
 use DG\BypassFinals;
 use Lazzard\FtpBridge\FtpBridge;
@@ -55,7 +55,7 @@ class CommandStreamTest extends TestCase
 
     public function testReadWithMultilineReply()
     {
-        $crlf  = FtpBridge::CRLF;
+        $crlf = FtpBridge::CRLF;
         $reply = "214-The following commands are recognized (* =>'s unimplemented):{$crlf}" .
             "CWD     XCWD    CDUP    XCUP    SMNT*   QUIT    PORT    PASV{$crlf}" .
             "EPRT    EPSV    ALLO*   RNFR    RNTO    DELE    MDTM    RMD{$crlf}" .
@@ -125,9 +125,9 @@ class CommandStreamTest extends TestCase
             ->disableOriginalConstructor()
             ->getMockForAbstractClass();
 
-        $host     = "foo.bar.com";
-        $port     = 21;
-        $timeout  = 90;
+        $host = "foo.bar.com";
+        $port = 21;
+        $timeout = 90;
         $blocking = true;
 
         $stream = $this->getMockBuilder(CommandStream::class)
@@ -152,9 +152,9 @@ class CommandStreamTest extends TestCase
             ->disableOriginalConstructor()
             ->getMockForAbstractClass();
 
-        $host     = "foo.bar.com";
-        $port     = 21;
-        $timeout  = 90;
+        $host = "foo.bar.com";
+        $port = 21;
+        $timeout = 90;
         $blocking = true;
 
         $stream = $this->getMockBuilder(CommandStream::class)

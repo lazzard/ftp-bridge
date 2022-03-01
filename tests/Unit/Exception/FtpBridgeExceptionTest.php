@@ -1,6 +1,6 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests\Exception;
+namespace Lazzard\FtpBridge\Tests\Unit\Exception;
 
 use Lazzard\FtpBridge\Exception\FtpBridgeException;
 

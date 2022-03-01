@@ -1,15 +1,15 @@
 <?php
 
-namespace Lazzard\FtpBridge\Tests\Logger;
+namespace Lazzard\FtpBridge\Tests\Unit\Logger;
 
-use PHPUnit\Framework\TestCase;
 use Lazzard\FtpBridge\FtpBridge;
-use Lazzard\FtpBridge\Logger\LogLevel;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
+use Lazzard\FtpBridge\Logger\LogLevel;
+use PHPUnit\Framework\TestCase;
 
 abstract class LoggerTestCase extends TestCase
 {
-    /** @var Array */
+    /** @var array */
     protected static $fakeSession;
 
     public static function setUpBeforeClass(): void

@@ -9,8 +9,8 @@
          stopOnFailure="false">
 
     <testsuites>
-        <testsuite name="Lazzard/ftp-bridge Test Suite">
-            <directory>tests</directory>
+        <testsuite name="unit tests">
+            <directory>tests/Unit</directory>
         </testsuite>
     </testsuites>
 
