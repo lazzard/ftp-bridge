@@ -2,13 +2,38 @@
 
 namespace Lazzard\FtpBridge\Util;
 
+use Lazzard\FtpBridge\Exception\StreamWrapperException;
+
 class StreamWrapper
 {
-    private $handle;
+    /** @var resource */
+    protected $stream;
 
-    public function setHandle($handle)
+    /**
+     * @param resource $stream
+     *
+     * @throws StreamWrapperException
+     */
+    public function setStream($stream)
     {
-        $this->handle = $handle;
+        if (!is_resource($stream)) {
+            throw new StreamWrapperException(sprintf(
+                "StreamWrapper stream handle must be of type resource, '%s' type given.",
+                gettype($stream)
+            ));
+        }
+
+        $this->stream = $stream;
+    }
+
+    /**
+     * @param resource $stream
+     *
+     * @return void
+     */
+    public function getStream($stream)
+    {
+        $this->stream = $stream;
     }
 
     /**
@@ -39,12 +64,12 @@ class StreamWrapper
      */
     public function streamSocketGetName()
     {
-        return stream_socket_get_name($this->handle, false);
+        return stream_socket_get_name($this->stream, false);
     }
 
     public function streamSocketAccept()
     {
-        return stream_socket_accept($this->handle);
+        return stream_socket_accept($this->stream);
     }
 
     /**
@@ -65,7 +90,7 @@ class StreamWrapper
      */
     public function fwrite($string)
     {
-        return fwrite($this->handle, $string);
+        return fwrite($this->stream, $string);
     }
 
     /**
@@ -73,7 +98,7 @@ class StreamWrapper
      */
     public function fgets()
     {
-        return fgets($this->handle);
+        return fgets($this->stream);
     }
 
     /**
@@ -81,7 +106,7 @@ class StreamWrapper
      */
     public function fclose()
     {
-        return fclose($this->handle);
+        return fclose($this->stream);
     }
 
     /**
@@ -91,7 +116,7 @@ class StreamWrapper
      */
     public function fseek($offset)
     {
-        return fseek($this->handle, $offset);
+        return fseek($this->stream, $offset);
     }
 
     /**
@@ -99,11 +124,16 @@ class StreamWrapper
      */
     public function feof()
     {
-        return feof($this->handle);
+        return feof($this->stream);
     }
 
+    /**
+     * @param int $length
+     *
+     * @return false|string
+     */
     public function fread($length)
     {
-        return fread($this->handle, $length);
+        return fread($this->stream, $length);
     }
 }

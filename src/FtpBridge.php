@@ -64,14 +64,19 @@ class FtpBridge
     /** @var DataStream */
     protected $dataStream;
 
+    /** @var StreamWrapper */
+    protected $streamWrapper;
+
     /**
      * FtpBridge constructor
      *
      * @param LoggerInterface|null $logger
+     * @param StreamWrapper|null   $streamWrapper
      */
-    public function __construct(LoggerInterface $logger = null)
+    public function __construct(LoggerInterface $logger = null, StreamWrapper $streamWrapper = null)
     {
         $this->logger = $logger;
+        $this->streamWrapper = $streamWrapper ?: new StreamWrapper;
     }
 
     /**
@@ -136,6 +141,22 @@ class FtpBridge
     public function setDataStream($dataStream)
     {
         $this->dataStream = $dataStream;
+    }
+
+    /**
+     * @return StreamWrapper
+     */
+    public function getStreamWrapper()
+    {
+        return $this->streamWrapper;
+    }
+
+    /**
+     * @param StreamWrapper $streamWrapper
+     */
+    public function setStreamWrapper(StreamWrapper $streamWrapper)
+    {
+        $this->streamWrapper = $streamWrapper;
     }
 
     /**
