@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 class FtpBridgeTest extends TestCase
 {
+
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
@@ -149,7 +150,7 @@ class FtpBridgeTest extends TestCase
         $ftpBridge->setCommandStream($commandStreamMock);
 
         $this->assertInstanceOf(Response::class, $ftpBridge->receive());
-        $this->assertInstanceOf(Response::class, $ftpBridge->response);
+        $this->assertInstanceOf(Response::class, $ftpBridge->getResponse());
     }
 
     public function test_receiveData_throws_exception_with_passive_mode(): void

@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class StreamTest extends TestCase
 {
+
     public function testWriteReturnsTrue()
     {
         $wrapper = $this->getMockBuilder(StreamWrapper::class)
@@ -176,12 +177,15 @@ class StreamTest extends TestCase
         $blocking = true;
 
         $wrapper = $this->getMockBuilder(StreamWrapper::class)
-            ->onlyMethods(['streamSocketClient'])
+            ->onlyMethods(['streamSocketClient', 'setStream'])
             ->getMock();
 
         $wrapper->expects($this->once())
             ->method('streamSocketClient')
             ->willReturn(true);
+
+        $wrapper->expects($this->once())
+            ->method('setStream');
 
         $stream = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()

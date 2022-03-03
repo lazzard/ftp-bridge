@@ -114,7 +114,7 @@ abstract class Stream implements StreamInterface
 
         $this->stream = $stream;
 
-        $this->streamWrapper->setHandle($stream);
+        $this->streamWrapper->setStream($stream);
 
         return true;
     }

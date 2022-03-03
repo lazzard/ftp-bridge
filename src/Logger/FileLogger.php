@@ -135,6 +135,6 @@ class FileLogger extends Logger
 
         $this->stream = $stream;
 
-        $this->streamWrapper->setHandle($stream);
+        $this->streamWrapper->setStream($stream);
     }
 }

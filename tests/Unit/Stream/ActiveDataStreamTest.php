@@ -7,7 +7,6 @@ use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
 use Lazzard\FtpBridge\Exception\ResponseException;
 use Lazzard\FtpBridge\Stream\ActiveDataStream;
 use Lazzard\FtpBridge\Stream\CommandStream;
-use Lazzard\FtpBridge\Stream\StreamInterface;
 use Lazzard\FtpBridge\Util\StreamWrapper;
 use PHPUnit\Framework\TestCase;
 
@@ -20,27 +19,21 @@ class ActiveDataStreamTest extends TestCase
         BypassFinals::enable();
     }
 
-    public function testInstanceImplementsStreamInterface()
-    {
-        $activeStream = $this->getMockBuilder(ActiveDataStream::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->assertInstanceOf(StreamInterface::class, $activeStream);
-    }
-
     public function testOpenReturnsTrue()
     {
         $port = 25601;
 
         $streamWrapper = $this->getMockBuilder(StreamWrapper::class)
-            ->onlyMethods(['streamSocketServer'])
+            ->onlyMethods(['streamSocketServer', 'setStream'])
             ->getMock();
 
         $streamWrapper->expects($this->once())
             ->method('streamSocketServer')
             ->with("tcp://0.0.0.0:$port")
-            ->willReturn(true);
+            ->willReturn(fopen('php://temp', 'w+'));
+
+        $streamWrapper->expects($this->once())
+            ->method('setStream');
 
         $streamWrapperForCommandStream = $this->getMockBuilder(StreamWrapper::class)
             ->onlyMethods(['streamSocketGetName'])
@@ -87,7 +80,7 @@ class ActiveDataStreamTest extends TestCase
         $streamWrapper->expects($this->once())
             ->method('streamSocketServer')
             ->with("tcp://0.0.0.0:$port")
-            ->willReturn(true);
+            ->willReturn(fopen('php://temp', 'w+'));
 
         $streamWrapperForCommandStream = $this->getMockBuilder(StreamWrapper::class)
             ->onlyMethods(['streamSocketGetName'])
@@ -133,7 +126,7 @@ class ActiveDataStreamTest extends TestCase
         $streamWrapper->expects($this->once())
             ->method('streamSocketServer')
             ->with("tcp://0.0.0.0:$port")
-            ->willReturn(true);
+            ->willReturn(fopen('php://temp', 'w+'));
 
         $streamWrapperForCommandStream = $this->getMockBuilder(StreamWrapper::class)
             ->onlyMethods(['streamSocketGetName'])
@@ -198,6 +191,7 @@ class ActiveDataStreamTest extends TestCase
         $streamWrapper = $this->getMockBuilder(StreamWrapper::class)
             ->onlyMethods([
                 'streamSocketAccept',
+                'setStream',
                 'fread',
                 'feof',
                 'fclose'
@@ -207,13 +201,22 @@ class ActiveDataStreamTest extends TestCase
         $crlf = "\r\n";
         $data = "file1.txt{$crlf}file2.txt{$crlf}";
 
-        $streamWrapper->expects($this->exactly(1))
+        $streamWrapper->expects($this->once())
+            ->method('streamSocketAccept');
+
+        $streamWrapper->expects($this->exactly(2))
+            ->method('setStream');
+
+        $streamWrapper->expects($this->once())
             ->method('fread')
             ->willReturn($data);
 
         $streamWrapper->expects($this->once())
             ->method('feof')
             ->willReturn(true);
+
+        $streamWrapper->expects($this->once())
+            ->method('fclose');
 
         $activeStream = $this->getMockBuilder(ActiveDataStream::class)
             ->disableOriginalConstructor()

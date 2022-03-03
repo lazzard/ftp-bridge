@@ -7,20 +7,11 @@ use Lazzard\FtpBridge\Exception\ResponseException;
 use Lazzard\FtpBridge\Logger\Logger;
 use Lazzard\FtpBridge\Stream\CommandStream;
 use Lazzard\FtpBridge\Stream\PassiveDataStream;
-use Lazzard\FtpBridge\Stream\StreamInterface;
 use Lazzard\FtpBridge\Util\StreamWrapper;
 use PHPUnit\Framework\TestCase;
 
 class PassiveDataStreamTest extends TestCase
 {
-    public function testInstanceImplementsStreamInterface()
-    {
-        $commandStream = $this->getMockBuilder(PassiveDataStream::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->assertInstanceOf(StreamInterface::class, $commandStream);
-    }
 
     public function testOpenReturnsTrue()
     {

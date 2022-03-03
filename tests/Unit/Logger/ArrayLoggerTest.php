@@ -4,23 +4,16 @@ namespace Lazzard\FtpBridge\Tests\Unit\Logger;
 
 use Lazzard\FtpBridge\FtpBridge;
 use Lazzard\FtpBridge\Logger\ArrayLogger;
-use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Logger\LogLevel;
 
 class ArrayLoggerTest extends LoggerTest
 {
+
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
 
         self::$logger = ArrayLogger::class;
-    }
-
-    public function testConstructor()
-    {
-        $logger = new ArrayLogger;
-
-        $this->assertInstanceOf(LoggerInterface::class, $logger);
     }
 
     public function testLog()

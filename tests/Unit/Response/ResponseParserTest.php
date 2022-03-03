@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class ResponseParserTest extends TestCase
 {
+
     public function testToArrayWithMultilineReply()
     {
         $crlf = FtpBridge::CRLF;

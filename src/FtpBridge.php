@@ -25,6 +25,8 @@ use Lazzard\FtpBridge\Stream\PassiveDataStream;
 use Lazzard\FtpBridge\Util\StreamWrapper;
 
 /**
+ * Provides methods to interact with FTP servers.
+ *
  * @since  1.0
  * @author El Amrani Chakir <elamrani.sv.laza@gmail.com>
  */
@@ -51,10 +53,10 @@ class FtpBridge
     const TR_TYPE_CR_CONTROL = 'C';
 
     /** @var LoggerInterface */
-    public $logger;
+    protected $logger;
 
     /** @var Response */
-    public $response;
+    protected $response;
 
     /** @var CommandStream */
     protected $commandStream;
@@ -73,19 +75,67 @@ class FtpBridge
     }
 
     /**
-     * @param CommandStream $stream
+     * @return LoggerInterface
      */
-    public function setCommandStream(CommandStream $stream)
+    public function getLogger()
     {
-        $this->commandStream = $stream;
+        return $this->logger;
     }
 
     /**
-     * @param DataStream $stream
+     * @param LoggerInterface $logger
      */
-    public function setDataStream(DataStream $stream)
+    public function setLogger(LoggerInterface $logger)
     {
-        $this->dataStream = $stream;
+        $this->logger = $logger;
+    }
+
+    /**
+     * @return Response
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse(Response $response)
+    {
+        $this->response = $response;
+    }
+
+    /**
+     * @return CommandStream
+     */
+    public function getCommandStream()
+    {
+        return $this->commandStream;
+    }
+
+    /**
+     * @param CommandStream $commandStream
+     */
+    public function setCommandStream($commandStream)
+    {
+        $this->commandStream = $commandStream;
+    }
+
+    /**
+     * @return DataStream
+     */
+    public function getDataStream()
+    {
+        return $this->dataStream;
+    }
+
+    /**
+     * @param DataStream $dataStream
+     */
+    public function setDataStream($dataStream)
+    {
+        $this->dataStream = $dataStream;
     }
 
     /**
@@ -188,7 +238,7 @@ class FtpBridge
      */
     public function connect($host, $port = 21, $timeout = 90, $blocking = true)
     {
-        $this->commandStream = new CommandStream($host, $port, $timeout, $blocking, new StreamWrapper, $this->logger);
+        $this->commandStream = new CommandStream($host, $port, $timeout, $blocking, $this->streamWrapper, $this->logger);
 
         if (!$this->commandStream->open()) {
             $lastError = error_get_last();
@@ -211,7 +261,7 @@ class FtpBridge
      */
     public function openPassive()
     {
-        $this->dataStream = new PassiveDataStream($this->commandStream, new StreamWrapper, $this->logger);
+        $this->dataStream = new PassiveDataStream($this->commandStream, $this->streamWrapper, $this->logger);
 
         if (!$this->dataStream->open()) {
             $lastError = error_get_last();
@@ -234,7 +284,7 @@ class FtpBridge
      */
     public function openActive()
     {
-        $this->dataStream = new ActiveDataStream($this->commandStream, new StreamWrapper, $this->logger);
+        $this->dataStream = new ActiveDataStream($this->commandStream, $this->streamWrapper, $this->logger);
 
         if (!$this->dataStream->open()) {
             $lastError = error_get_last();

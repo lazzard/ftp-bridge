@@ -13,6 +13,7 @@ namespace Lazzard\FtpBridge\Stream;
 
 use Lazzard\FtpBridge\Exception\ActiveDataStreamException;
 use Lazzard\FtpBridge\Exception\ResponseException;
+use Lazzard\FtpBridge\Exception\StreamWrapperException;
 use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Response\Response;
 use Lazzard\FtpBridge\Util\StreamWrapper;
@@ -43,13 +44,13 @@ class ActiveDataStream extends DataStream
      *
      * {@inheritDoc}
      *
-     * @throws ActiveDataStreamException|ResponseException
+     * @throws ActiveDataStreamException|ResponseException|StreamWrapperException
      */
     public function open()
     {
         // minimum port number will be 1024 because 4 * 256 + 0 = 1024
         // maximum port number will be 65535 because 255 * 256 + 255 = 65535
-        $p1  = rand(4, 255);
+        $p1 = rand(4, 255);
         $p2 = rand(0, 255);
 
         $port = $this->calculatePortNumber($p1, $p2);
@@ -64,7 +65,7 @@ class ActiveDataStream extends DataStream
         ) {
             $this->stream = $stream;
 
-            $this->streamWrapper->setHandle($stream);
+            $this->streamWrapper->setStream($stream);
 
             // get the local socket name of the socket resource created by the commandStream instance
             $name = $this->commandStream->streamWrapper->streamSocketGetName();
@@ -95,7 +96,7 @@ class ActiveDataStream extends DataStream
             return false;
         }
 
-        $this->streamWrapper->setHandle($connection);
+        $this->streamWrapper->setStream($connection);
 
         $data = '';
 
@@ -110,7 +111,7 @@ class ActiveDataStream extends DataStream
         $this->streamWrapper->fclose();
 
         // revert to the original server socket stream
-        $this->streamWrapper->setHandle($this->stream);
+        $this->streamWrapper->setStream($this->stream);
 
         $this->log($data);
 

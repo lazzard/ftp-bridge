@@ -4,13 +4,13 @@ namespace Lazzard\FtpBridge\Tests\Unit\Logger;
 
 use Lazzard\FtpBridge\FtpBridge;
 use Lazzard\FtpBridge\Logger\FileLogger;
-use Lazzard\FtpBridge\Logger\LoggerInterface;
 use Lazzard\FtpBridge\Logger\LogLevel;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
 class FileLoggerTest extends LoggerTest
 {
+
     /** @var vfsStreamDirectory */
     private $root;
 
@@ -26,16 +26,6 @@ class FileLoggerTest extends LoggerTest
         parent::setUpBeforeClass();
 
         self::$logger = FileLogger::class;
-    }
-
-    public function testConstructor()
-    {
-        vfsStream::newFile('logs.txt', 0777)
-            ->at($this->root);
-
-        $logger = new FileLogger($this->root->url() . '/logs.txt');
-
-        $this->assertInstanceOf(LoggerInterface::class, $logger);
     }
 
     public function testLog()

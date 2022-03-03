@@ -6,7 +6,6 @@ use DG\BypassFinals;
 use Lazzard\FtpBridge\FtpBridge;
 use Lazzard\FtpBridge\Logger\Logger;
 use Lazzard\FtpBridge\Stream\CommandStream;
-use Lazzard\FtpBridge\Stream\StreamInterface;
 use Lazzard\FtpBridge\Util\StreamWrapper;
 use PHPUnit\Framework\TestCase;
 
@@ -17,15 +16,6 @@ class CommandStreamTest extends TestCase
         parent::setUpBeforeClass();
 
         BypassFinals::enable();
-    }
-
-    public function testConstructor()
-    {
-        $logger = $this->getMockBuilder(Logger::class)
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
-
-        $this->assertInstanceOf(StreamInterface::class, new CommandStream("foo.bar.com", 21, 90, true, new StreamWrapper, $logger));
     }
 
     public function testReadWithSingleLineReply()
