@@ -14,17 +14,19 @@
         {
             "name": "El Amrani Chakir",
             "email": "elamrani.sv.laza@gmail.com"
+        },
+        {
+            "name": "Lazzard Contributors",
+            "homepage": "https://github.com/orgs/lazzard/people"
         }
     ],
     "require": {
-        "php": ">=5.3"
+        "php": "^5.3 || ^7.0 || ^8.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9",
         "mikey179/vfsstream": "^1.6",
-        "dg/bypass-finals": "^1.3",
-        "symfony/var-dumper": "^5.4",
-        "filp/whoops": "^2.14"
+        "dg/bypass-finals": "^1.3"
     },
     "prefer-stable" : true,
     "autoload": {
