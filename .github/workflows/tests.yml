@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Setup PHP Action
-        uses: shivammathur/setup-php@1.8.2
+        uses: shivammathur/setup-php@2.37.1
         with:
           extensions: intl
           php-version: "${{ matrix.php-versions }}"
